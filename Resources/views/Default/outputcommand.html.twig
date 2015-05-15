@@ -1,0 +1,8 @@
+<pre>
+Esecuzione del comando: <i style="color: white;">{{ command }}</i><br/>
+{% if (errcode == false) %}
+<h5>{{ message|replace({';': "\n"}) }}</h5>
+{% else %}
+<h5 style="color: red;">{{ message|replace({';': "\n"}) }}</h5>
+{% endif %}
+</pre>

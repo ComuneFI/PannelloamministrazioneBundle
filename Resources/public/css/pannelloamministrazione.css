@@ -1,0 +1,96 @@
+legend {
+    background-color: #CC0000;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 3px 10px;
+    /*margin-left: 30%;*/
+    font-size: 18px;
+
+}
+.groupbox
+{
+    padding: 1.2em 1.5em;
+    border:1px solid gray;
+    width: 360px;
+}    
+
+.utility
+{
+    position:absolute;
+    top:40px;
+    left:10px;
+} 
+
+.bundle
+{
+    position:absolute;
+    top:40px;
+    left:420px;
+} 
+.entity
+{
+    position:absolute;
+    top:40px;
+    left:830px;
+} 
+
+#risultato {font-size: 18px; background-color: black; color: green; height: 250px;overflow: auto; display: none; margin-top: 320px;}
+#stato {margin-top: 320px;}
+.adminpanel {border:0px solid gray; text-align: left;}
+.button {
+    border-top: 1px solid #96d1f8;
+    background: #65a9d7;
+    background: -webkit-gradient(linear, left top, left bottom, from(#5A9368), to(#5A9368));
+    background: -webkit-linear-gradient(top, #5A9368, #5A9368);
+    background: -moz-linear-gradient(top, #5A9368, #5A9368);
+    background: -ms-linear-gradient(top, #5A9368, #5A9368);
+    background: -o-linear-gradient(top, #5A9368, #5A9368);
+    padding: 7.5px 15px;
+    -webkit-border-radius: 39px;
+    -moz-border-radius: 39px;
+    border-radius: 39px;
+    -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+    -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+    box-shadow: rgba(0,0,0,1) 0 1px 0;
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+    color: white;
+    font-size: 15px;
+    font-family: Georgia, serif;
+    text-decoration: none;
+    width: 350px;
+    vertical-align: middle;
+}
+.button:hover {
+    border-top-color: #28597a;
+    background: #28597a;
+    color: #ccc;
+}
+.button:active {
+    border-top-color: #248c51;
+    background: #248c51;
+}
+
+label, input {
+    /* in order to define widths */
+    display: inline-block;
+}
+
+label {
+    width: 30%;
+    /* positions the label text beside the input */
+    text-align: right;
+}
+
+label + input {
+    width: 30%;
+    /* large margin-right to force the next element to the new-line
+       and margin-left to create a gutter between the label and input */
+    margin: 0 30% 0 4%;
+}
+
+/* only the submit button is matched by this selector,
+   but to be sure you could use an id or class for that button */
+input + input {
+    float: right;
+}
+

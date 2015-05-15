@@ -1,0 +1,7 @@
+parameters:
+#    fi_pannello_amministrazione.example.class: Fi\PannelloAmministrazioneBundle\Example
+
+services:
+#    fi_pannello_amministrazione.example:
+#        class: %fi_pannello_amministrazione.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
