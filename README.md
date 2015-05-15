@@ -17,7 +17,7 @@ Aggiungere nel file composer.json (root del progetto) nella sezione:
     },
 }    
 
-Modificare sempre in composer.json:
+Aggiungere sempre in composer.json:
 
 "repositories": [
         {   
