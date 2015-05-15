@@ -31,9 +31,7 @@
         ]
     },
     "autoload": {
-        "psr-4": {
-            "Fi\\PannelloAmministrazioneBundle": ""
-        }
+        "psr-4": {"Fi\\PannelloAmministrazioneBundle\\": "" }        
     },
     "target-dir": "Fi/PannelloAmministrazioneBundle",
     "repositories": [{
