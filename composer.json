@@ -2,12 +2,6 @@
     "name": "Fi/PannelloAmministrazioneBundle",
     "description": "Pannello di amministrazione per progetti Fifree2",
     "type": "symfony-bundle",
-    "autoload": {
-        "psr-0": {
-            "Fi\\": "vendor/Fi"
-        }
-    },
-    "type": "symfony-bundle",
     "authors": [{
             "name": "Andrea Manzi",
             "email": "andrea.manzi@comune.fi.it"
