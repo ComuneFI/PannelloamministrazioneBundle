@@ -1,0 +1,30 @@
+{
+    "name": "fi/pannelloamministrazionebundle",
+    "description": "Pannello di amministrazione per progetti fifree2",
+    "type": "symfony-bundle",
+    "authors": [{
+            "name": "Andrea Manzi",
+            "email": "andrea.manzi@comune.fi.it"
+        }],
+    "keywords": [
+        "Pannello amministrazione bundle"
+    ],
+    "license": [
+        "MIT"
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-0": {
+            "Fi\\PannelloAmministrazioneBundle": ""
+        }
+    },
+    "target-dir": "Fi/PannelloAmministrazioneBundle",
+    "repositories": [{
+        }],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0"
+        }
+    }
+}
