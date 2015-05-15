@@ -9,17 +9,15 @@
     "keywords": [
         "Pannello amministrazione bundle"
     ],
-    "license": [
-        "MIT"
-    ],
-    "require": {
-    },
+    "license": "MIT",
     "autoload": {
-        "psr-0": {"Fi\\PannelloAmministrazioneBundle\\": "" }        
+        "psr-4": {
+            "Fi\\PannelloAmministrazioneBundle\\": ""
+        }
     },
-    "target-dir": "Fi/PannelloAmministrazioneBundle",
-    "repositories": [{
-        }],
+    "require": {
+        "symfony/http-kernel": "~2.5"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0"
