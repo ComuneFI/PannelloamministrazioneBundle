@@ -52,4 +52,4 @@ fi_pannello_amministrazione:
     resource: "@FiPannelloAmministrazioneBundle/Resources/config/routing.yml"
     prefix:   /
 
-Infine lanciare assets:install:
+Infine se necessario lanciare assets:install
