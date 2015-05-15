@@ -36,6 +36,10 @@ Aggiungere sempre in composer.json:
         }
     ]
 
+E sempre nel composer.json, nella sezione require aggiungere:
+
+"fi/pannelloamministrazionebundle": "dev-master",
+        
 
 Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ...
