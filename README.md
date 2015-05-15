@@ -17,6 +17,26 @@ Aggiungere nel file composer.json (root del progetto) nella sezione:
     },
 }    
 
+Modificare sempre in composer.json:
+
+"repositories": [
+        {   
+            ...
+           ,
+            "type": "package",
+            "package": {
+                "name": "Fi/PannelloAmministrazioneBundle",
+                "version": "dev-master",
+                "source": {
+                    "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/pannelloamministrazionebundle.git/",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ]
+
+
 Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ...
 new Fi\PannelloAmministrazioneBundle\FiPannelloAmministrazioneBundle(),
