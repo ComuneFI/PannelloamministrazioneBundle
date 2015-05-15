@@ -32,10 +32,10 @@
     },
     "autoload": {
         "psr-0": {
-            "Fi\\Bundle\\PannelloAmministrazioneBundle": ""
+            "Fi\\PannelloAmministrazioneBundle": ""
         }
     },
-    "target-dir": "PannelloAmministrazioneBundle",
+    "target-dir": "Fi/PannelloAmministrazioneBundle",
     "repositories": [{
         }],
     "extra": {
