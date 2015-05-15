@@ -2,7 +2,7 @@
     "name": "Fi/PannelloAmministrazioneBundle",
     "description": "Pannello di amministrazione per progetti Fifree2",
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-0": { "": "src/", "Fi\\": "vendor/Fi" }
     },
     "type": "symfony-bundle",
     "authors": [{
