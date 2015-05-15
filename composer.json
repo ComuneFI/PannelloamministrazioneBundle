@@ -1,8 +1,12 @@
 {
     "name": "Fi/PannelloAmministrazioneBundle",
     "description": "Pannello di amministrazione per progetti Fifree2",
+    "type": "symfony-bundle",
     "autoload": {
-        "psr-0": { "": "src/", "Fi\\": "vendor/Fi" }
+        "psr-0": {
+            "": "src/",
+            "Fi\\": "vendor/Fi"
+        }
     },
     "type": "symfony-bundle",
     "authors": [{
@@ -35,10 +39,10 @@
     },
     "autoload": {
         "psr-0": {
-            "Fi\\PannelloAmministrazioneBundle": ""
+            "Fi\\Bundle\\PannelloAmministrazioneBundle": ""
         }
     },
-    "target-dir": "Fi/PannelloAmministrazioneBundle",
+    "target-dir": "PannelloAmministrazioneBundle",
     "repositories": [{
         }],
     "extra": {
