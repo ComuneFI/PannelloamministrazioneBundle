@@ -47,3 +47,5 @@ Aggiungere nella routing dell'applicazione in app/config/routing.yml:
 fi_pannello_amministrazione:
     resource: "@FiPannelloAmministrazioneBundle/Resources/config/routing.yml"
     prefix:   /
+
+Infine lanciare assets:install:
