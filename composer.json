@@ -1,6 +1,6 @@
 {
-    "name": "fi/pannelloamministrazionebundle",
-    "description": "Pannello di amministrazione per progetti fifree2",
+    "name": "Fi/PannelloAmministrazioneBundle",
+    "description": "Pannello di amministrazione per progetti Fifree2",
     "type": "symfony-bundle",
     "authors": [{
             "name": "Andrea Manzi",
