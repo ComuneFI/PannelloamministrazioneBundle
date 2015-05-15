@@ -1,6 +1,9 @@
 {
     "name": "Fi/PannelloAmministrazioneBundle",
     "description": "Pannello di amministrazione per progetti Fifree2",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
     "type": "symfony-bundle",
     "authors": [{
             "name": "Andrea Manzi",
