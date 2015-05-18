@@ -17,9 +17,5 @@
     },
     "require": {
         "symfony/http-kernel": "~2.5"
-    },"extra": {
-        "branch-alias": {
-            "dev-master": "1.0"
-        }
     }
 }
