@@ -1,5 +1,6 @@
 {
     "name": "fi/pannelloamministrazionebundle",
+    "version": "1.0.1",
     "description": "Pannello di amministrazione per progetti Fifree2",
     "type": "symfony-bundle",
     "authors": [{
