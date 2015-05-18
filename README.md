@@ -11,7 +11,7 @@ Aggiungere nel file composer.json (root del progetto) nella sezione:
 "autoload": {
 		...,
         "psr-4" : {
-            "Fi\\PannelloAmministrazioneBundle\\": "vendor/Fi/PannelloAmministrazioneBundle/"
+            "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/"
         },
         ....
     },
@@ -23,15 +23,9 @@ Aggiungere sempre in composer.json:
         {   
             ...
            ,
-            "type": "package",
-            "package": {
-                "name": "Fi/PannelloAmministrazioneBundle",
-                "version": "dev-master",
-                "source": {
-                    "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/pannelloamministrazionebundle.git/",
-                    "type": "git",
-                    "reference": "master"
-                }
+            {
+            "type": "git",
+            "url": "https://github.com/manzolo/pannelloamministrazionebundle.git"
             }
         }
     ]
