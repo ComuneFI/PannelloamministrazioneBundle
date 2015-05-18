@@ -295,7 +295,7 @@ EOF;
                 return new Response("Nella cartella 'doc' non è presente il file " . $wbFile . "!");
             }
 
-            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "Wb" . DIRECTORY_SEPARATOR . "SchemaExporterBundle" . DIRECTORY_SEPARATOR . "cli" . DIRECTORY_SEPARATOR . "export.php";
+            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi" . DIRECTORY_SEPARATOR . "SchemaExporterBundle" . DIRECTORY_SEPARATOR . "cli" . DIRECTORY_SEPARATOR . "export.php";
 
             $destinationPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR;
 
