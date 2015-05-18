@@ -19,7 +19,7 @@
     "require": {
         "symfony/http-kernel": "~2.5"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.1"
