@@ -2,6 +2,7 @@
     "name": "fi/pannelloamministrazionebundle",
     "description": "Pannello di amministrazione per progetti Fifree2",
     "type": "symfony-bundle",
+    "minimum-stability": "dev",
     "authors": [{
             "name": "Andrea Manzi",
             "email": "andrea.manzi@comune.fi.it"
