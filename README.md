@@ -24,7 +24,7 @@ Installazione:
     "repositories": [
             {   
                 {
-                "type": "git",
+                "type": "vcs",
                 "url": "https://github.com/manzolo/pannelloamministrazionebundle.git"
                 }
             }
@@ -32,7 +32,7 @@ Installazione:
 ```
 - E sempre nel composer.json, nella sezione require aggiungere:
 ```
-    "fi/pannelloamministrazionebundle": "master",
+    "fi/pannelloamministrazionebundle": "dev-master",
 ```
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ```
