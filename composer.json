@@ -16,7 +16,8 @@
         }
     },
     "require": {
-        "symfony/http-kernel": "~2.5"
+        "symfony/http-kernel": "~2.5",
+        "fi/schemaexporterbundle" : "dev-master"
     },
     "extra": {
         "branch-alias": {
