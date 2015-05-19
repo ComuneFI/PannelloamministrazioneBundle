@@ -13,11 +13,9 @@ Installazione:
         "description": "The \"Symfony Standard Edition\" distribution",
 
     "autoload": {
-                    ...,
             "psr-4" : {
                 "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/"
-            },
-            ....
+            }
         },
     }    
 ```
@@ -25,8 +23,6 @@ Installazione:
 ```
     "repositories": [
             {   
-                ...
-               ,
                 {
                 "type": "git",
                 "url": "https://github.com/manzolo/pannelloamministrazionebundle.git"
