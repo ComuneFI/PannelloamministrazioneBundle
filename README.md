@@ -40,13 +40,10 @@ Installazione:
 
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 
-    ...
     new Fi\PannelloAmministrazioneBundle\FiPannelloAmministrazioneBundle(),
-    ...    
 
 - Aggiungere nella routing dell'applicazione in app/config/routing.yml:
 
-    ...
     fi_pannello_amministrazione:
         resource: "@FiPannelloAmministrazioneBundle/Resources/config/routing.yml"
         prefix:   /
