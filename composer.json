@@ -15,12 +15,6 @@
             "fi\\pannelloamministrazionebundle\\": ""
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/manzolo/schemaexporterbundle.git"
-        }
-    ],
     "require": {
         "php": ">=5.4.0",
         "symfony/http-kernel": "~2.5",
