@@ -5,7 +5,7 @@ Installazione:
 -------------
 
 - Aggiungere nel file composer.json (root del progetto) nella sezione:
-
+```
     {
     "name": "symfony/framework-standard-edition",
         "license": "MIT",
@@ -20,9 +20,9 @@ Installazione:
             ....
         },
     }    
-
+```
 - Aggiungere sempre in composer.json:
-
+```
     "repositories": [
             {   
                 ...
@@ -33,19 +33,22 @@ Installazione:
                 }
             }
     ]
-
+```
 - E sempre nel composer.json, nella sezione require aggiungere:
-
+```
     "fi/pannelloamministrazionebundle": "master",
-
+```
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ```
     new Fi\PannelloAmministrazioneBundle\FiPannelloAmministrazioneBundle(),
 ```
 - Aggiungere nella routing dell'applicazione in app/config/routing.yml:
-
+```
     fi_pannello_amministrazione:
         resource: "@FiPannelloAmministrazioneBundle/Resources/config/routing.yml"
         prefix:   /
-
-- Infine lanciare assets:install
+```
+- Infine lanciare 
+```
+    assets:install
+```
