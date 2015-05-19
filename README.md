@@ -39,9 +39,9 @@ Installazione:
     "fi/pannelloamministrazionebundle": "master",
 
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
-
+```
     new Fi\PannelloAmministrazioneBundle\FiPannelloAmministrazioneBundle(),
-
+```
 - Aggiungere nella routing dell'applicazione in app/config/routing.yml:
 
     fi_pannello_amministrazione:
