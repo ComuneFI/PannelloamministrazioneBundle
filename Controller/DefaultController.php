@@ -696,5 +696,4 @@ EOF;
     public function forceCleanLockFile() {
         $this->LockFile(false);
     }
-
 }
