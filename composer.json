@@ -17,8 +17,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "symfony/http-kernel": "~2.5",
-        "fi/schemaexporterbundle": "dev-master"
+        "symfony/http-kernel": "~2.5"
     },
     "extra": {
         "branch-alias": {
