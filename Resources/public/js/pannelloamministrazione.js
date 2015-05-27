@@ -23,9 +23,7 @@ $(document).keydown(function (e) {
             $("#adminpanel" + currentfunction).click();
             currentfunction = "";
         }
-
     }
-
 });
 
 $("#symfonycommand").focusin(function () {
