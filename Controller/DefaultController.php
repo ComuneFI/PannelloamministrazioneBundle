@@ -275,7 +275,7 @@ EOF;
     private function generateFormWiew($bundlename, $entityform, $view) {
         $fs = new Filesystem();
         $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-        $source = $prjPath . "/src/Fi/CoreBundle/FiTemplate/views/" . $view . ".html.twig";
+        $source = $prjPath . "/vendor/fi/fifreecorebundle/FiTemplate/views/" . $view . ".html.twig";
         $dest = $prjPath . "/src/" . $bundlename . "/Resources/views/" . $entityform . "/" . $view . ".html.twig";
         $fs->copy($source, $dest, true);
     }
@@ -348,7 +348,7 @@ EOF;
             if (!$process->isSuccessful()) {
                 return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
-            return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
         }
     }
 
@@ -433,7 +433,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -460,7 +460,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -529,7 +529,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -574,7 +574,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -602,7 +602,7 @@ EOF;
                 /*if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }*/
-                return new Response('Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()));
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
