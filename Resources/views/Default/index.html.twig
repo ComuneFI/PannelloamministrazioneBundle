@@ -14,27 +14,27 @@
     <div class="adminpanel utility">
         <fieldset class="groupbox" id="grpulitita">
             <legend>Utilità</legend>
-            <button id="adminpanelcc" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Symfony2 ClearCache</button>
+            <button id="adminpanelcc" class="active btn btn-default" data-reactid=".3.0" type="button">Symfony2 ClearCache</button>
             <br/><br/>
             {% if (svn == true) %}
-                <button id="adminpanelsvn" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Prendi l'ultima versione da svn</button>
+                <button id="adminpanelsvn" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da svn</button>
                 <br/><br/>
             {% endif %}
             {% if (git == true) %}
-                <button id="adminpanelgit" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Prendi l'ultima versione da Git</button>
+                <button id="adminpanelgit" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da Git</button>
                 <br/><br/>
             {% endif %}
-                <button id="adminpanelphpunittest" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">PHPUnit test</button>
+                <button id="adminpanelphpunittest" class="active btn btn-success" data-reactid=".3.0" type="button">PHPUnit test</button>
                 <br/><br/>
             <!--<input class="button" type="button" id="adminpanelchown" value="Riassegna diritti al progetto"/>-->
-                <label for='symfonycommand'>Comando:</label>
-                <input type="text" id="symfonycommand" value="" />
-                <button id="adminpanelsymfonycommand" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Esegue comando symfony</button>
+                <label for='symfonycommand'>Comando symfony:</label><br/>
+                <input class="form-control" type="text" id="symfonycommand" value="" /><br/>
+                <button id="adminpanelsymfonycommand" class="active btn btn-warning" data-reactid=".3.0" type="button">Esegue comando symfony</button>
                 <br/><br/>
                 
-                <label for='unixcommand'>Comando unix:</label>
-                <input type="text" id="unixcommand" value="" />
-                <button id="adminpanelunixcommand" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Esegue comando Unix</button>
+                <label for='unixcommand'>Comando shell:</label><br/>
+                <input class="form-control" type="text" id="unixcommand" value="" /><br/>
+                <button id="adminpanelunixcommand" class="active btn btn-danger" data-reactid=".3.0" type="button">Esegue comando da shell</button>
 
         </fieldset>
     </div>
@@ -44,20 +44,20 @@
         <fieldset class="groupbox" id="grpbundle">
             <legend>Bundle e Form</legend>
             <div>
-                <button id="adminpanelgeneratebundle" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Genera bundle</button>
+                <button id="adminpanelgeneratebundle" class="active btn btn-default" data-reactid=".3.0" type="button">Genera bundle</button>
                 <br/><br/>
                 <div class="inputbox">
                     <label for='bundlename'>Nome Bundle:</label>
-                    <input type="text" id="bundlename" value="Fi/DemoBundle"/>
+                    <input class="form-control" type="text" id="bundlename" value="Fi/DemoBundle"/><br/>
                 </div>
             </div>
             <div>
-                <button id="adminpanelgenerateform" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Genera form</button>
+                <button id="adminpanelgenerateform" class="active btn btn-default" data-reactid=".3.0" type="button">Genera form</button>
                 <br/><br/>
                 <label for='entityform'>Entità:</label>
-                <input type="text" id="entityform" value="ffprincipale"/><br/>
+                <input class="form-control" type="text" id="entityform" value="ffprincipale"/><br/>
             </div>
-                <button id="adminpanelgenerateformcrud" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
+                <button id="adminpanelgenerateformcrud" class="active btn btn-default" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
         </fieldset>
     </div>
 
@@ -66,27 +66,27 @@
         <fieldset class="groupbox" id="grpentities">
             <legend title="{{database_host}} {{database_name}} ({{database_driver}})">Database</legend>
             <div>
-                <button id="adminpanelgenerateentity" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Genera entity YML da modello workbench</button>
+                <button id="adminpanelgenerateentity" class="active btn btn-success" data-reactid=".3.0" type="button">Genera entity YML da modello workbench</button>
                 <div class="inputbox">
                     <label for='entityfile'>File modello:</label>
-                    <select id="entityfile">
+                    <select class="form-control" id="entityfile">
                         {% for mwb in mwbs %}
                             <option value="{{mwb}}">{{mwb}}</option>
                         {% endfor %}
                     </select>
                     <br/>
-                    <label for='entitybundle'>Bundle:</label>
-                    <select id="entitybundle">
+                    <label for='entitybundle'>Bundle:</label><br/>
+                    <select class="form-control" id="entitybundle">
                         {% for bundle in bundles %}
                             <option value="{{bundle}}">{{bundle}}</option>
                         {% endfor %}
                     </select>
-
+                    <br/><br/>
                 </div>
             </div>
-                <button id="adminpanelgenerateclassentity" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Genera le classi dalle entities</button>
+                <button id="adminpanelgenerateclassentity" class="active btn btn-default" data-reactid=".3.0" type="button">Genera le classi dalle entities</button>
                 <br/><br/>
-                <button id="adminpanelaggiornadatabase" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Aggiorna schema database</button>
+                <button id="adminpanelaggiornadatabase" class="active btn btn-danger" data-reactid=".3.0" type="button">Aggiorna schema database</button>
         </fieldset>
     </div>
     </div>

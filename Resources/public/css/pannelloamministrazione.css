@@ -1,5 +1,5 @@
 legend {
-    background-color: #CC0000;
+    background-color: #265a88;
     color: #FFFFFF;
     font-weight: bold;
     padding: 3px 10px;
@@ -11,7 +11,7 @@ legend {
 {
     padding: 0.4em 1.0em;
     border:1px solid gray;
-    width: 360px;
+    width: 330px;
 }    
 
 .utility
@@ -25,13 +25,13 @@ legend {
 {
     position:absolute;
     top:40px;
-    left:420px;
+    left:360px;
 } 
 .entity
 {
     position:absolute;
     top:40px;
-    left:830px;
+    left:710px;
 } 
 
 #risultato {margin-left: 10px; font-size: 18px; background-color: black; color: green; height: 240px;overflow: auto; display: none; margin-top: 420px;}
@@ -74,19 +74,18 @@ legend {
 label, input {
     /* in order to define widths */
     display: inline-block;
+    width: 94%;
+    text-align: left;
 }
 
 label {
-    width: 30%;
+    width: 94%;
     /* positions the label text beside the input */
-    text-align: right;
+    text-align: left;
 }
 
 label + input {
-    width: 30%;
-    /* large margin-right to force the next element to the new-line
-       and margin-left to create a gutter between the label and input */
-    margin: 0 30% 0 4%;
+    width: 94%;
 }
 
 /* only the submit button is matched by this selector,
@@ -96,5 +95,5 @@ input + input {
 }
 
 .btn {
-    width: 350px;
+    width: 300px;
 }
