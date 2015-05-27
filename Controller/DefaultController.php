@@ -164,9 +164,9 @@ class DefaultController extends Controller {
         $code = $this->getControllerCode(str_replace("/", "\\", $bundlename), $entityform);
         $fs->dumpFile($controlleFile, $code);
 
+        //Fixed: Adesso questa parte la fa da solo symfony (05/2015)
         //Routing
         //$this->generateFormRouting($bundlename, $entityform);
-
         //Twig template (Crea i template per new edit show)
         $this->generateFormWiew($bundlename, $entityform, "edit");
         $this->generateFormWiew($bundlename, $entityform, "index");
@@ -251,26 +251,26 @@ EOF;
         return $code;
     }
 
-    private function generateFormRouting($bundlename, $entityform) {
-        //Routing del form
-        $fs = new Filesystem();
-        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
+    /* private function generateFormRouting($bundlename, $entityform) {
+      //Routing del form
+      $fs = new Filesystem();
+      $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
 
-        $routingFile = $prjPath . "/src/" . $bundlename . "/Resources/config/routing/" . $entityform . ".yml";
-        $code = $this->getRoutingCode(str_replace("/", "", $bundlename), $entityform);
-        $fs->dumpFile($routingFile, $code);
+      $routingFile = $prjPath . "/src/" . $bundlename . "/Resources/config/routing/" . $entityform . ".yml";
+      $code = $this->getRoutingCode(str_replace("/", "", $bundlename), $entityform);
+      $fs->dumpFile($routingFile, $code);
 
-        $dest = $prjPath . "/src/" . $bundlename . "/Resources/config/routing.yml";
+      $dest = $prjPath . "/src/" . $bundlename . "/Resources/config/routing.yml";
 
-        $routingContext = "\n" . str_replace("/", "", $bundlename) . '_' . $entityform . ': ' . "\n" .
-                '  resource: "@' . str_replace("/", "", $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
-                '  prefix: /' . $entityform . "\n";
+      $routingContext = "\n" . str_replace("/", "", $bundlename) . '_' . $entityform . ': ' . "\n" .
+      '  resource: "@' . str_replace("/", "", $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
+      '  prefix: /' . $entityform . "\n";
 
-        //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
-        $fh = fopen($dest, 'a');
-        fwrite($fh, $routingContext);
-        fclose($fh);
-    }
+      //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
+      $fh = fopen($dest, 'a');
+      fwrite($fh, $routingContext);
+      fclose($fh);
+      } */
 
     private function generateFormWiew($bundlename, $entityform, $view) {
         $fs = new Filesystem();
@@ -348,7 +348,7 @@ EOF;
             if (!$process->isSuccessful()) {
                 return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
-            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
@@ -433,7 +433,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -460,7 +460,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -529,7 +529,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -574,7 +574,7 @@ EOF;
                 if (!$process->isSuccessful()) {
                     return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -593,16 +593,16 @@ EOF;
                 $sepchr = self::getSeparator();
                 $phpPath = "/usr/bin/php";
 
-                $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr .$phpPath." ". "bin" . DIRECTORY_SEPARATOR ."phpunit -c app";
+                $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
                 $process = new Process($command);
                 $process->run();
 
                 $this->LockFile(false);
                 // eseguito deopo la fine del comando
-                /*if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }*/
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput())."</pre>");
+                /* if (!$process->isSuccessful()) {
+                  return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+                  } */
+                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
                 return new Response("Non previsto in ambiente windows!");
             }
@@ -695,4 +695,5 @@ EOF;
     public function forceCleanLockFile() {
         $this->LockFile(false);
     }
+
 }
