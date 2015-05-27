@@ -34,9 +34,9 @@ legend {
     left:710px;
 } 
 
-#risultato {margin-left: 10px; font-size: 18px; background-color: black; color: green; height: 240px;overflow: auto; display: none; margin-top: 420px;}
+#risultato {margin-left: 10px; font-size: 18px; background-color: black; color: green; height: 240px;overflow: auto; display: none; margin-top: 430px;}
 #risultato pre {background-color: black; color: green; border:0px;}
-#stato {margin-top: 420px;}
+#stato {margin-top: 430px;}
 .adminpanel {border:0px solid gray; text-align: left;}
 .button {
     border-top: 1px solid #96d1f8;
