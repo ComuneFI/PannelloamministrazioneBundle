@@ -165,7 +165,7 @@ class DefaultController extends Controller {
         $fs->dumpFile($controlleFile, $code);
 
         //Routing
-        $this->generateFormRouting($bundlename, $entityform);
+        //$this->generateFormRouting($bundlename, $entityform);
 
         //Twig template (Crea i template per new edit show)
         $this->generateFormWiew($bundlename, $entityform, "edit");
