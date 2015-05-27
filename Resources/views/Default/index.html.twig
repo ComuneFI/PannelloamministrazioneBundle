@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block body %}
+    <div>
     <div class="adminpanel utility">
         <fieldset class="groupbox" id="grpulitita">
             <legend>Utilità</legend>
@@ -87,6 +88,7 @@
                 <br/><br/>
                 <button id="adminpanelaggiornadatabase" class="active btn btn-lg btn-primary" data-reactid=".3.0" type="button">Aggiorna schema database</button>
         </fieldset>
+    </div>
     </div>
     <div id="stato"></div>
     <div id="risultato"></div>
@@ -370,7 +372,7 @@
                     $("#risultato").html(data);
                     $("#stato").html('');
                     $("#risultato").slideDown("slow");
-                    alert("Controllare il log, e in caso di routing.yml non aggiornabile automaticamente, inserire a mano la parte suggerita tenendo conto nell'indentazione");
+                    //alert("Controllare il log, e in caso di routing.yml non aggiornabile automaticamente, inserire a mano la parte suggerita tenendo conto nell'indentazione");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
                     $("#stato").html('');
