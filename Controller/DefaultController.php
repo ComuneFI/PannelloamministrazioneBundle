@@ -319,7 +319,7 @@ EOF;
             $bundlePathEscaped = str_replace("/", "\\", $bundlePath);
             $bundlePathEscaped = str_replace("\\", "\\\\", $bundlePathEscaped);
 
-            $str = file_get_contents($prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fifreecorebundle/FiTemplate/config/export.json");
+            $str = file_get_contents($prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi/freecorebundle/FiTemplate/config/export.json");
             $str = str_replace("[bundle]", str_replace("/", "", $bundlePathEscaped), $str);
             $str = str_replace("[dir]", $destinationPathEscaped, $str);
             file_put_contents($exportJson, $str);
