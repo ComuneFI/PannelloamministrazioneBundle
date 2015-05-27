@@ -6,101 +6,102 @@
     <link rel="stylesheet" href="{{asset('bundles/fipannelloamministrazione/css/bootstrap.min.css')}}" />
     <link rel="stylesheet" href="{{asset('bundles/fipannelloamministrazione/css/bootstrap-theme.min.css')}}" />
     <link rel="stylesheet" href="{{asset('bundles/fipannelloamministrazione/css/pannelloamministrazione.css')}}" />
-
 {% endblock %}
 
 {% block body %}
     <div>
-    <div class="adminpanel utility">
-        <fieldset class="groupbox" id="grpulitita">
-            <legend>Utilità</legend>
-            <button id="adminpanelcc" class="active btn btn-default" data-reactid=".3.0" type="button">Symfony2 ClearCache</button>
-            <br/><br/>
-            {% if (svn == true) %}
-                <button id="adminpanelsvn" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da svn</button>
+        <div class="adminpanel utility">
+            <fieldset class="groupbox" id="grpulitita">
+                <legend>Utilità</legend>
+                <button id="adminpanelcc" class="active btn btn-default" data-reactid=".3.0" type="button">Symfony2 ClearCache</button>
                 <br/><br/>
-            {% endif %}
-            {% if (git == true) %}
-                <button id="adminpanelgit" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da Git</button>
-                <br/><br/>
-            {% endif %}
+                {% if (svn == true) %}
+                    <button id="adminpanelsvn" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da svn</button>
+                    <br/><br/>
+                {% endif %}
+                {% if (git == true) %}
+                    <button id="adminpanelgit" class="active btn btn-info" data-reactid=".3.0" type="button">Prendi l'ultima versione da Git</button>
+                    <br/><br/>
+                {% endif %}
                 <button id="adminpanelphpunittest" class="active btn btn-success" data-reactid=".3.0" type="button">PHPUnit test</button>
                 <br/><br/>
-            <!--<input class="button" type="button" id="adminpanelchown" value="Riassegna diritti al progetto"/>-->
+                <!--<input class="button" type="button" id="adminpanelchown" value="Riassegna diritti al progetto"/>-->
                 <label for='symfonycommand'>Comando symfony:</label><br/>
                 <input class="form-control" type="text" id="symfonycommand" value="" /><br/>
                 <button id="adminpanelsymfonycommand" class="active btn btn-warning" data-reactid=".3.0" type="button">Esegue comando symfony</button>
                 <br/><br/>
-                
+
                 <label for='unixcommand'>Comando shell:</label><br/>
                 <input class="form-control" type="text" id="unixcommand" value="" /><br/>
                 <button id="adminpanelunixcommand" class="active btn btn-danger" data-reactid=".3.0" type="button">Esegue comando da shell</button>
 
-        </fieldset>
-    </div>
+            </fieldset>
+        </div>
 
-    <br/>
-    <div class="adminpanel bundle">
-        <fieldset class="groupbox" id="grpbundle">
-            <legend>Bundle e Form</legend>
-            <div>
-                <button id="adminpanelgeneratebundle" class="active btn btn-default" data-reactid=".3.0" type="button">Genera bundle</button>
-                <br/><br/>
-                <div class="inputbox">
-                    <label for='bundlename'>Nome Bundle:</label>
-                    <input class="form-control" type="text" id="bundlename" value="Fi/DemoBundle"/><br/>
-                </div>
-            </div>
-            <div>
-                <button id="adminpanelgenerateform" class="active btn btn-default" data-reactid=".3.0" type="button">Genera form</button>
-                <br/><br/>
-                <label for='entityform'>Entità:</label>
-                <input class="form-control" type="text" id="entityform" value="ffprincipale"/><br/>
-            </div>
-                <button id="adminpanelgenerateformcrud" class="active btn btn-default" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
-        </fieldset>
-    </div>
-
-    <br/>
-    <div class="adminpanel entity">
-        <fieldset class="groupbox" id="grpentities">
-            <legend title="{{database_host}} {{database_name}} ({{database_driver}})">Database</legend>
-            <div>
-                <button id="adminpanelgenerateentity" class="active btn btn-success" data-reactid=".3.0" type="button">Genera entity YML da modello workbench</button>
-                <div class="inputbox">
-                    <label for='entityfile'>File modello:</label>
-                    <select class="form-control" id="entityfile">
-                        {% for mwb in mwbs %}
-                            <option value="{{mwb}}">{{mwb}}</option>
-                        {% endfor %}
-                    </select>
-                    <br/>
-                    <label for='entitybundle'>Bundle:</label><br/>
-                    <select class="form-control" id="entitybundle">
-                        {% for bundle in bundles %}
-                            <option value="{{bundle}}">{{bundle}}</option>
-                        {% endfor %}
-                    </select>
+        <br/>
+        <div class="adminpanel bundle">
+            <fieldset class="groupbox" id="grpbundle">
+                <legend>Bundle e Form</legend>
+                <div>
+                    <button id="adminpanelgeneratebundle" class="active btn btn-default" data-reactid=".3.0" type="button">Genera bundle</button>
                     <br/><br/>
+                    <div class="inputbox">
+                        <label for='bundlename'>Nome Bundle:</label>
+                        <input class="form-control" type="text" id="bundlename" value="Fi/DemoBundle"/><br/>
+                    </div>
                 </div>
-            </div>
+                <div>
+                    <button id="adminpanelgenerateform" class="active btn btn-default" data-reactid=".3.0" type="button">Genera form</button>
+                    <br/><br/>
+                    <label for='entityform'>Entità:</label>
+                    <input class="form-control" type="text" id="entityform" value="ffprincipale"/><br/>
+                </div>
+                <button id="adminpanelgenerateformcrud" class="active btn btn-default" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
+            </fieldset>
+        </div>
+
+        <br/>
+        <div class="adminpanel entity">
+            <fieldset class="groupbox" id="grpentities">
+                <legend title="{{database_host}} {{database_name}} ({{database_driver}})">Database</legend>
+                <div>
+                    <button id="adminpanelgenerateentity" class="active btn btn-success" data-reactid=".3.0" type="button">Genera entity YML da modello workbench</button>
+                    <div class="inputbox">
+                        <label for='entityfile'>File modello:</label>
+                        <select class="form-control" id="entityfile">
+                            {% for mwb in mwbs %}
+                                <option value="{{mwb}}">{{mwb}}</option>
+                            {% endfor %}
+                        </select>
+                        <br/>
+                        <label for='entitybundle'>Bundle:</label><br/>
+                        <select class="form-control" id="entitybundle">
+                            {% for bundle in bundles %}
+                                <option value="{{bundle}}">{{bundle}}</option>
+                            {% endfor %}
+                        </select>
+                        <br/><br/>
+                    </div>
+                </div>
                 <button id="adminpanelgenerateclassentity" class="active btn btn-default" data-reactid=".3.0" type="button">Genera le classi dalle entities</button>
                 <br/><br/>
                 <button id="adminpanelaggiornadatabase" class="active btn btn-danger" data-reactid=".3.0" type="button">Aggiorna schema database</button>
-        </fieldset>
-    </div>
+            </fieldset>
+        </div>
     </div>
     <div id="stato"></div>
     <div id="risultato"></div>
     {% block javascripts %}
         <script type="text/javascript" src = "{{ asset('bundles/fipannelloamministrazione/js/bootstrap.min.js') }}" ></script>
+        <script type="text/javascript" src = "{{ asset('bundles/fipannelloamministrazione/js/pannelloamministrazione.js') }}" ></script>
         <script type="text/javascript">
-
+            var currentfunction = "";
             $(document).ready(function () {
                 var apachemacro = '"$APACHEUSER"';
                 //Unix command autocomplete
                 var unixcommandlist = [
                     {label: "Cancella file di lock", value: "rm -rf {{rootdir ~ '/app/tmp/running.run'}}"},
+                    {label: "Cancella composer.lock", value: "rm -rf {{rootdir ~ '/composer.lock'}}"},
                     {label: "Cancella log files", value: "rm -rf {{rootdir ~ '/app/logs/*'}}"},
                     {label: "Cancella cache prod", value: "rm -rf {{rootdir ~ '/app/cache/prod/*'}}"},
                     {label: "Cancella cache dev", value: "rm -rf {{rootdir ~ '/app/cache/dev/*'}}"},
@@ -158,6 +159,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -182,6 +184,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -208,6 +211,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -262,6 +266,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -289,6 +294,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -316,6 +322,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -344,6 +351,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -371,6 +379,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                     //alert("Controllare il log, e in caso di routing.yml non aggiornabile automaticamente, inserire a mano la parte suggerita tenendo conto nell'indentazione");
                 }).fail(function (jqXHR, textStatus) {
@@ -396,6 +405,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -423,6 +433,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -455,6 +466,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -480,6 +492,7 @@
                 }).done(function (data) {
                     $("#risultato").html(data);
                     $("#stato").html('');
+                    opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
@@ -490,6 +503,8 @@
 
                 });
             });
+
+            
         </script>
     {% endblock %}
 {% endblock %}
