@@ -339,7 +339,7 @@ EOF;
                     . $phpPath . " " . $scriptGenerator . " --export=doctrine2-yaml --config=" . $exportJson . " " . $wbFile . " " . $destinationPathEscaped;
 
             $process = new Process($command);
-            $process->setTimeout(60 * 10);
+            $process->setTimeout(60 * 100);
             $process->run();
 
             if ($fs->exists($exportJson)) {
@@ -356,7 +356,7 @@ EOF;
     }
 
     public function generateEntityClassAction(Request $request) {
-        set_time_limit(180);
+        set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -419,7 +419,7 @@ EOF;
     /* SVN */
 
     public function getSvnAction() {
-        set_time_limit(180);
+        set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -429,7 +429,7 @@ EOF;
                 //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
                 $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "svn update";
                 $process = new Process($command);
-                $process->setTimeout(60 * 10);
+                $process->setTimeout(60 * 100);
                 $process->run();
 
                 $this->LockFile(false);
@@ -446,7 +446,7 @@ EOF;
     /* GIT */
 
     public function getGitAction() {
-        set_time_limit(180);
+        set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -456,7 +456,7 @@ EOF;
                 //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
                 $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "git pull";
                 $process = new Process($command);
-                $process->setTimeout(60 * 10);
+                $process->setTimeout(60 * 100);
                 $process->run();
 
                 $this->LockFile(false);
@@ -473,6 +473,7 @@ EOF;
     /* CLEAR CACHE */
 
     public function clearCacheAction(Request $request) {
+        set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -487,14 +488,14 @@ EOF;
                         . $phpPath . " console cache:clear";
 
                 $processdev = new Process($commanddev);
-                $processdev->setTimeout(60 * 10);
+                $processdev->setTimeout(60 * 100);
                 $processdev->run();
                 $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
                 $commandprod = "cd " . $pathsrc . $sepchr
                         . $phpPath . " console cache:clear --env=prod";
 
                 $processprod = new Process($commandprod);
-                $processprod->setTimeout(60 * 10);
+                $processprod->setTimeout(60 * 100);
                 $processprod->run();
                 $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
                 $this->LockFile(false);
@@ -525,7 +526,7 @@ EOF;
                         . $phpPath . " console " . $comando;
 
                 $process = new Process($command);
-                $process->setTimeout(60 * 10);
+                $process->setTimeout(60 * 100);
                 $process->run();
 
                 $this->LockFile(false);
@@ -552,7 +553,7 @@ EOF;
             } else {
                 //Sblocca pannello di controllo da lock
                 $process = new Process($command);
-                $process->setTimeout(60 * 10);
+                $process->setTimeout(60 * 100);
                 $process->run();
 
                 // eseguito deopo la fine del comando
