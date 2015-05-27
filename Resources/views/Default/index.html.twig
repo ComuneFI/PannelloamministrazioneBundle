@@ -89,7 +89,6 @@
             </fieldset>
         </div>
     </div>
-    <div id="stato"></div>
     <div id="risultato"></div>
     {% block javascripts %}
         <script type="text/javascript" src = "{{ asset('bundles/fipannelloamministrazione/js/bootstrap.min.js') }}" ></script>
@@ -152,18 +151,15 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_clearcache") }}",
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -177,18 +173,15 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_getGit") }}",
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -204,18 +197,15 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_getSvn") }}",
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -231,17 +221,14 @@
              }
              $("#risultato").hide();
              $("#risultato").html("");
-             $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
              $.ajax({
              url: "{{ path("fi_pannello_amministrazione_chown") }}",
              context: document.body
              }).done(function (data) {
              $("#risultato").html(data);
-             $("#stato").html('');
              $("#risultato").slideDown("slow");
              }).fail(function (jqXHR, textStatus) {
              $("#risultato").html(jqXHR.responseText);
-             $("#stato").html('');
              $("#risultato").show();
              alert("Si è verificato un errore!");
              return false;
@@ -258,19 +245,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_generateentity") }}",
                     data: {bundle: entitybundle, file: entityfile},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -286,19 +270,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_generateentityclass") }}",
                     data: {bundlename: entitybundle},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -314,19 +295,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_generatebundle") }}",
                     data: {bundlename: bundlename},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -343,19 +321,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_generateform") }}",
                     data: {entityform: entityform, bundlename: bundlename},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -371,20 +346,17 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_generateformcrud") }}",
                     data: {entityform: entityform, bundlename: bundlename},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                     //alert("Controllare il log, e in caso di routing.yml non aggiornabile automaticamente, inserire a mano la parte suggerita tenendo conto nell'indentazione");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -398,18 +370,15 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_aggiornaschemadatabase") }}",
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -425,19 +394,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_symfonycommand") }}",
                     data: {symfonycommand: symfonycommand},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -458,19 +424,16 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_unixcommand") }}",
                     data: {unixcommand: unixcommand},
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -485,18 +448,15 @@
                 }
                 $("#risultato").hide();
                 $("#risultato").html("");
-                $("#stato").html('<img src="{{ asset('bundles/ficore/images/wait.gif') }}">');
                 $.ajax({
                     url: "{{ path("fi_pannello_amministrazione_phpunittest") }}",
                     context: document.body
                 }).done(function (data) {
                     $("#risultato").html(data);
-                    $("#stato").html('');
                     opendialogrisultato();
                     $("#risultato").slideDown("slow");
                 }).fail(function (jqXHR, textStatus) {
                     $("#risultato").html(jqXHR.responseText);
-                    $("#stato").html('');
                     $("#risultato").show();
                     alert("Si è verificato un errore!");
                     return false;
@@ -504,7 +464,7 @@
                 });
             });
 
-            
+
         </script>
     {% endblock %}
 {% endblock %}
