@@ -614,37 +614,6 @@ EOF;
         }
     }
 
-    /* public function chownAction(Request $request) {
-      set_time_limit(180);
-      //$dir = $request->getParameter("dirchown");
-      if ($this->isLockedFile()) {
-      return $this->LockedFunctionMessage();
-      } else {
-      if (!self::isWindows()) {
-      $this->LockFile(true);
-
-      $commandutil = 'chmod -R 777 ' . substr($this->get('kernel')->getRootDir(), 0, -4);
-      shell_exec($commandutil . " 2>&1");  //system call
-      $command = 'chown -R $(stat -c "%U:%G" ' . substr($this->get('kernel')->getRootDir(), 0, -4) . ') ' . substr($this->get('kernel')->getRootDir(), 0, -4);
-      $cmdoutput = shell_exec($command . " 2>&1");  //system call
-      $commandutil = 'chmod -R 755 ' . substr($this->get('kernel')->getRootDir(), 0, -4);
-      shell_exec($commandutil . " 2>&1");  //system call
-      $commandutil = 'chmod -R 777 ' . $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . 'cache';
-      shell_exec($commandutil . " 2>&1");  //system call
-      $commandutil = 'chmod -R 777 ' . $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . 'logs';
-      shell_exec($commandutil . " 2>&1");  //system call
-      //$cmdoutput = shell_exec("rm -rf " . $pathchown . "/dev/ 2>&1");  //system call
-      //$command = "chown -R a.manzi:a.manzi " . $pathchown;
-      //$cmdoutput = shell_exec($command . " 2>&1");  //system call
-      $this->LockFile(false);
-      return $this->render('FiPannelloAmministrazioneBundle:Default:clearcache.html.twig', array("command" => $command, "output" => $cmdoutput));
-      } else {
-      return new Response("Non previsto in ambiente windows!");
-      }
-      }
-      }
-     */
-
     static function getPHPExecutableFromPath() {
         $phpPath = exec("which php");
         if (file_exists($phpPath)) {
