@@ -571,6 +571,7 @@ EOF;
                 $this->LockFile(true);
                 //$phpPath = self::getPHPExecutableFromPath();
                 $process = new Process($command);
+                $process->setTimeout(60 * 100);
                 $process->run();
 
                 $this->LockFile(false);
