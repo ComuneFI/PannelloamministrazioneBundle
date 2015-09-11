@@ -1,63 +1,63 @@
 fi_pannello_amministrazione_homepage:
-    pattern:  /adminpanel
+    path:  /adminpanel
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:index }
 
 fi_pannello_amministrazione_clearcache:
-    pattern:  /adminpanel/clearcache
+    path:  /adminpanel/clearcache
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:clearCache }
 
 fi_pannello_amministrazione_chown:
-    pattern:  /adminpanel/chown
+    path:  /adminpanel/chown
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:chown }
 
 fi_pannello_amministrazione_getSvn:
-    pattern:  /adminpanel/getSvn
+    path:  /adminpanel/getSvn
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:getSvn }
 
 fi_pannello_amministrazione_getGit:
-    pattern:  /adminpanel/getGit
+    path:  /adminpanel/getGit
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:getGit }
 
 fi_pannello_amministrazione_generateentity:
-    pattern:  /adminpanel/generateEntity
+    path:  /adminpanel/generateEntity
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:generateEntity }
 
 fi_pannello_amministrazione_generateentityclass:
-    pattern:  /adminpanel/generateEntityClass
+    path:  /adminpanel/generateEntityClass
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:generateEntityClass }
 
 fi_pannello_amministrazione_dropdatabase:
-    pattern:  /adminpanel/dropDatabase
+    path:  /adminpanel/dropDatabase
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:dropdatabase }
     
 fi_pannello_amministrazione_dropdatabaseconfirm:
-    pattern:  /adminpanel/dropDatabaseConfirm
+    path:  /adminpanel/dropDatabaseConfirm
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:dropdatabaseconfirm }
 
 fi_pannello_amministrazione_aggiornaschemadatabase:
-    pattern:  /adminpanel/aggiornaschemadatabase
+    path:  /adminpanel/aggiornaschemadatabase
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:aggiornaSchemaDatabase }
 
 fi_pannello_amministrazione_generatebundle:
-    pattern:  /adminpanel/generateBundle
+    path:  /adminpanel/generateBundle
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:generateBundle }
 
 fi_pannello_amministrazione_generateform:
-    pattern:  /adminpanel/generateForm
+    path:  /adminpanel/generateForm
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:generateForm }
 
 fi_pannello_amministrazione_generateformcrud:
-    pattern:  /adminpanel/generateFormCrud
+    path:  /adminpanel/generateFormCrud
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:generateFormCrud }
 
 fi_pannello_amministrazione_symfonycommand:
-    pattern:  /adminpanel/symfonyCommand
+    path:  /adminpanel/symfonyCommand
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:symfonyCommand }
 
 fi_pannello_amministrazione_unixcommand:
-    pattern:  /adminpanel/unixCommand
+    path:  /adminpanel/unixCommand
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:unixCommand }
 
 fi_pannello_amministrazione_phpunittest:
-    pattern:  /adminpanel/phpunittest
+    path:  /adminpanel/phpunittest
     defaults: { _controller: FiPannelloAmministrazioneBundle:Default:phpunittest }
