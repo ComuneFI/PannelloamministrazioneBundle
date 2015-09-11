@@ -204,46 +204,46 @@ EOF;
 
         $codeTemplate = <<<EOF
 [tabella]_container:
-    pattern:  /
+    path:  /
     defaults: { _controller: "[bundle]:[tabella]:index" }
 
 [tabella]_new:
-    pattern:  /new
+    path:  /new
     defaults: { _controller: "[bundle]:[tabella]:new" }
 
 [tabella]_create:
-    pattern:  /create
+    path:  /create
     defaults: { _controller: "[bundle]:[tabella]:create" }
-    requirements: { _method: post }
+    requirements: { methods: post }
 
 [tabella]_edit:
-    pattern:  /{id}/edit
+    path:  /{id}/edit
     defaults: { _controller: "[bundle]:[tabella]:edit" }
 
 [tabella]_update:
-    pattern:  /{id}/update
+    path:  /{id}/update
     defaults: { _controller: "[bundle]:[tabella]:update" }
-    requirements: { _method: post|put }
+    requirements: { methods: post|put }
 
 [tabella]_aggiorna:
-    pattern:  /aggiorna
+    path:  /aggiorna
     defaults: { _controller: "[bundle]:[tabella]:aggiorna" }
-    requirements: { _method: post|put }
+    requirements: { methods: post|put }
 
 [tabella]_delete:
-    pattern:  /{id}/delete
+    path:  /{id}/delete
     defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { _method: post|delete }
+    requirements: { methods: post|delete }
 
 [tabella]_deletemultiple:
-    pattern:  /delete
+    path:  /delete
     defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { _method: post|delete }
+    requirements: { methods: post|delete }
 
 [tabella]_griglia:
-    pattern:  /griglia
+    path:  /griglia
     defaults: { _controller: "[bundle]:[tabella]:griglia" }
-    requirements: { _method: get }
+    requirements: { methods: get }
 EOF;
         $codebundle = str_replace("[bundle]", $bundlename, $codeTemplate);
         $code = str_replace("[tabella]", $tabella, $codebundle);
