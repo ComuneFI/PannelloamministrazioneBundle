@@ -50,7 +50,13 @@ class DefaultController extends Controller {
             $git = false;
         }
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => $projectDir)
+        if (!self::isWindows()) {
+            $delcmd = "rm -rf ";
+        } else {
+            $delcmd = "del ";
+        }
+
+        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => $projectDir, "delcmd" => $delcmd)
         );
     }
 
