@@ -477,8 +477,11 @@ EOF;
         } else {
             if (!self::isWindows()) {
                 $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
-                $phpPath = "/usr/bin/php";
+                if (!self::isWindows()) {
+                    $phpPath = "/usr/bin/php";
+                } else {
+                    $phpPath = $this->getPHPExecutableFromPath();
+                }
                 $pathsrc = $this->get('kernel')->getRootDir();
                 $sepchr = self::getSeparator();
 
