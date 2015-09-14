@@ -58,7 +58,7 @@ class DefaultController extends Controller {
             $windows = true;
         }
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\","/",$projectDir), "delcmd" => $delcmd, "iswindows"=>$windows)
+        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\","\\\\",$projectDir), "delcmd" => $delcmd, "iswindows"=>$windows)
         );
     }
 
@@ -558,7 +558,7 @@ EOF;
             $lockdelcmd = "del ";
         }
         //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
-        $filelock = str_replace("\\","/",$this->getFileLock());
+        $filelock = str_replace("\\","\\\\",$this->getFileLock());
         if ($command == $lockdelcmd . $filelock) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
