@@ -52,11 +52,13 @@ class DefaultController extends Controller {
 
         if (!self::isWindows()) {
             $delcmd = "rm -rf ";
+            $windows = false;
         } else {
             $delcmd = "del ";
+            $windows = true;
         }
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => $projectDir, "delcmd" => $delcmd)
+        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\","/",$projectDir), "delcmd" => $delcmd, "iswindows"=>$windows)
         );
     }
 
