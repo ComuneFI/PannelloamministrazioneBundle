@@ -51,10 +51,10 @@ class DefaultController extends Controller {
         }
 
         if (!self::isWindows()) {
-            $delcmd = "rm -rf ";
+            $delcmd = "rm -rf";
             $windows = false;
         } else {
-            $delcmd = "del ";
+            $delcmd = "del";
             $windows = true;
         }
 
@@ -558,7 +558,7 @@ EOF;
             $lockdelcmd = "del ";
         }
         //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
-        $filelock = $this->getFileLock();
+        $filelock = str_replace("\\","/",$this->getFileLock());
         if ($command == $lockdelcmd . $filelock) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
