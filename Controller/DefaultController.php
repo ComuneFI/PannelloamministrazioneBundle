@@ -59,12 +59,13 @@ class DefaultController extends Controller {
             $delfoldercmd = "rmdir /s";
             $windows = true;
         }
+
         $comandishell = array(
-            "lockfile" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run',
-            "composerlock" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'composer.lock',
-            "logsfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . "*",
-            "cacheprodfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "prod" . DIRECTORY_SEPARATOR . "*",
-            "cachedevfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*",
+            "lockfile" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run'),
+            "composerlock" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'composer.lock'),
+            "logsfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . "*"),
+            "cacheprodfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "prod" . DIRECTORY_SEPARATOR . "*"),
+            "cachedevfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*"),
         );
 
 
