@@ -68,7 +68,6 @@ class DefaultController extends Controller {
             "cachedevfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*"),
         );
 
-
         return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\", "\\\\", $projectDir), "comandishell" => $comandishell, "iswindows" => $windows)
         );
     }
@@ -667,7 +666,7 @@ EOF;
     }
 
     public function getFileLock() {
-        return $this->get('kernel')->getRootDir() . "/tmp/running.run";
+        return $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . "tmp" . DIRECTORY_SEPARATOR . "running.run";
     }
 
     public function isLockedFile() {
