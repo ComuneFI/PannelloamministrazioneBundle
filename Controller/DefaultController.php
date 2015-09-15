@@ -52,13 +52,23 @@ class DefaultController extends Controller {
 
         if (!self::isWindows()) {
             $delcmd = "rm -rf";
+            $delfoldercmd = "rm -rf";
             $windows = false;
         } else {
             $delcmd = "del";
+            $delfoldercmd = "rmdir /s";
             $windows = true;
         }
+        $comandishell = array(
+            "lockfile" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run',
+            "composerlock" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'composer.lock',
+            "logsfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . "*",
+            "cacheprodfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "prod" . DIRECTORY_SEPARATOR . "*",
+            "cachedevfiles" => $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*",
+        );
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\","\\\\",$projectDir), "delcmd" => $delcmd, "iswindows"=>$windows)
+
+        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\", "\\\\", $projectDir), "comandishell" => $comandishell, "iswindows" => $windows)
         );
     }
 
@@ -558,7 +568,7 @@ EOF;
             $lockdelcmd = "del ";
         }
         //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
-        $filelock = str_replace("\\","\\\\",$this->getFileLock());
+        $filelock = str_replace("\\", "\\\\", $this->getFileLock());
         if ($command == $lockdelcmd . $filelock) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {

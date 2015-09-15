@@ -99,11 +99,11 @@
                 var apachemacro = '"$APACHEUSER"';
                 //Unix command autocomplete
                 var unixcommandlist = [
-                    {label: "Cancella file di lock", value: "{{delcmd}} {{rootdir ~ '/app/tmp/running.run'}}"},
-                    {label: "Cancella composer.lock", value: "{{delcmd}} {{rootdir ~ '/composer.lock'}}"},
-                    {label: "Cancella log files", value: "{{delcmd}} {{rootdir ~ '/app/logs/*'}}"},
-                    {label: "Cancella cache prod", value: "{{delcmd}} {{rootdir ~ '/app/cache/prod/*'}}"},
-                    {label: "Cancella cache dev", value: "{{delcmd}} {{rootdir ~ '/app/cache/dev/*'}}"},
+                    {label: "Cancella file di lock", value: "{{comandishell.lockfile}}"},
+                    {label: "Cancella composer.lock", value: "{{comandishell.composerlock}}"},
+                    {label: "Cancella log files", value: "{{comandishell.logsfiles}}"},
+                    {label: "Cancella cache prod", value: "{{comandishell.cacheprodfiles}}"},
+                    {label: "Cancella cache dev", value: "{{comandishell.cachedevfiles}}"},
                     {label: "Composer update", value: "source {{rootdir | slice(0, rootdir|length - (appname|length) - 1)}}/envvars; cd {{rootdir}}; export COMPOSER_HOME={{rootdir | slice(0, rootdir|length - (appname|length) - 1)}}/.composer; php -d allow_url_fopen=On /usr/local/bin/composer.phar --no-interaction update"},
                     {label: "Clona progetto git", value: "source {{rootdir | slice(0, rootdir|length - (appname|length) - 1)}}/envvars; cd {{rootdir}}; git clone git@gitserver.comune.intranet:{{appname}}.git"},
                     {label: "Correggi diritti per apache", value: "cd {{rootdir}}; APACHEUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data' | grep -v root | head -1 | cut -d\  -f1`; setfacl -R -m u:" + apachemacro + ":rwX -m u:`whoami`:rwX app/cache app/logs app/tmp src/ app/AppKernel.php app/config/routing.yml; setfacl -dR -m u:" + apachemacro + ":rwX -m u:`whoami`:rwX app/cache app/logs app/tmp src/ app/AppKernel.php app/config/routing.yml;"},
