@@ -569,7 +569,7 @@ EOF;
         }
         //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
         $filelock = str_replace("\\", "\\\\", $this->getFileLock());
-        if (str_replace("\\\\", "/",$command) == str_replace("\\\\", "/",$lockdelcmd . $filelock)) {
+        if (str_replace("\\\\", "/", $command) == str_replace("\\\\", "\\", $lockdelcmd . $filelock)) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
                 return new Response('Non esiste il file di lock: <i style="color: white;">' . $filelock . '</i><br/>');
