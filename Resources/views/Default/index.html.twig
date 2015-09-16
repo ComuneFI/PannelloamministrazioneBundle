@@ -469,13 +469,22 @@
                     });
                 });
 
-                function msgbox(text)
+                function msgbox(text, title)
                 {
-                    $("#risultato").hide();
-                    $("#risultato").html("");
-                    opendialogrisultato();
-                    $("#risultato").html(text);
-                    $("#risultato").show();
+                    title = typeof title !== 'undefined' ? title : "Attenzione";
+
+                    $("#dialog").dialog({
+                        title: title,
+                        buttons: {
+                            "Ok": function () {
+                                $(this).dialog("close");
+                            }
+                        },
+                        modal: true
+                    });
+                    $("#testodialog").html(text);
+
+
                 }
 
 
