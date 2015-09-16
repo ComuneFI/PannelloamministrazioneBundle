@@ -493,36 +493,32 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+            $this->LockFile(true);
             if (!self::isWindows()) {
-                $this->LockFile(true);
-                if (!self::isWindows()) {
-                    $phpPath = "/usr/bin/php";
-                } else {
-                    $phpPath = $this->getPHPExecutableFromPath();
-                }
-                $pathsrc = $this->get('kernel')->getRootDir();
-                $sepchr = self::getSeparator();
-
-                $commanddev = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console cache:clear";
-
-                $processdev = new Process($commanddev);
-                $processdev->setTimeout(60 * 100);
-                $processdev->run();
-                $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
-                $commandprod = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console cache:clear --env=prod";
-
-                $processprod = new Process($commandprod);
-                $processprod->setTimeout(60 * 100);
-                $processprod->run();
-                $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
-                $this->LockFile(false);
-
-                return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
+                $phpPath = "/usr/bin/php";
             } else {
-                return new Response("Non previsto in ambiente windows!");
+                $phpPath = $this->getPHPExecutableFromPath();
             }
+            $pathsrc = $this->get('kernel')->getRootDir();
+            $sepchr = self::getSeparator();
+
+            $commanddev = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console cache:clear";
+
+            $processdev = new Process($commanddev);
+            $processdev->setTimeout(60 * 100);
+            $processdev->run();
+            $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
+            $commandprod = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console cache:clear --env=prod";
+
+            $processprod = new Process($commandprod);
+            $processprod->setTimeout(60 * 100);
+            $processprod->run();
+            $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
+            $this->LockFile(false);
+
+            return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
         }
     }
 
@@ -534,28 +530,29 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+
+            $this->LockFile(true);
+
             if (!self::isWindows()) {
-                $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
                 $phpPath = "/usr/bin/php";
-                $pathsrc = $this->get('kernel')->getRootDir();
-                $sepchr = self::getSeparator();
-
-                $command = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console " . $comando;
-
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
-
-                $this->LockFile(false);
-                if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
-                return new Response("Non previsto in ambiente windows!");
+                $phpPath = self::getPHPExecutableFromPath();
             }
+            $pathsrc = $this->get('kernel')->getRootDir();
+            $sepchr = self::getSeparator();
+
+            $command = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console " . $comando;
+
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
+
+            $this->LockFile(false);
+            if (!$process->isSuccessful()) {
+                return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+            }
+            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
