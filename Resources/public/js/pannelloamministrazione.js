@@ -53,3 +53,31 @@ jQuery('body')
                     }
                 }
         );
+
+function conferma(question) {
+    var defer = $.Deferred();
+    $('<div></div>')
+            .html(question)
+            .dialog({
+                autoOpen: true,
+                modal: true,
+                width:'auto',
+                title: 'Richiesta conferma',
+                dialogClass: "noclose",
+                buttons: {
+                    "Si": function () {
+                        defer.resolve("true");//this text 'true' can be anything. But for this usage, it should be true or false.
+                        $(this).dialog("close");
+                    },
+                    "No": function () {
+                        defer.resolve("false");//this text 'false' can be anything. But for this usage, it should be true or false.
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
+    return defer.promise();
+}
+
