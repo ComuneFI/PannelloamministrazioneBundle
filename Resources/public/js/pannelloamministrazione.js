@@ -45,8 +45,9 @@ $("body").on("keydown", function (e) {
 $("#symfonycommand").focusin(function () {
     currentfunction = "symfonycommand";
 });
-$("#symfonycommand").focusout(function () {
-    //currentfunction = "";
+
+$("#unixcommand").focusin(function () {
+    currentfunction = "unixcommand";
 });
 
 $("#bundlename").focusin(function () {
@@ -62,9 +63,6 @@ $("#entitybundle").focusin(function () {
     currentfunction = "";
 });
 
-$("#unixcommand").focusin(function () {
-    currentfunction = "unixcommand";
-});
 $("#unixcommand").focusout(function () {
     //currentfunction = "";
 });
