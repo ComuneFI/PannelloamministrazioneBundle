@@ -517,8 +517,10 @@ EOF;
             $processprod->run();
             $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
             $this->LockFile(false);
-
-            return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
+            echo $commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod;
+            //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+            exit;
+            //return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
         }
     }
 
