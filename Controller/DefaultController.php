@@ -510,7 +510,7 @@ EOF;
             $processdev->run();
             $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
             $commandprod = "cd " . $pathsrc . $sepchr
-                    . $phpPath . " console cache:clear --env=prod "; //--no-debug
+                    . $phpPath . " console cache:clear --env=prod --no-debug";
 
             $processprod = new Process($commandprod);
             $processprod->setTimeout(60 * 100);
