@@ -264,7 +264,7 @@ EOF;
 [tabella]_griglia:
     path:  /griglia
     defaults: { _controller: "[bundle]:[tabella]:griglia" }
-    requirements: { methods: get }
+    requirements: { methods: get|post }
 EOF;
         $codebundle = str_replace("[bundle]", $bundlename, $codeTemplate);
         $code = str_replace("[tabella]", $tabella, $codebundle);
