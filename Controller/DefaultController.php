@@ -18,15 +18,17 @@ class DefaultController extends Controller {
         $finder = new Finder();
         $fs = new Filesystem();
 
+        $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
         $bundlelists = $this->container->getParameter('kernel.bundles');
         $bundles = array();
         foreach ($bundlelists as $bundle) {
             if (substr($bundle, 0, 2) === 'Fi') {
                 $bundle = str_replace("\\", "/", $bundle);
-                $bundles[] = substr($bundle, 0, strripos($bundle, "/"));
+                if ($fs->exists($projectDir . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . substr($bundle, 0, strripos($bundle, "/")))) {
+                    $bundles[] = substr($bundle, 0, strripos($bundle, "/"));
+                };
             }
         }
-        $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
         $docDir = $projectDir . '/doc/';
         
         $mwbs = array();
@@ -50,7 +52,25 @@ class DefaultController extends Controller {
             $git = false;
         }
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => $projectDir)
+        if (!self::isWindows()) {
+            $delcmd = "rm -rf";
+            $delfoldercmd = "rm -rf";
+            $windows = false;
+        } else {
+            $delcmd = "del";
+            $delfoldercmd = "rmdir /s";
+            $windows = true;
+        }
+
+        $comandishell = array(
+            "lockfile" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run'),
+            "composerlock" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'composer.lock'),
+            "logsfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . "*"),
+            "cacheprodfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "prod" . DIRECTORY_SEPARATOR . "*"),
+            "cachedevfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*"),
+        );
+
+        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\", "\\\\", $projectDir), "comandishell" => $comandishell, "iswindows" => $windows)
         );
     }
 
@@ -184,6 +204,7 @@ use Fi\CoreBundle\Controller\FiController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Fi\CoreBundle\Controller\griglia;
+use Fi\CoreBundle\Controller\gestionepermessiController;
 use [bundle]\Entity\[tabella];
 use [bundle]\Form\[tabella]Type;
 
@@ -206,46 +227,46 @@ EOF;
 
         $codeTemplate = <<<EOF
 [tabella]_container:
-    pattern:  /
+    path:  /
     defaults: { _controller: "[bundle]:[tabella]:index" }
 
 [tabella]_new:
-    pattern:  /new
+    path:  /new
     defaults: { _controller: "[bundle]:[tabella]:new" }
 
 [tabella]_create:
-    pattern:  /create
+    path:  /create
     defaults: { _controller: "[bundle]:[tabella]:create" }
-    requirements: { _method: post }
+    requirements: { methods: post }
 
 [tabella]_edit:
-    pattern:  /{id}/edit
+    path:  /{id}/edit
     defaults: { _controller: "[bundle]:[tabella]:edit" }
 
 [tabella]_update:
-    pattern:  /{id}/update
+    path:  /{id}/update
     defaults: { _controller: "[bundle]:[tabella]:update" }
-    requirements: { _method: post|put }
+    requirements: { methods: post|put }
 
 [tabella]_aggiorna:
-    pattern:  /aggiorna
+    path:  /aggiorna
     defaults: { _controller: "[bundle]:[tabella]:aggiorna" }
-    requirements: { _method: post|put }
+    requirements: { methods: post|put }
 
 [tabella]_delete:
-    pattern:  /{id}/delete
+    path:  /{id}/delete
     defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { _method: post|delete }
+    requirements: { methods: post|delete }
 
 [tabella]_deletemultiple:
-    pattern:  /delete
+    path:  /delete
     defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { _method: post|delete }
+    requirements: { methods: post|delete }
 
 [tabella]_griglia:
-    pattern:  /griglia
+    path:  /griglia
     defaults: { _controller: "[bundle]:[tabella]:griglia" }
-    requirements: { _method: get }
+    requirements: { methods: get|post }
 EOF;
         $codebundle = str_replace("[bundle]", $bundlename, $codeTemplate);
         $code = str_replace("[tabella]", $tabella, $codebundle);
@@ -452,23 +473,19 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
-            if (!self::isWindows()) {
-                $this->LockFile(true);
-                $sepchr = self::getSeparator();
-                //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
-                $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "git pull";
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
+            $this->LockFile(true);
+            $sepchr = self::getSeparator();
+            //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
+            $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "git pull";
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
 
-                $this->LockFile(false);
-                if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
-            } else {
-                return new Response("Non previsto in ambiente windows!");
+            $this->LockFile(false);
+            if (!$process->isSuccessful()) {
+                return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
+            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
@@ -479,33 +496,34 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+            $this->LockFile(true);
             if (!self::isWindows()) {
-                $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
                 $phpPath = "/usr/bin/php";
-                $pathsrc = $this->get('kernel')->getRootDir();
-                $sepchr = self::getSeparator();
-
-                $commanddev = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console cache:clear";
-
-                $processdev = new Process($commanddev);
-                $processdev->setTimeout(60 * 100);
-                $processdev->run();
-                $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
-                $commandprod = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console cache:clear --env=prod";
-
-                $processprod = new Process($commandprod);
-                $processprod->setTimeout(60 * 100);
-                $processprod->run();
-                $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
-                $this->LockFile(false);
-
-                return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
             } else {
-                return new Response("Non previsto in ambiente windows!");
+                $phpPath = $this->getPHPExecutableFromPath();
             }
+            $pathsrc = $this->get('kernel')->getRootDir();
+            $sepchr = self::getSeparator();
+
+            $commanddev = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console cache:clear";
+
+            $processdev = new Process($commanddev);
+            $processdev->setTimeout(60 * 100);
+            $processdev->run();
+            $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
+            $commandprod = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console cache:clear --env=prod --no-debug";
+
+            $processprod = new Process($commandprod);
+            $processprod->setTimeout(60 * 100);
+            $processprod->run();
+            $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
+            $this->LockFile(false);
+            echo $commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod;
+            //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+            exit;
+            //return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
         }
     }
 
@@ -517,38 +535,43 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+
+            $this->LockFile(true);
+
             if (!self::isWindows()) {
-                $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
                 $phpPath = "/usr/bin/php";
-                $pathsrc = $this->get('kernel')->getRootDir();
-                $sepchr = self::getSeparator();
-
-                $command = "cd " . $pathsrc . $sepchr
-                        . $phpPath . " console " . $comando;
-
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
-
-                $this->LockFile(false);
-                if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
             } else {
-                return new Response("Non previsto in ambiente windows!");
+                $phpPath = self::getPHPExecutableFromPath();
             }
+            $pathsrc = $this->get('kernel')->getRootDir();
+            $sepchr = self::getSeparator();
+
+            $command = "cd " . $pathsrc . $sepchr
+                    . $phpPath . " console " . $comando;
+
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
+
+            $this->LockFile(false);
+            if (!$process->isSuccessful()) {
+                return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+            }
+            return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
     public function unixCommandAction(Request $request) {
         set_time_limit(0);
         $command = $request->get("unixcommand");
-
+        if (!self::isWindows()) {
+            $lockdelcmd = "rm -rf ";
+        } else {
+            $lockdelcmd = "del ";
+        }
         //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
-        $filelock = $this->getFileLock();
-        if ($command == "rm -rf " . $filelock) {
+        $filelock = str_replace("\\", "\\\\", $this->getFileLock());
+        if (str_replace("\\\\", "/", $command) == str_replace("\\\\", "\\", $lockdelcmd . $filelock)) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
                 return new Response('Non esiste il file di lock: <i style="color: white;">' . $filelock . '</i><br/>');
@@ -569,22 +592,24 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
-            if (!self::isWindows()) {
-                $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
+            $this->LockFile(true);
+            //$phpPath = self::getPHPExecutableFromPath();
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
 
-                $this->LockFile(false);
-                // eseguito deopo la fine del comando
-                if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }
-                return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
-            } else {
-                return new Response("Non previsto in ambiente windows!");
+            $this->LockFile(false);
+            // eseguito deopo la fine del comando
+            if (!$process->isSuccessful()) {
+                echo 'Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
+                //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+                exit;
+                //return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
+            echo '<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>";
+            //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+            exit;
+            //return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
@@ -649,7 +674,7 @@ EOF;
     }
 
     public function getFileLock() {
-        return $this->get('kernel')->getRootDir() . "/tmp/running.run";
+        return $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . "tmp" . DIRECTORY_SEPARATOR . "running.run";
     }
 
     public function isLockedFile() {
