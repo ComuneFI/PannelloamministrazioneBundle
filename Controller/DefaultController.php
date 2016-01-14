@@ -28,6 +28,8 @@ class DefaultController extends Controller {
         }
         $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
         $docDir = $projectDir . '/doc/';
+        
+        $mwbs = array();
 
         if ($fs->exists($docDir)) {
             $finder->in($docDir)->files()->name('*.mwb');
