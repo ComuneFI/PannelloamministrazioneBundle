@@ -12,7 +12,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
-class DefaultController extends Controller {
+class PannelloAmministrazioneController extends Controller {
 
     public function indexAction() {
         $finder = new Finder();
@@ -70,7 +70,7 @@ class DefaultController extends Controller {
             "cachedevfiles" => str_replace("\\", "\\\\", $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "*"),
         );
 
-        return $this->render('FiPannelloAmministrazioneBundle:Default:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\", "\\\\", $projectDir), "comandishell" => $comandishell, "iswindows" => $windows)
+        return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:index.html.twig', array("svn" => $svn, "git" => $git, "bundles" => $bundles, "mwbs" => $mwbs, "rootdir" => str_replace("\\", "\\\\", $projectDir), "comandishell" => $comandishell, "iswindows" => $windows)
         );
     }
 
@@ -109,7 +109,7 @@ class DefaultController extends Controller {
 
             $this->LockFile(false);
 
-            return $this->render('FiPannelloAmministrazioneBundle:Default:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
         }
     }
 
@@ -130,7 +130,7 @@ class DefaultController extends Controller {
             $resultform = $this->executeCommand($application, "doctrine:generate:form", array("entity" => str_replace("/", "", $bundlename) . ":" . $entityform));
 
             $this->LockFile(false);
-            return $this->render('FiPannelloAmministrazioneBundle:Default:outputcommand.html.twig', array("errcode" => $resultform["errcode"], "command" => $resultform["command"], "message" => $resultform["message"]));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $resultform["errcode"], "command" => $resultform["command"], "message" => $resultform["message"]));
         }
     }
 
@@ -156,7 +156,7 @@ class DefaultController extends Controller {
                 $this->generateFormsDefaultTableValues($entityform);
             }
 
-            return $this->render('FiPannelloAmministrazioneBundle:Default:outputcommand.html.twig', array("errcode" => $resultcrud["errcode"], "command" => $resultcrud["command"], "message" => $resultcrud["message"]));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $resultcrud["errcode"], "command" => $resultcrud["command"], "message" => $resultcrud["message"]));
         }
     }
 
@@ -394,7 +394,7 @@ EOF;
 
             $this->LockFile(false);
 
-            return $this->render('FiPannelloAmministrazioneBundle:Default:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
         }
     }
 
@@ -423,7 +423,7 @@ EOF;
             $this->LockFile(false);
             //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
             exit;
-            //return $this->render('FiPannelloAmministrazioneBundle:Default:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
+            //return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
         }
     }
 
