@@ -135,7 +135,8 @@
                     'cache:clear --env="prod"',
                     "cache:clear",
                     "cache:warmup",
-                    'assets:install {{rootdir ~ '/web'}}'
+                    'assets:install {{rootdir ~ '/web'}}',
+                    "pannelloamministrazione:checkgitversion"
                 ];
 
                 $("#symfonycommand").autocomplete({
