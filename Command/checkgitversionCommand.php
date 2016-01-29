@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class checkgitversionCommand extends ContainerAwareCommand {
 
@@ -48,7 +49,14 @@ class checkgitversionCommand extends ContainerAwareCommand {
 
         foreach ($findercomposerbundle as $file) {
             $fullcomposerbundlepath = $composerbundlespath . DIRECTORY_SEPARATOR . $file->getBasename();
-            $output->writeln('<info>' . $file->getBasename() . '</info> ' . $this->getGitVersion($fullcomposerbundlepath, false) . ' ---> ' . $this->getGitVersion($fullcomposerbundlepath, true));
+            $local = $this->getGitVersion($fullcomposerbundlepath, false);
+            $remote = $this->getGitVersion($fullcomposerbundlepath, true);
+            $style = new OutputFormatterStyle('blue', 'white', array('bold', 'blink'));
+            $output->getFormatter()->setStyle('warning', $style);
+            if ($local !== $remote) {
+                $remote = "<warning> * " . $remote . " * </warning>";
+            }
+            $output->writeln('<info>' . $file->getBasename() . '</info> ' . $local . ' -> ' . $remote);
 
             $composerbundles[] = array("name" => $file->getBasename(), "path" => $fullcomposerbundlepath, "version" => $this->getGitVersion($fullcomposerbundlepath));
         }
@@ -58,16 +66,21 @@ class checkgitversionCommand extends ContainerAwareCommand {
         if (!self::isWindows()) {
             $shellOutput = [];
             if ($remote) {
+                //Remote
                 $cmd = "cd " . $path;
                 $remotetag = $cmd . ";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
                 $process = new Process($remotetag);
                 $process->setTimeout(60 * 100);
                 $process->run();
                 if ($process->isSuccessful()) {
-                    return (trim($process->getOutput())?trim($process->getOutput()):"?");
+                    $version = trim($process->getOutput());
+                    if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
+                        return $matches[0]; //returning the first match 
+                    }
                 }
                 return "?";
             } else {
+                //Local
                 $cmd = "cd " . $path;
                 $process = new Process($cmd . ';git branch | ' . "grep ' * '");
                 $process->setTimeout(60 * 100);
@@ -75,9 +88,15 @@ class checkgitversionCommand extends ContainerAwareCommand {
                 if ($process->isSuccessful()) {
                     $out = explode(chr(10), $process->getOutput());
                     foreach ($out as $line) {
-
                         if (strpos($line, '* ') !== false) {
-                            return trim(strtolower(str_replace('* ', '', $line)));
+                            $version = trim(strtolower(str_replace('* ', '', $line)));
+                            if ($version == "master") {
+                                return $version;
+                            } else {
+                                if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
+                                    return $matches[0]; //returning the first match 
+                                }
+                            }
                         }
                     }
                 } else {
