@@ -64,9 +64,9 @@ class checkgitversionCommand extends ContainerAwareCommand {
                 $process->setTimeout(60 * 100);
                 $process->run();
                 if ($process->isSuccessful()) {
-                    return $process->getOutput();
+                    return (trim($process->getOutput())?trim($process->getOutput()):"?");
                 }
-                return "";
+                return "?";
             } else {
                 $cmd = "cd " . $path;
                 $process = new Process($cmd . ';git branch | ' . "grep ' * '");
@@ -80,15 +80,10 @@ class checkgitversionCommand extends ContainerAwareCommand {
                             return trim(strtolower(str_replace('* ', '', $line)));
                         }
                     }
-
-                    /* if (strpos($line, '* ') !== false) {
-                      return trim(strtolower(str_replace('* ', '', $line)));
-                      }
-                      return $process->getOutput(); */
                 } else {
-                    echo $process->getErrorOutput();
+                    //echo $process->getErrorOutput();
                 }
-                return "";
+                return "?";
             }
         } else {
             //Per windows non esiste il grep
