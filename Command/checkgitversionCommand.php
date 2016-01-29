@@ -48,22 +48,48 @@ class checkgitversionCommand extends ContainerAwareCommand {
 
         foreach ($findercomposerbundle as $file) {
             $fullcomposerbundlepath = $composerbundlespath . DIRECTORY_SEPARATOR . $file->getBasename();
-            $output->writeln('<info>'.$file->getBasename().'</info> '.$this->getGitVersion($fullcomposerbundlepath).'');
+            $output->writeln('<info>' . $file->getBasename() . '</info> ' . $this->getGitVersion($fullcomposerbundlepath, false) . ' ---> ' . $this->getGitVersion($fullcomposerbundlepath, true));
+
             $composerbundles[] = array("name" => $file->getBasename(), "path" => $fullcomposerbundlepath, "version" => $this->getGitVersion($fullcomposerbundlepath));
         }
     }
 
-    private function getGitVersion($path) {
+    private function getGitVersion($path, $remote = false) {
         if (!self::isWindows()) {
             $shellOutput = [];
-            $cmd = "cd " . $path;
-            exec($cmd . ';git branch | ' . "grep ' * '", $shellOutput);
-            foreach ($shellOutput as $line) {
-                if (strpos($line, '* ') !== false) {
-                    return trim(strtolower(str_replace('* ', '', $line)));
+            if ($remote) {
+                $cmd = "cd " . $path;
+                $remotetag = $cmd . ";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
+                $process = new Process($remotetag);
+                $process->setTimeout(60 * 100);
+                $process->run();
+                if ($process->isSuccessful()) {
+                    return $process->getOutput();
                 }
+                return "";
+            } else {
+                $cmd = "cd " . $path;
+                $process = new Process($cmd . ';git branch | ' . "grep ' * '");
+                $process->setTimeout(60 * 100);
+                $process->run();
+                if ($process->isSuccessful()) {
+                    $out = explode(chr(10), $process->getOutput());
+                    foreach ($out as $line) {
+
+                        if (strpos($line, '* ') !== false) {
+                            return trim(strtolower(str_replace('* ', '', $line)));
+                        }
+                    }
+
+                    /* if (strpos($line, '* ') !== false) {
+                      return trim(strtolower(str_replace('* ', '', $line)));
+                      }
+                      return $process->getOutput(); */
+                } else {
+                    echo $process->getErrorOutput();
+                }
+                return "";
             }
-            return "";
         } else {
             //Per windows non esiste il grep
             return "";
