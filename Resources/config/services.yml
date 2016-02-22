@@ -1,7 +1,12 @@
 parameters:
 #    fi_pannello_amministrazione.example.class: Fi\PannelloAmministrazioneBundle\Example
+    fi.app.file.twig.extension.class: Fi\PannelloAmministrazioneBundle\Twig\Extension\FileExtension
 
 services:
 #    fi_pannello_amministrazione.example:
 #        class: %fi_pannello_amministrazione.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+    fi.app.file.twig.extension:
+        class: %fi.app.file.twig.extension.class%
+        tags:
+            - { name: twig.extension }
