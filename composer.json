@@ -16,7 +16,8 @@
         }
     },
     "repositories": [
-        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"}
+        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"},
+        {"packagist":false}
     ],
     "require": {
         "php": ">=5.4.0",
