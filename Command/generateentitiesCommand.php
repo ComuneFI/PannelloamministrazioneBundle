@@ -13,7 +13,6 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Fi\OsBundle\DependencyInjection\OsFunctions;
 
 class generateentitiesCommand extends ContainerAwareCommand {
 
@@ -95,8 +94,8 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $str = str_replace("[dir]", $destinationPathEscaped, $str);
         file_put_contents($exportJson, $str);
 
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        if (self::isWindows()) {
+            $phpPath = selft::getPHPExecutableFromPath();
         } else {
             $phpPath = "/usr/bin/php";
         }
@@ -147,10 +146,44 @@ class generateentitiesCommand extends ContainerAwareCommand {
     }
 
     static function getSeparator() {
-        if (OsFunctions::isWindows()) {
+        if (self::isWindows()) {
             return "&";
         } else {
             return ";";
+        }
+    }
+
+    static function getPHPExecutableFromPath() {
+        if (self::isWindows()) {
+            //In caso di windows
+            $paths = explode(PATH_SEPARATOR, getenv('PATH'));
+            foreach ($paths as $path) {
+                $php_executable = $path . DIRECTORY_SEPARATOR . "php" . (isset($_SERVER["WINDIR"]) ? ".exe" : "");
+                if (file_exists($php_executable) && is_file($php_executable)) {
+                    return $php_executable;
+                }
+            }
+        } else {
+            //In caso altri sistemi operativi (linux)
+            $phpPath = exec("which php");
+            if (file_exists($phpPath)) {
+                return $phpPath;
+            } elseif (file_exists("/usr/bin/php")) {
+                return "/usr/bin/php";
+            }
+        }
+
+        throw new Exception("Php non trovato");
+    }
+
+    /**
+     * La funzione restituisce se la macchina che ospita l'applicazione è windows true, altrimenti false (es. linux)
+     */
+    static function isWindows() {
+        if (PHP_OS == "WINNT") {
+            return true;
+        } else {
+            return false;
         }
     }
 
