@@ -16,10 +16,11 @@
         }
     },
     "repositories": [
-        {"type": "vcs", "url": "https://github.com/manzolo/osbundle"}
+        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"},
+        {"packagist":false}
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "1.0.0"
+        "fi/osbundle": "*"
     }
 }
