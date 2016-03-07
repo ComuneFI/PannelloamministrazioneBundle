@@ -21,6 +21,6 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "1.0.2"
+        "fi/osbundle": "1.0.2-stable"
     }
 }
