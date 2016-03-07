@@ -16,7 +16,7 @@
         }
     },
     "repositories": [
-        {"type": "vcs", "url": "https://github.com/manzolo/osbuncle"}
+        {"type": "vcs", "url": "https://github.com/manzolo/osbundle"}
     ],
     "require": {
         "php": ">=5.4.0",
