@@ -16,16 +16,11 @@
         }
     },
     "repositories": [
-        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"},
+        {"type": "composer", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"},
         {"packagist":false}
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "~1.0"
-    },
-    "extra": {
-        "branch-alias": {
-            "master": "1.0.23"
-        }
+        "fi/osbundle": "1.0.2"
     }
 }
