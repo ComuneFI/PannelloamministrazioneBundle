@@ -16,8 +16,19 @@
         }
     },
     "repositories": [
-        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"},
-        {"packagist":false}
+        {
+            "type": "package",
+            "package": {
+                "name": "fi/osbundle",
+                "version": "1.0.2",
+                "type": "package",
+                "source": {
+                    "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
     ],
     "require": {
         "php": ">=5.4.0",
