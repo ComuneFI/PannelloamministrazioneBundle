@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "dev-master"
+        "fi/osbundle": "1.0.*"
     },
     "extra": {
         "branch-alias": {
