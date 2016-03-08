@@ -14,7 +14,9 @@ Installazione:
 
     "autoload": {
             "psr-4" : {
-                "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/"
+                "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/",
+                "Fi\\OsBundle\\": "vendor/fi/osbundle/"
+
             }
         },
     }    
@@ -23,16 +25,16 @@ Installazione:
 ```
     "repositories": [
             {   
-                {
-                "type": "vcs",
-                "url": "https://github.com/manzolo/pannelloamministrazionebundle.git"
-                }
+                {"type": "vcs","url": "https://github.com/manzolo/pannelloamministrazionebundle.git"},
+                {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"}
+
             }
     ]
 ```
 - E sempre nel composer.json, nella sezione require aggiungere:
 ```
-    "fi/pannelloamministrazionebundle": "dev-master",
+    "fi/pannelloamministrazionebundle": "1.0.*",
+    "fi/osbundle": "1.0.*",
 ```
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ```
