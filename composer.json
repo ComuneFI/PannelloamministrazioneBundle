@@ -24,7 +24,7 @@
                 "autoload": {"psr-4": {"Fi\\OsBundle\\": "vendor/fi/osbundle/"}},
                 "source": {
                     "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/",
-                    "type": "composer",
+                    "type": "git",
                     "reference": "master"
                 }
             }
@@ -32,7 +32,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "1.0.*"
+        "fi/osbundle": "*"
 
     },
     "extra": {
