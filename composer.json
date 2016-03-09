@@ -12,18 +12,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "fi\\pannelloamministrazionebundle\\": "",
-            "Fi\\OsBundle\\": "vendor/fi/osbundle/"
+            "Fi\\PannelloAmministrazioneBundle\\": ""            
         }
     },
     "require": {
         "php": ">=5.4.0",
         "fi/osbundle": "1.0.*"
         
-    },
-    "extra": {
-        "branch-alias": {
-            "master": "1.0.24"
-        }
     }
 }
