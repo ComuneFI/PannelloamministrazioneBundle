@@ -32,7 +32,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "dev-master"
+        "fi/osbundle": "*"
 
     },
     "extra": {
