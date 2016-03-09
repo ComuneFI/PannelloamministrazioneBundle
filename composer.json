@@ -16,24 +16,12 @@
         }
     },
     "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "fi/osbundle",
-                "version": "1.0.2",
-                "autoload": {"psr-4": {"Fi\\OsBundle\\": "vendor/fi/osbundle/"}},
-                "source": {
-                    "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/",
-                    "type": "git",
-                    "reference": "1.0.2"
-                }
-            }
-        }
+        {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"}
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "*"
-
+        "fi/osbundle": "1.0.*"
+        
     },
     "extra": {
         "branch-alias": {
