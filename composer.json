@@ -12,7 +12,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "fi\\pannelloamministrazionebundle\\": ""
+            "fi\\pannelloamministrazionebundle\\": "",
+            "Fi\\OsBundle\\": "vendor/fi/osbundle/"
         }
     },
     "repositories": [
