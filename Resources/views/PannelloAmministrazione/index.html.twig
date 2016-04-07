@@ -138,6 +138,7 @@
                     'cache:clear --env="prod"',
                     "cache:clear",
                     "cache:warmup",
+                    "fos:user:promote username ROLE_SUPER_ADMIN",
                     'assets:install {{rootdir ~ '/web'}}',
                     "pannelloamministrazione:checkgitversion"
                 ];
