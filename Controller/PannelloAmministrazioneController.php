@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use Fi\OsBundle\DependencyInjection\OsFunctions;
 
 class PannelloAmministrazioneController extends Controller {
 
@@ -52,7 +53,7 @@ class PannelloAmministrazioneController extends Controller {
             $git = false;
         }
 
-        if (!self::isWindows()) {
+        if (!OsFunctions::isWindows()) {
             $delcmd = "rm -rf";
             $delfoldercmd = "rm -rf";
             $windows = false;
@@ -398,8 +399,8 @@ EOF;
             $str = str_replace("[dir]", $destinationPathEscaped, $str);
             file_put_contents($exportJson, $str);
 
-            if (self::isWindows()) {
-                $phpPath = self::getPHPExecutableFromPath();
+            if (OsFunctions::isWindows()) {
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
             } else {
                 $phpPath = "/usr/bin/php";
             }
@@ -494,7 +495,7 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
-            if (!self::isWindows()) {
+            if (!OsFunctions::isWindows()) {
                 $this->LockFile(true);
                 $sepchr = self::getSeparator();
 //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
@@ -545,10 +546,10 @@ EOF;
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-            if (!self::isWindows()) {
+            if (!OsFunctions::isWindows()) {
                 $phpPath = "/usr/bin/php";
             } else {
-                $phpPath = $this->getPHPExecutableFromPath();
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
             }
             $pathsrc = $this->get('kernel')->getRootDir();
             $sepchr = self::getSeparator();
@@ -586,10 +587,10 @@ EOF;
 
             $this->LockFile(true);
 
-            if (!self::isWindows()) {
+            if (!OsFunctions::isWindows()) {
                 $phpPath = "/usr/bin/php";
             } else {
-                $phpPath = self::getPHPExecutableFromPath();
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
             }
             $pathsrc = $this->get('kernel')->getRootDir();
             $sepchr = self::getSeparator();
@@ -612,7 +613,7 @@ EOF;
     public function unixCommandAction(Request $request) {
         set_time_limit(0);
         $command = $request->get("unixcommand");
-        if (!self::isWindows()) {
+        if (!OsFunctions::isWindows()) {
             $lockdelcmd = "rm -rf ";
         } else {
             $lockdelcmd = "del ";
@@ -641,7 +642,7 @@ EOF;
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-//$phpPath = self::getPHPExecutableFromPath();
+//$phpPath = OsFunctions::getPHPExecutableFromPath();
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
@@ -667,9 +668,9 @@ EOF;
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
-            if (!self::isWindows()) {
+            if (!OsFunctions::isWindows()) {
                 $this->LockFile(true);
-//$phpPath = self::getPHPExecutableFromPath();
+//$phpPath = OsFunctions::getPHPExecutableFromPath();
                 $sepchr = self::getSeparator();
                 $phpPath = "/usr/bin/php";
 
@@ -689,32 +690,8 @@ EOF;
         }
     }
 
-    static function getPHPExecutableFromPath() {
-        $phpPath = exec("which php");
-        if (file_exists($phpPath)) {
-            return $phpPath;
-        }
-        $paths = explode(PATH_SEPARATOR, getenv('PATH'));
-        foreach ($paths as $path) {
-            $php_executable = $path . DIRECTORY_SEPARATOR . "php" . (isset($_SERVER["WINDIR"]) ? ".exe" : "");
-            if (file_exists($php_executable) && is_file($php_executable)) {
-                return $php_executable;
-            }
-        }
-        echo "Php non trovato";
-        return FALSE; // not found
-    }
-
-    static function isWindows() {
-        if (PHP_OS == "WINNT") {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     static function getSeparator() {
-        if (self::isWindows()) {
+        if (OsFunctions::isWindows()) {
             return "&";
         } else {
             return ";";
