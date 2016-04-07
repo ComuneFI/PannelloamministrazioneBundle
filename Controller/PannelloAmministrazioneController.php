@@ -30,7 +30,7 @@ class PannelloAmministrazioneController extends Controller {
             }
         }
         $docDir = $projectDir . '/doc/';
-        
+
         $mwbs = array();
 
         if ($fs->exists($docDir)) {
@@ -135,33 +135,78 @@ class PannelloAmministrazioneController extends Controller {
     }
 
     public function generateFormCrudAction(Request $request) {
+        /* @var $fs \Symfony\Component\Filesystem\Filesystem */
+        $fs = new Filesystem();
 
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+            $bundlename = $request->get("bundlename");
+            $entityform = $request->get("entityform");
+//$entityform = "attolegale";
+
+            $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
+            $srcPath = $prjPath . DIRECTORY_SEPARATOR . "src";
+            $appPath = $prjPath . DIRECTORY_SEPARATOR . "app";
+            if (!is_writable($appPath)) {
+                return new Response($appPath . " non scrivibile");
+            }
+            $formPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . "Form" . DIRECTORY_SEPARATOR . $entityform . "Type.php";
+            $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . "Controller" . DIRECTORY_SEPARATOR . $entityform . "Controller.php";
+            if ($fs->exists($formPath)) {
+                return new Response($formPath . " esistente");
+            }
+
+            if ($fs->exists($controllerPath)) {
+                return new Response($controllerPath . " esistente");
+            }
+
+
+            $viewPath = $appPath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $entityform;
+            $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $entityform;
+            if ($fs->exists($viewPathSrc)) {
+                return new Response($viewPathSrc . " esistente");
+            }
+
             $this->LockFile(true);
             $application = new Application($this->get("kernel"));
             $application->setAutoExit(false);
-            $bundlename = $request->get("bundlename");
-            $entityform = $request->get("entityform");
-
 
             $resultcrud = $this->executeCommand($application, "doctrine:generate:crud", array("--entity" => str_replace("/", "", $bundlename) . ":" . $entityform, "--route-prefix" => $entityform, "--with-write" => true, "--format" => "yml", "--overwrite" => false, "--no-interaction" => true));
 
             $this->LockFile(false);
             if ($resultcrud["errcode"] == 0) {
 
-                $this->generateFormsTemplates($bundlename, $entityform);
+                $fs->rename($viewPath, $viewPathSrc);
+
+                $retmsg = $this->generateFormsTemplates($bundlename, $entityform);
 
                 $this->generateFormsDefaultTableValues($entityform);
+
+                $appviews = $appPath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views";
+                if ($fs->exists($appviews)) {
+                    $finder = new Finder();
+                    $ret = $finder->files()->in($appviews);
+                    if (count($ret) == 0) {
+                        $fs->remove($appviews);
+                    }
+                }
+                $resourcesviews = $appPath . DIRECTORY_SEPARATOR . "Resources";
+                if ($fs->exists($resourcesviews)) {
+                    $finder = new Finder();
+                    $ret = $finder->files()->in($resourcesviews);
+                    if (count($ret) == 0) {
+                        $fs->remove($resourcesviews);
+                    }
+                }
             }
 
-            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $resultcrud["errcode"], "command" => $resultcrud["command"], "message" => $resultcrud["message"]));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $resultcrud["errcode"], "command" => $resultcrud["command"], "message" => $resultcrud["message"] . $retmsg));
         }
     }
 
     private function generateFormsDefaultTableValues($entityform) {
-        //Si inserisce il record di default nella tabella permessi
+//Si inserisce il record di default nella tabella permessi
         $em = $this->container->get("doctrine")->getManager();
         $ruoloAmm = $em->getRepository('FiCoreBundle:ruoli')->findOneBy(array('is_superadmin' => true)); //SuperAdmin
 
@@ -181,17 +226,19 @@ class PannelloAmministrazioneController extends Controller {
     private function generateFormsTemplates($bundlename, $entityform) {
         $fs = new Filesystem();
         $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-        //Controller
+//Controller
         $controlleFile = $prjPath . "/src/" . $bundlename . "/Controller/" . $entityform . "Controller.php";
         $code = $this->getControllerCode(str_replace("/", "\\", $bundlename), $entityform);
         $fs->dumpFile($controlleFile, $code);
 
-        //Routing
-        $this->generateFormRouting($bundlename, $entityform);
-        //Twig template (Crea i template per new edit show)
+//Routing
+        $retmsg = $this->generateFormRouting($bundlename, $entityform);
+//Twig template (Crea i template per new edit show)
         $this->generateFormWiew($bundlename, $entityform, "edit");
         $this->generateFormWiew($bundlename, $entityform, "index");
         $this->generateFormWiew($bundlename, $entityform, "new");
+
+        return $retmsg;
     }
 
     private function getControllerCode($bundlename, $tabella) {
@@ -274,7 +321,7 @@ EOF;
     }
 
     private function generateFormRouting($bundlename, $entityform) {
-        //Routing del form
+//Routing del form
         $fs = new Filesystem();
         $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
 
@@ -282,20 +329,21 @@ EOF;
         $code = $this->getRoutingCode(str_replace("/", "", $bundlename), $entityform);
         $fs->dumpFile($routingFile, $code);
 
-        //Fixed: Adesso questa parte la fa da solo symfony (05/2015)
-        /*
-          $dest = $prjPath . "/src/" . $bundlename . "/Resources/config/routing.yml";
+//Fixed: Adesso questa parte la fa da solo symfony (05/2015)
+//Refixed dalla versione 2.8 non lo fa più (04/2016)
 
-          $routingContext = "\n" . str_replace("/", "", $bundlename) . '_' . $entityform . ': ' . "\n" .
-          '  resource: "@' . str_replace("/", "", $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
-          '  prefix: /' . $entityform . "\n";
+        $dest = $prjPath . "/src/" . $bundlename . "/Resources/config/routing.yml";
 
-          //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
-          $fh = fopen($dest, 'a');
-          fwrite($fh, $routingContext);
-          fclose($fh);
+        $routingContext = "\n" . str_replace("/", "", $bundlename) . '_' . $entityform . ': ' . "\n" .
+                '  resource: "@' . str_replace("/", "", $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
+                '  prefix: /' . $entityform . "\n";
 
-         */
+//Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
+        $fh = fopen($dest, 'a');
+        fwrite($fh, $routingContext);
+        fclose($fh);
+
+        return "Routing " . $dest . " generato automaticamente da pannelloammonistrazionebundle";
     }
 
     private function generateFormWiew($bundlename, $entityform, $view) {
@@ -421,9 +469,9 @@ EOF;
                 $this->showBundleGenerationMessage($bundlePath, $result["message"]);
             }
             $this->LockFile(false);
-            //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
+//Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
             exit;
-            //return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
+//return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
         }
     }
 
@@ -449,7 +497,7 @@ EOF;
             if (!self::isWindows()) {
                 $this->LockFile(true);
                 $sepchr = self::getSeparator();
-                //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
+//Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
                 $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "svn update";
                 $process = new Process($command);
                 $process->setTimeout(60 * 100);
@@ -475,7 +523,7 @@ EOF;
         } else {
             $this->LockFile(true);
             $sepchr = self::getSeparator();
-            //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
+//Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
             $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . "git pull";
             $process = new Process($command);
             $process->setTimeout(60 * 100);
@@ -521,9 +569,9 @@ EOF;
             $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
             $this->LockFile(false);
             echo $commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod;
-            //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+//Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             exit;
-            //return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
+//return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
         }
     }
 
@@ -555,9 +603,9 @@ EOF;
 
             $this->LockFile(false);
             if (!$process->isSuccessful()) {
-                return new Response('Errore nel comando: <i style="color: white;">' . str_replace(";","<br/>",str_replace("&&","<br/>",$command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+                return new Response('Errore nel comando: <i style="color: white;">' . str_replace(";", "<br/>", str_replace("&&", "<br/>", $command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
-            return new Response('<pre>Eseguito comando:<br/><br/><i style="color: white;">' . str_replace(";","<br/>",str_replace("&&","<br/>",$command)) . '</i><br/><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
+            return new Response('<pre>Eseguito comando:<br/><br/><i style="color: white;">' . str_replace(";", "<br/>", str_replace("&&", "<br/>", $command)) . '</i><br/><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
@@ -569,21 +617,21 @@ EOF;
         } else {
             $lockdelcmd = "del ";
         }
-        //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
+//Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
         $filelock = str_replace("\\", "\\\\", $this->getFileLock());
         if (str_replace("\\\\", "/", $command) == str_replace("\\\\", "\\", $lockdelcmd . $filelock)) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
                 return new Response('Non esiste il file di lock: <i style="color: white;">' . $filelock . '</i><br/>');
             } else {
-                //Sblocca pannello di controllo da lock
+//Sblocca pannello di controllo da lock
                 $process = new Process($command);
                 $process->setTimeout(60 * 100);
                 $process->run();
 
-                // eseguito deopo la fine del comando
+// eseguito deopo la fine del comando
                 if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style="color: white;">' . str_replace(";","<br/>",str_replace("&&","<br/>",$command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+                    return new Response('Errore nel comando: <i style="color: white;">' . str_replace(";", "<br/>", str_replace("&&", "<br/>", $command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
                 return new Response('File di lock cancellato');
             }
@@ -593,23 +641,23 @@ EOF;
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-            //$phpPath = self::getPHPExecutableFromPath();
+//$phpPath = self::getPHPExecutableFromPath();
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
 
             $this->LockFile(false);
-            // eseguito deopo la fine del comando
+// eseguito deopo la fine del comando
             if (!$process->isSuccessful()) {
-                echo 'Errore nel comando: <i style="color: white;">' . str_replace(";","<br/>",str_replace("&&","<br/>",$command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
-                //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+                echo 'Errore nel comando: <i style="color: white;">' . str_replace(";", "<br/>", str_replace("&&", "<br/>", $command)) . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
+//Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
                 exit;
-                //return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+//return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
-            echo '<pre>Eseguito comando:<br/><i style="color: white;"><br/>' . str_replace(";","<br/>",str_replace("&&","<br/>",$command)) . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>";
-            //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
+            echo '<pre>Eseguito comando:<br/><i style="color: white;"><br/>' . str_replace(";", "<br/>", str_replace("&&", "<br/>", $command)) . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>";
+//Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             exit;
-            //return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
+//return new Response('<pre>Eseguito comando: <i style="color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
@@ -621,7 +669,7 @@ EOF;
         } else {
             if (!self::isWindows()) {
                 $this->LockFile(true);
-                //$phpPath = self::getPHPExecutableFromPath();
+//$phpPath = self::getPHPExecutableFromPath();
                 $sepchr = self::getSeparator();
                 $phpPath = "/usr/bin/php";
 
@@ -630,7 +678,7 @@ EOF;
                 $process->run();
 
                 $this->LockFile(false);
-                // eseguito deopo la fine del comando
+// eseguito deopo la fine del comando
                 /* if (!$process->isSuccessful()) {
                   return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                   } */
