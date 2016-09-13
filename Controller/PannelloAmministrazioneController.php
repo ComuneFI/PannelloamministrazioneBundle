@@ -379,11 +379,17 @@ EOF;
             $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "mysql-workbench-schema-export";
 
             $destinationPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR;
+            $viewsPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR;
+            $entityPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Entity" . DIRECTORY_SEPARATOR;
+            $formPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Form" . DIRECTORY_SEPARATOR;
 
             if (!$fs->exists($scriptGenerator)) {
                 return new Response("Non è presente il file export.php del bundle SchemaExporterBundle!");
             }
-
+            $fs->mkdir($destinationPath);
+            $fs->mkdir($entityPath);
+            $fs->mkdir($formPath);
+            $fs->mkdir($viewsPath);
             if (!$fs->exists($destinationPath)) {
                 return new Response("Non esiste la cartella per l'esportazione " . $destinationPath . ", controllare il nome del Bundle!");
             }
@@ -523,7 +529,7 @@ EOF;
         $fs = new Filesystem();
         if ($fs->exists($bundlePath)) {
             echo str_replace("\n", "<br/>", $message);
-            echo "Per abilitare il nuovo bundle nel kernel aggiornare la pagina";
+            echo "Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php e aggiornare la pagina";
             echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
         } else {
             echo str_replace("\n", "<br/>", $message);
