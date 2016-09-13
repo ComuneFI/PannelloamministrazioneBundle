@@ -3,20 +3,16 @@
 namespace Fi\PannelloAmministrazioneBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class checkgitversionCommand extends ContainerAwareCommand {
-
-    protected function configure() {
+class checkgitversionCommand extends ContainerAwareCommand
+{
+    protected function configure()
+    {
         $this
                 ->setName('pannelloamministrazione:checkgitversion')
                 ->setDescription('Controllo versioni bundles')
@@ -24,65 +20,66 @@ class checkgitversionCommand extends ContainerAwareCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
-        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . "/..";
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $rootdir = $this->getContainer()->get('kernel')->getRootDir().'/..';
         $appdir = $this->getContainer()->get('kernel')->getRootDir();
-        $cachedir = $appdir . DIRECTORY_SEPARATOR . "cache";
-        $logdir = $appdir . DIRECTORY_SEPARATOR . "logs";
-        $tmpdir = $appdir . DIRECTORY_SEPARATOR . "/tmp";
-        $srcdir = $rootdir . DIRECTORY_SEPARATOR . "/src";
-        $webdir = $rootdir . DIRECTORY_SEPARATOR . "/web";
-        $uploaddir = $webdir . DIRECTORY_SEPARATOR . "/uploads";
+        $cachedir = $appdir.DIRECTORY_SEPARATOR.'cache';
+        $logdir = $appdir.DIRECTORY_SEPARATOR.'logs';
+        $tmpdir = $appdir.DIRECTORY_SEPARATOR.'/tmp';
+        $srcdir = $rootdir.DIRECTORY_SEPARATOR.'/src';
+        $webdir = $rootdir.DIRECTORY_SEPARATOR.'/web';
+        $uploaddir = $webdir.DIRECTORY_SEPARATOR.'/uploads';
         $projectDir = substr($this->getContainer()->get('kernel')->getRootDir(), 0, -4);
 
-
         if (self::isWindows()) {
-            echo "Non previsto in ambiente windows";
+            echo 'Non previsto in ambiente windows';
             exit;
         }
 
-
         $composerbundles = array();
-        $composerbundlespath = $projectDir . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi";
+        $composerbundlespath = $projectDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'fi';
         $findercomposerbundle = new Finder();
         $findercomposerbundle->in($composerbundlespath)->sortByName()->directories()->depth('== 0');
 
         foreach ($findercomposerbundle as $file) {
-            $fullcomposerbundlepath = $composerbundlespath . DIRECTORY_SEPARATOR . $file->getBasename();
+            $fullcomposerbundlepath = $composerbundlespath.DIRECTORY_SEPARATOR.$file->getBasename();
             $local = $this->getGitVersion($fullcomposerbundlepath, false);
             $remote = $this->getGitVersion($fullcomposerbundlepath, true);
             $style = new OutputFormatterStyle('blue', 'white', array('bold', 'blink'));
             $output->getFormatter()->setStyle('warning', $style);
             if ($local !== $remote) {
-                $remote = "<warning> * " . $remote . " * </warning>";
+                $remote = '<warning> * '.$remote.' * </warning>';
             }
-            $output->writeln('<info>' . $file->getBasename() . '</info> ' . $local . ' -> ' . $remote);
+            $output->writeln('<info>'.$file->getBasename().'</info> '.$local.' -> '.$remote);
 
-            $composerbundles[] = array("name" => $file->getBasename(), "path" => $fullcomposerbundlepath, "version" => $this->getGitVersion($fullcomposerbundlepath));
+            $composerbundles[] = array('name' => $file->getBasename(), 'path' => $fullcomposerbundlepath, 'version' => $this->getGitVersion($fullcomposerbundlepath));
         }
     }
 
-    private function getGitVersion($path, $remote = false) {
+    private function getGitVersion($path, $remote = false)
+    {
         if (!self::isWindows()) {
             $shellOutput = [];
             if ($remote) {
                 //Remote
-                $cmd = "cd " . $path;
-                $remotetag = $cmd . ";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
+                $cmd = 'cd '.$path;
+                $remotetag = $cmd.";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
                 $process = new Process($remotetag);
                 $process->setTimeout(60 * 100);
                 $process->run();
                 if ($process->isSuccessful()) {
                     $version = trim($process->getOutput());
                     if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
-                        return $matches[0]; //returning the first match 
+                        return $matches[0]; //returning the first match
                     }
                 }
-                return "?";
+
+                return '?';
             } else {
                 //Local
-                $cmd = "cd " . $path;
-                $process = new Process($cmd . ';git branch | ' . "grep ' * '");
+                $cmd = 'cd '.$path;
+                $process = new Process($cmd.';git branch | '."grep ' * '");
                 $process->setTimeout(60 * 100);
                 $process->run();
                 if ($process->isSuccessful()) {
@@ -90,11 +87,11 @@ class checkgitversionCommand extends ContainerAwareCommand {
                     foreach ($out as $line) {
                         if (strpos($line, '* ') !== false) {
                             $version = trim(strtolower(str_replace('* ', '', $line)));
-                            if ($version == "master") {
+                            if ($version == 'master') {
                                 return $version;
                             } else {
                                 if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
-                                    return $matches[0]; //returning the first match 
+                                    return $matches[0]; //returning the first match
                                 }
                             }
                         }
@@ -102,22 +99,21 @@ class checkgitversionCommand extends ContainerAwareCommand {
                 } else {
                     //echo $process->getErrorOutput();
                 }
-                return "?";
+
+                return '?';
             }
         } else {
             //Per windows non esiste il grep
-            return "";
+            return '';
         }
     }
 
-    static function isWindows() {
-        if (PHP_OS == "WINNT") {
+    public static function isWindows()
+    {
+        if (PHP_OS == 'WINNT') {
             return true;
         } else {
             return false;
         }
     }
-
 }
-
-?>

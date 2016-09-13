@@ -17,7 +17,6 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "~1.0",
-        "fi/schemaexporterbundle": "~1.0"
+        "fi/osbundle": "~1.0"
     }
 }

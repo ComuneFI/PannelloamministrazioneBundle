@@ -12,6 +12,8 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
+use Doctrine\Common\Inflector\Inflector;
+use MwbExporter\Model\Table;
 
 class PannelloAmministrazioneController extends Controller {
 
@@ -163,7 +165,7 @@ class PannelloAmministrazioneController extends Controller {
             }
 
 
-            $viewPath = $appPath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $entityform;
+            $viewPath = $appPath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . strtolower($entityform);
             $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $entityform;
             if ($fs->exists($viewPathSrc)) {
                 return new Response($viewPathSrc . " esistente");
@@ -200,6 +202,8 @@ class PannelloAmministrazioneController extends Controller {
                         $fs->remove($resourcesviews);
                     }
                 }
+            } else {
+                $retmsg = $resultcrud["message"];
             }
 
             return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $resultcrud["errcode"], "command" => $resultcrud["command"], "message" => $resultcrud["message"] . $retmsg));
@@ -251,7 +255,7 @@ namespace [bundle]\Controller;
 use Fi\CoreBundle\Controller\FiController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Fi\CoreBundle\Controller\griglia;
+use Fi\CoreBundle\Controller\Griglia;
 use Fi\CoreBundle\Controller\gestionepermessiController;
 use [bundle]\Entity\[tabella];
 use [bundle]\Form\[tabella]Type;
@@ -313,7 +317,7 @@ EOF;
 
 [tabella]_griglia:
     path:  /griglia
-    defaults: { _controller: "[bundle]:[tabella]:griglia" }
+    defaults: { _controller: "[bundle]:[tabella]:Griglia" }
     requirements: { methods: get|post }
 EOF;
         $codebundle = str_replace("[bundle]", $bundlename, $codeTemplate);
@@ -326,7 +330,8 @@ EOF;
         $fs = new Filesystem();
         $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
 
-        $routingFile = $prjPath . "/src/" . $bundlename . "/Resources/config/routing/" . $entityform . ".yml";
+        $routingFile = $prjPath . "/src/" . $bundlename . "/Resources/config/routing/" . strtolower($entityform) . ".yml";
+
         $code = $this->getRoutingCode(str_replace("/", "", $bundlename), $entityform);
         $fs->dumpFile($routingFile, $code);
 
@@ -339,12 +344,12 @@ EOF;
                 '  resource: "@' . str_replace("/", "", $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
                 '  prefix: /' . $entityform . "\n";
 
-//Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
+        //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
         $fh = fopen($dest, 'a');
         fwrite($fh, $routingContext);
         fclose($fh);
-
-        return "Routing " . $dest . " generato automaticamente da pannelloammonistrazionebundle";
+        $retmsg = "Routing " . $dest . " generato automaticamente da pannelloammonistrazionebundle\n* * * * FARE CLEAR CACHE !!!!! * * * *";
+        return $retmsg;
     }
 
     private function generateFormWiew($bundlename, $entityform, $view) {
@@ -359,6 +364,8 @@ EOF;
 
     public function generateEntityAction(Request $request) {
         $fs = new Filesystem();
+        $finder = new Finder();
+
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -369,7 +376,7 @@ EOF;
                 return new Response("Nella cartella 'doc' non è presente il file " . $wbFile . "!");
             }
 
-            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi" . DIRECTORY_SEPARATOR . "schemaexporterbundle" . DIRECTORY_SEPARATOR . "cli" . DIRECTORY_SEPARATOR . "export.php";
+            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "mysql-workbench-schema-export";
 
             $destinationPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR;
 
@@ -418,7 +425,42 @@ EOF;
                 $fs->remove($exportJson);
             }
 
+            $pathdoctrineyml = $destinationPath;
+
+            //Si converte il nome file tabella.orm.yml se ha undercore
+            $finder->in($pathdoctrineyml)->files()->name('*_*');
+            $table = new Table();
+
+            foreach ($finder as $file) {
+                $oldfilename = $file->getPathName();
+                $newfilename = $pathdoctrineyml . DIRECTORY_SEPARATOR . $table->beautify($file->getFileName());
+                $fs->rename($oldfilename, $newfilename, true);
+            }
+
+            //Si cercano file con nomi errati
+            $finderwrong = new Finder();
+            $finderwrong->in($pathdoctrineyml)->files()->name('*_*');
+            $wrongfilename = array();
+            if (count($finderwrong) > 0) {
+                foreach ($finderwrong as $file) {
+                    $wrongfilename[] = $file->getFileName();
+                    $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
+                }
+            }
+            $finderwrongcapitalize = new Finder();
+            $finderwrongcapitalize->in($pathdoctrineyml)->files()->name('*.yml');
+            foreach ($finderwrongcapitalize as $file) {
+                if (!ctype_upper(substr($file->getFileName(), 0, 1))) {
+                    $wrongfilename[] = $file->getFileName();
+                    $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
+                }
+            }
+
             $this->LockFile(false);
+
+            if (count($wrongfilename) > 0) {
+                return new Response('<i style="color: red;">Ci sono tabelle nel file ' . $wbFile . ' con nomi non consentiti:<br/>' . implode("<br/>", $wrongfilename) . '</i><br/>I nomi tabella devono essere <ul><li>con la prima lettera maiuscola</li><li>underscore ammesso</li><li>doppio underscore non ammesso</li>');
+            }
 
             if (!$process->isSuccessful()) {
                 return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
@@ -429,6 +471,7 @@ EOF;
 
     public function generateEntityClassAction(Request $request) {
         set_time_limit(0);
+        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
