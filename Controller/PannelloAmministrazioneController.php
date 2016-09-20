@@ -731,7 +731,7 @@ EOF;
 
                 // Questo codice per versioni che usano un symfony 2 o 3
                 if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                    $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "vendor" . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
+                    $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "vendor" . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "phpunit";
                 } else {
                     $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
                 }
