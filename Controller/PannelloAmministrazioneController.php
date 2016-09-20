@@ -725,16 +725,22 @@ EOF;
         } else {
             if (!OsFunctions::isWindows()) {
                 $this->LockFile(true);
-//$phpPath = OsFunctions::getPHPExecutableFromPath();
+                //$phpPath = OsFunctions::getPHPExecutableFromPath();
                 $sepchr = self::getSeparator();
                 $phpPath = "/usr/bin/php";
 
-                $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
+                // Questo codice per versioni che usano un symfony 2 o 3
+                if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+                    $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "vendor" . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
+                } else {
+                    $command = "cd " . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . " " . "bin" . DIRECTORY_SEPARATOR . "phpunit -c app";
+                }
+
                 $process = new Process($command);
                 $process->run();
 
                 $this->LockFile(false);
-// eseguito deopo la fine del comando
+                // eseguito deopo la fine del comando
                 /* if (!$process->isSuccessful()) {
                   return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                   } */
