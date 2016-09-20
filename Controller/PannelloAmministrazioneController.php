@@ -376,7 +376,12 @@ EOF;
                 return new Response("Nella cartella 'doc' non è presente il file " . $wbFile . "!");
             }
 
-            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "mysql-workbench-schema-export";
+            // Questo codice per versioni che usano un symfony 2 o 3
+            if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "mysql-workbench-schema-export";
+            } else {
+                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "mysql-workbench-schema-export";
+            }
 
             $destinationPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR;
             $viewsPath = $prjPath . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . "Resources" . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR;
