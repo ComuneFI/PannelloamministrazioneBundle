@@ -392,6 +392,7 @@ EOF;
                 return new Response("Non è presente il file export.php del bundle SchemaExporterBundle!");
             }
             $fs->mkdir($destinationPath);
+            $fs->mkdir($destinationPath . DIRECTORY_SEPARATOR . "doctrine");
             $fs->mkdir($entityPath);
             $fs->mkdir($formPath);
             $fs->mkdir($viewsPath);
