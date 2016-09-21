@@ -355,7 +355,7 @@ EOF;
     private function generateFormWiew($bundlename, $entityform, $view) {
         $fs = new Filesystem();
         $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-        $source = $prjPath . "/vendor/fi/fifreecorebundle/FiTemplate/views/" . $view . ".html.twig";
+        $source = $prjPath . "/vendor/fi/fifreecorebundle/src/FiTemplate/views/" . $view . ".html.twig";
         $dest = $prjPath . "/src/" . $bundlename . "/Resources/views/" . $entityform . "/" . $view . ".html.twig";
         $fs->copy($source, $dest, true);
     }
@@ -413,7 +413,7 @@ EOF;
             $bundlePathEscaped = str_replace("/", "\\", $bundlePath);
             $bundlePathEscaped = str_replace("\\", "\\\\", $bundlePathEscaped);
 
-            $str = file_get_contents($prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi/fifreecorebundle/FiTemplate/config/export.json");
+            $str = file_get_contents($prjPath . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "fi/fifreecorebundle/src/FiTemplate/config/export.json");
             $str = str_replace("[bundle]", str_replace("/", "", $bundlePathEscaped), $str);
             $str = str_replace("[dir]", $destinationPathEscaped, $str);
             file_put_contents($exportJson, $str);
