@@ -23,17 +23,17 @@ class checkgitversionCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $rootdir = $this->getContainer()->get('kernel')->getRootDir().'/..';
-        $appdir = $this->getContainer()->get('kernel')->getRootDir();
-        $cachedir = $appdir.DIRECTORY_SEPARATOR.'cache';
-        $logdir = $appdir.DIRECTORY_SEPARATOR.'logs';
-        $tmpdir = $appdir.DIRECTORY_SEPARATOR.'/tmp';
-        $srcdir = $rootdir.DIRECTORY_SEPARATOR.'/src';
-        $webdir = $rootdir.DIRECTORY_SEPARATOR.'/web';
-        $uploaddir = $webdir.DIRECTORY_SEPARATOR.'/uploads';
+        /* $appdir = $this->getContainer()->get('kernel')->getRootDir();
+          $webdir = $rootdir.DIRECTORY_SEPARATOR.'/web';
+          $cachedir = $appdir.DIRECTORY_SEPARATOR.'cache';
+          $logdir = $appdir.DIRECTORY_SEPARATOR.'logs';
+          $tmpdir = $appdir.DIRECTORY_SEPARATOR.'/tmp';
+          $srcdir = $rootdir.DIRECTORY_SEPARATOR.'/src';
+          $uploaddir = $webdir.DIRECTORY_SEPARATOR.'/uploads'; */
         $projectDir = substr($this->getContainer()->get('kernel')->getRootDir(), 0, -4);
 
         if (self::isWindows()) {
-            echo 'Non previsto in ambiente windows';
+            $output->writeln('<info>Non previsto in ambiente windows</info>');
             exit;
         }
 
@@ -59,52 +59,50 @@ class checkgitversionCommand extends ContainerAwareCommand
 
     private function getGitVersion($path, $remote = false)
     {
-        if (!self::isWindows()) {
-            $shellOutput = [];
-            if ($remote) {
-                //Remote
-                $cmd = 'cd '.$path;
-                $remotetag = $cmd.";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
-                $process = new Process($remotetag);
-                $process->setTimeout(60 * 100);
-                $process->run();
-                if ($process->isSuccessful()) {
-                    $version = trim($process->getOutput());
-                    if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
-                        return $matches[0]; //returning the first match
-                    }
-                }
+        if (self::isWindows()) {
+            return '';
+        }
 
-                return '?';
-            } else {
-                //Local
-                $cmd = 'cd '.$path;
-                $process = new Process($cmd.';git branch | '."grep ' * '");
-                $process->setTimeout(60 * 100);
-                $process->run();
-                if ($process->isSuccessful()) {
-                    $out = explode(chr(10), $process->getOutput());
-                    foreach ($out as $line) {
-                        if (strpos($line, '* ') !== false) {
-                            $version = trim(strtolower(str_replace('* ', '', $line)));
-                            if ($version == 'master') {
-                                return $version;
-                            } else {
-                                if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
-                                    return $matches[0]; //returning the first match
-                                }
+        if ($remote) {
+            //Remote
+            $cmd = 'cd '.$path;
+            $remotetag = $cmd.";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
+            $process = new Process($remotetag);
+            $process->setTimeout(60 * 100);
+            $process->run();
+            if ($process->isSuccessful()) {
+                $version = trim($process->getOutput());
+                if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
+                    return $matches[0]; //returning the first match
+                }
+            }
+
+            return '?';
+        } else {
+            //Local
+            $cmd = 'cd '.$path;
+            $process = new Process($cmd.';git branch | '."grep ' * '");
+            $process->setTimeout(60 * 100);
+            $process->run();
+            if ($process->isSuccessful()) {
+                $out = explode(chr(10), $process->getOutput());
+                foreach ($out as $line) {
+                    if (strpos($line, '* ') !== false) {
+                        $version = trim(strtolower(str_replace('* ', '', $line)));
+                        if ($version == 'master') {
+                            return $version;
+                        } else {
+                            if (preg_match('/\d+(?:\.\d+)+/', $version, $matches)) {
+                                return $matches[0]; //returning the first match
                             }
                         }
                     }
-                } else {
-                    //echo $process->getErrorOutput();
                 }
-
-                return '?';
+            } else {
+                //echo $process->getErrorOutput();
             }
-        } else {
-            //Per windows non esiste il grep
-            return '';
+
+            return '?';
         }
     }
 
