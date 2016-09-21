@@ -123,7 +123,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
                 . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' . 
                 $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
 
-        $schemaupdateresult = $this->exportschema($command);
+        $schemaupdateresult = $this->exportschema($command, $output);
         if ($schemaupdateresult < 0) {
             return -1;
         }
@@ -150,7 +150,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         return $exportJson;
     }
 
-    private function exportschema($command) {
+    private function exportschema($command,$output) {
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
