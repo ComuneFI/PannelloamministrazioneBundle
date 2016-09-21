@@ -85,7 +85,12 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
         $bundlePath = $bundlename;
-        $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            $scriptGenerator = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        } else {
+            $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        }
+
         $destinationPath = $apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
@@ -135,7 +140,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
 
         if (!$fs->exists($scriptGenerator)) {
-            $output->writeln('<error>Non è presente il file export.php del bundle SchemaExporterBundle!</error>');
+            $output->writeln('<error>Non è presente il comando ".$scriptGenerator." per esportare il modello!</error>');
             return -1;
         }
         if (!$fs->exists($destinationPath)) {
