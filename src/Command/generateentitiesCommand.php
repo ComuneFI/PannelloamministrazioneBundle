@@ -13,6 +13,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
 use MwbExporter\Model\Table;
 
 class generateentitiesCommand extends ContainerAwareCommand {
@@ -34,8 +35,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         set_time_limit(0);
         $fs = new Filesystem();
         $finder = new Finder();
-        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
-        $prjPath = $rootdir;
+        $apppaths = new ProjectPath($this->getContainer());
 
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
@@ -51,7 +51,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $schemaupdate = true;
         }
 
-        $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $wbFile = $apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
         $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
 
         if ($checkprerequisiti < 0) {
@@ -59,27 +59,19 @@ class generateentitiesCommand extends ContainerAwareCommand {
         }
 
         $bundlePath = $bundlename;
-
-        $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
-
-        $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
-
-        $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
-
+        $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        $destinationPath = $apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
-
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
-        $exportJson = $prjPath . '/app/tmp/export.json';
-
+        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR .  'tmp/export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
         }
+
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $destinationPath));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
 
-        $exportjsonfile = file_get_contents($prjPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi/fifreecorebundle/src/FiTemplate/config/export.json');
+        $exportjsonfile = file_get_contents($apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi/fifreecorebundle/src/FiTemplate/config/export.json');
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
@@ -89,7 +81,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         } else {
             $phpPath = '/usr/bin/php';
         }
-        $pathsrc = $rootdir;
+        $pathsrc = $apppaths->getRootPath();
         $sepchr = self::getSeparator();
 
         $command = 'cd ' . substr($pathsrc, 0, -4) . $sepchr
@@ -103,9 +95,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $fs->remove($exportJson);
         }
 
-        $pathdoctrineyml = $destinationPath;
-
-        $tablecheck = $this->checktables($pathdoctrineyml, $wbFile, $output);
+        $tablecheck = $this->checktables($destinationPath, $wbFile, $output);
 
         if ($tablecheck < 0) {
             return -1;
@@ -121,6 +111,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         if ($tablecheck < 0) {
             return -1;
         }
+        return 0;
     }
 
     private function checkprerequisiti($bundlename, $mwbfile, $output) {
@@ -182,9 +173,11 @@ class generateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
-    private function checktables($pathdoctrineyml, $wbFile, $output) {
+    private function checktables($destinationPath, $wbFile, $output) {
         $finder = new Finder();
         $fs = new Filesystem();
+
+        $pathdoctrineyml = $destinationPath;
 
         //Si converte il nome file tabella.orm.yml se ha undercore
         $finder->in($pathdoctrineyml)->files()->name('*_*');
