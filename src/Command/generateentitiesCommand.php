@@ -33,7 +33,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         set_time_limit(0);
-        $fs = new Filesystem();
         $apppaths = new ProjectPath($this->getContainer());
 
         $bundlename = $input->getArgument('bundlename');
