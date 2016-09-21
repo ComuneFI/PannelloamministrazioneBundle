@@ -76,28 +76,19 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $fs = new Filesystem();
         $apppaths = new ProjectPath($this->getContainer());
 
-        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
-        $prjPath = $rootdir;
         $bundlePath = $bundlename;
-        $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
+        $wbFile = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $viewsPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $entityPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
+        $formPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
-        $bundlePath = $bundlename;
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
-        } else {
-            $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
-        }
+        $scriptGenerator = $this->getScriptGenerator();
 
         $destinationPath = $apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
-        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
-        if ($fs->exists($exportJson)) {
-            $fs->remove($exportJson);
-        }
+
+        $exportJson = $this->getExportJson();
 
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $destinationPath));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
@@ -129,7 +120,8 @@ class generateentitiesCommand extends ContainerAwareCommand {
         }
 
         $command = 'cd ' . substr($apppaths->getRootPath(), 0, -4) . $sepchr
-                . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' . $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
+                . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' . 
+                $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
 
         $schemaupdateresult = $this->exportschema($command);
         if ($schemaupdateresult < 0) {
@@ -148,6 +140,16 @@ class generateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
+    private function getExportJson() {
+        $fs = new Filesystem();
+        $apppaths = new ProjectPath($this->getContainer());
+        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
+        if ($fs->exists($exportJson)) {
+            $fs->remove($exportJson);
+        }
+        return $exportJson;
+    }
+
     private function exportschema($command) {
         $process = new Process($command);
         $process->setTimeout(60 * 100);
@@ -158,6 +160,16 @@ class generateentitiesCommand extends ContainerAwareCommand {
             return -1;
         }
         return 0;
+    }
+
+    private function getScriptGenerator() {
+        $apppaths = new ProjectPath($this->getContainer());
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            $scriptGenerator = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        } else {
+            $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+        }
+        return $scriptGenerator;
     }
 
     private function generateentities($bundlename, $emdest, $schemaupdate, $output) {
