@@ -111,7 +111,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
             return -1;
         }
-        
+
         $pathsrc = $apppaths->getRootPath();
         $sepchr = self::getSeparator();
 
@@ -153,8 +153,8 @@ class generateentitiesCommand extends ContainerAwareCommand {
     private function generateentities($bundlename, $emdest, $schemaupdate, $output) {
         /* GENERATE ENTITIES */
         $output->writeln('Creazione entities class per il bundle ' . str_replace('/', '', $bundlename));
-        $application = new Application($this->getContainer()->get('kernel'));
-        $application->setAutoExit(false);
+        //$application = new Application($this->getContainer()->get('kernel'));
+        //$application->setAutoExit(false);
         $command = $this->getApplication()->find('doctrine:generate:entities');
         $inputdge = new ArrayInput(array('--no-backup' => true, 'name' => str_replace('/', '', $bundlename)));
         $result = $command->run($inputdge, $output);
@@ -164,13 +164,37 @@ class generateentitiesCommand extends ContainerAwareCommand {
         if ($schemaupdate) {
             $output->writeln('Aggiornamento database...');
 
-            $application = new Application($this->getContainer()->get('kernel'));
-            $application->setAutoExit(false);
-            $command = $this->getApplication()->find('doctrine:schema:update');
-            $inputdsu = new ArrayInput(array('--force' => true, '--em' => $emdest));
-            $result = $command->run($inputdsu, $output);
+            /* $command = $this->getApplication()->find('doctrine:schema:update');
+              $inputdsu = new ArrayInput(array('--force' => true, '--em' => $emdest));
+              $result = $command->run($inputdsu, $output); */
 
-            $output->writeln('<info>Aggiornamento database completato</info>');
+            $apppaths = new ProjectPath($this->getContainer());
+            $pathsrc = $apppaths->getRootPath();
+            $sepchr = self::getSeparator();
+            // Questo codice per versioni che usano un symfony 2 o 3
+            if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "console doctrine:schema:update";
+            } else {
+                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "console doctrine:schema:update";
+            }
+
+            if (OsFunctions::isWindows()) {
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
+            } else {
+                $phpPath = "/usr/bin/php";
+            }
+            $command = 'cd ' . $pathsrc . $sepchr
+                    . $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest;
+
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+            } else {
+                $output->writeln('<info>Aggiornamento database completato</info>');
+            }
         }
         return 0;
     }
@@ -209,7 +233,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
                 $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
             }
         }
-        
+
         if (count($wrongfilename) > 0) {
             $output->writeln('<error>Ci sono tabelle nel file ' . $wbFile . ' con nomi non consentiti:' . implode(",", $wrongfilename) . '. I nomi tabella devono essere : con la prima lettera maiuscola,underscore ammesso,doppio underscore non ammesso</error>');
             return -1;
