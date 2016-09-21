@@ -34,7 +34,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
     protected function execute(InputInterface $input, OutputInterface $output) {
         set_time_limit(0);
         $fs = new Filesystem();
-        $finder = new Finder();
         $apppaths = new ProjectPath($this->getContainer());
 
         $bundlename = $input->getArgument('bundlename');
@@ -57,13 +56,41 @@ class generateentitiesCommand extends ContainerAwareCommand {
         if ($checkprerequisiti < 0) {
             return -1;
         }
+        $bundlePath = $bundlename;
+        $destinationPath = $apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+        $tablecheck = $this->checktables($destinationPath, $wbFile, $output);
+
+        if ($tablecheck < 0) {
+            return -1;
+        }
+
+        $output->writeln('<info>Entities yml create</info>');
+
+        $tablecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
+        if ($tablecheck < 0) {
+            return -1;
+        }
+        return 0;
+    }
+
+    private function checkprerequisiti($bundlename, $mwbfile, $output) {
+        $fs = new Filesystem();
+        $apppaths = new ProjectPath($this->getContainer());
+
+        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
+        $prjPath = $rootdir;
+        $bundlePath = $bundlename;
+        $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
+        $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
         $bundlePath = $bundlename;
         $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
         $destinationPath = $apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
-        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR .  'tmp/export.json';
+        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
         }
@@ -81,6 +108,11 @@ class generateentitiesCommand extends ContainerAwareCommand {
         } else {
             $phpPath = '/usr/bin/php';
         }
+        if (!$fs->exists($wbFile)) {
+            $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
+            return -1;
+        }
+        
         $pathsrc = $apppaths->getRootPath();
         $sepchr = self::getSeparator();
 
@@ -95,38 +127,8 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $fs->remove($exportJson);
         }
 
-        $tablecheck = $this->checktables($destinationPath, $wbFile, $output);
-
-        if ($tablecheck < 0) {
-            return -1;
-        }
-
         if (!$process->isSuccessful()) {
             $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-        }
-
-        $output->writeln('<info>Entities yml create</info>');
-
-        $tablecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
-        if ($tablecheck < 0) {
-            return -1;
-        }
-        return 0;
-    }
-
-    private function checkprerequisiti($bundlename, $mwbfile, $output) {
-        $fs = new Filesystem();
-        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
-        $prjPath = $rootdir;
-        $bundlePath = $bundlename;
-        $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
-
-        if (!$fs->exists($wbFile)) {
-            $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
-            return -1;
         }
 
         $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
@@ -145,6 +147,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $fs->mkdir($entityPath);
         $fs->mkdir($formPath);
         $fs->mkdir($viewsPath);
+
         return 0;
     }
 
@@ -207,7 +210,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
                 $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
             }
         }
-
+        
         if (count($wrongfilename) > 0) {
             $output->writeln('<error>Ci sono tabelle nel file ' . $wbFile . ' con nomi non consentiti:' . implode(",", $wrongfilename) . '. I nomi tabella devono essere : con la prima lettera maiuscola,underscore ammesso,doppio underscore non ammesso</error>');
             return -1;
