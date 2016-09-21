@@ -107,11 +107,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
 
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
         if (!$fs->exists($wbFile)) {
             $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
             return -1;
@@ -125,22 +120,24 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
             return -1;
         }
-        $pathsrc = $apppaths->getRootPath();
-        $sepchr = self::getSeparator();
 
-        $command = 'cd ' . substr($pathsrc, 0, -4) . $sepchr
+        $sepchr = self::getSeparator();
+        if (OsFunctions::isWindows()) {
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        } else {
+            $phpPath = "/usr/bin/php";
+        }
+
+        $command = 'cd ' . substr($apppaths->getRootPath(), 0, -4) . $sepchr
                 . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' . $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
 
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
+        $schemaupdateresult = $this->exportschema($command);
+        if ($schemaupdateresult < 0) {
+            return -1;
+        }
 
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
-        }
-
-        if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
         }
 
         $fs->mkdir($destinationPath);
@@ -148,6 +145,18 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $fs->mkdir($formPath);
         $fs->mkdir($viewsPath);
 
+        return 0;
+    }
+
+    private function exportschema($command) {
+        $process = new Process($command);
+        $process->setTimeout(60 * 100);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+            return -1;
+        }
         return 0;
     }
 
