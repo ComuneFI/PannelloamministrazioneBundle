@@ -117,6 +117,14 @@ class generateentitiesCommand extends ContainerAwareCommand {
             return -1;
         }
 
+        if (!$fs->exists($scriptGenerator)) {
+            $output->writeln('<error>Non è presente il comando ' . $scriptGenerator . ' per esportare il modello!</error>');
+            return -1;
+        }
+        if (!$fs->exists($destinationPath)) {
+            $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
+            return -1;
+        }
         $pathsrc = $apppaths->getRootPath();
         $sepchr = self::getSeparator();
 
@@ -139,14 +147,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
 
         $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
 
-        if (!$fs->exists($scriptGenerator)) {
-            $output->writeln('<error>Non è presente il comando ".$scriptGenerator." per esportare il modello!</error>');
-            return -1;
-        }
-        if (!$fs->exists($destinationPath)) {
-            $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
-            return -1;
-        }
         $fs->mkdir($destinationPath);
         $fs->mkdir($entityPath);
         $fs->mkdir($formPath);
