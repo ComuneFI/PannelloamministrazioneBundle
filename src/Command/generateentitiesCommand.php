@@ -35,13 +35,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $fs = new Filesystem();
         $finder = new Finder();
         $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
-        /* $appdir = $this->getContainer()->get('kernel')->getRootDir();
-          $webdir = $rootdir.DIRECTORY_SEPARATOR.'/web';
-          $cachedir = $appdir.DIRECTORY_SEPARATOR.'cache';
-          $logdir = $appdir.DIRECTORY_SEPARATOR.'logs';
-          $tmpdir = $appdir.DIRECTORY_SEPARATOR.'/tmp';
-          $srcdir = $rootdir.DIRECTORY_SEPARATOR.'/src';
-          $uploaddir = $webdir.DIRECTORY_SEPARATOR.'/uploads'; */
         $prjPath = $rootdir;
 
         $bundlename = $input->getArgument('bundlename');
@@ -59,32 +52,22 @@ class generateentitiesCommand extends ContainerAwareCommand {
         }
 
         $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $bundlePath = $bundlename;
-        if (!$fs->exists($wbFile)) {
-            $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
-            return 1;
+        $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
+
+        if ($checkprerequisiti < 0) {
+            return -1;
         }
+
+        $bundlePath = $bundlename;
 
         $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
 
         $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
 
-        if (!$fs->exists($scriptGenerator)) {
-            $output->writeln('<error>Non è presente il file export.php del bundle SchemaExporterBundle!</error>');
-            return 1;
-        }
-        if (!$fs->exists($destinationPath)) {
-            $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
-            return 1;
-        }
         $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
         $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
         $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
-        $fs->mkdir($destinationPath);
-        $fs->mkdir($entityPath);
-        $fs->mkdir($formPath);
-        $fs->mkdir($viewsPath);
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
 
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
@@ -138,6 +121,40 @@ class generateentitiesCommand extends ContainerAwareCommand {
         if ($tablecheck < 0) {
             return -1;
         }
+    }
+
+    private function checkprerequisiti($bundlename, $mwbfile, $output) {
+        $fs = new Filesystem();
+        $rootdir = $this->getContainer()->get('kernel')->getRootDir() . '/..';
+        $prjPath = $rootdir;
+        $bundlePath = $bundlename;
+        $wbFile = $prjPath . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $viewsPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $entityPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
+        $formPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
+
+        if (!$fs->exists($wbFile)) {
+            $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
+            return -1;
+        }
+
+        $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+
+        $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
+
+        if (!$fs->exists($scriptGenerator)) {
+            $output->writeln('<error>Non è presente il file export.php del bundle SchemaExporterBundle!</error>');
+            return -1;
+        }
+        if (!$fs->exists($destinationPath)) {
+            $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
+            return -1;
+        }
+        $fs->mkdir($destinationPath);
+        $fs->mkdir($entityPath);
+        $fs->mkdir($formPath);
+        $fs->mkdir($viewsPath);
+        return 0;
     }
 
     private function generateentities($bundlename, $emdest, $schemaupdate, $output) {
