@@ -157,7 +157,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
         //$application->setAutoExit(false);
         $command = $this->getApplication()->find('doctrine:generate:entities');
         $inputdge = new ArrayInput(array('--no-backup' => true, 'name' => str_replace('/', '', $bundlename)));
-        $result = $command->run($inputdge, $output);
+        $command->run($inputdge, $output);
 
         $output->writeln('<info>Entities class create</info>');
 
