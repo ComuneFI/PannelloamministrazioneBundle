@@ -143,10 +143,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
         }
 
-        $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
-
-        $destinationPath = $prjPath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
-
         $fs->mkdir($destinationPath);
         $fs->mkdir($entityPath);
         $fs->mkdir($formPath);
@@ -190,7 +186,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
             }
             $command = 'cd ' . $pathsrc . $sepchr
                     . $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest;
-
+            /* @var $process \Symfony\Component\Process\Process */
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
@@ -198,6 +194,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
             if (!$process->isSuccessful()) {
                 $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
             } else {
+                $output->writeln($process->getOutput());
                 $output->writeln('<info>Aggiornamento database completato</info>');
             }
         }
