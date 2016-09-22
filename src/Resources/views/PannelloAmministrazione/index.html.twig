@@ -63,7 +63,7 @@
             <fieldset class="groupbox" id="grpentities">
                 <legend title="{{database_host}} {{database_name}} ({{database_driver}})">Database</legend>
                 <div>
-                    <button id="adminpanelgenerateentity" class="active btn btn-success" data-reactid=".3.0" type="button">Genera entity YML da modello workbench</button>
+                    <button id="adminpanelgenerateentity" class="active btn btn-success" data-reactid=".3.0" type="button">Genera entity da modello workbench</button>
                     <div class="inputbox">
                         <label for='entityfile'>File modello:</label>
                         <select class="form-control" id="entityfile">
@@ -81,8 +81,8 @@
                         <br/><br/>
                     </div>
                 </div>
-                <button id="adminpanelgenerateclassentity" class="active btn btn-default" data-reactid=".3.0" type="button">Genera le classi dalle entities</button>
-                <br/><br/>
+                <!--<button id="adminpanelgenerateclassentity" class="active btn btn-default" data-reactid=".3.0" type="button">Genera le classi dalle entities</button>
+                <br/><br/>-->
                 <button id="adminpanelaggiornadatabase" class="active btn btn-danger" data-reactid=".3.0" type="button">Aggiorna schema database</button>
             </fieldset>
         </div>
@@ -248,7 +248,7 @@
                     }
                 });
             });
-            $("#adminpanelgenerateclassentity").click(function () {
+            /*$("#adminpanelgenerateclassentity").click(function () {
                 var entitybundle = $("#entitybundle").val();
                 var domanda = "Vuoi creare le classi per le entità del bundle: " + entitybundle;
                 conferma(domanda).then(function (answer) {
@@ -273,7 +273,7 @@
                         //FALSE
                     }
                 });
-            });
+            });*/
             $("#adminpanelgeneratebundle").click(function () {
                 var bundlename = $("#bundlename").val();
                 var domanda = "Vuoi creare il bundle: " + bundlename;

@@ -9,9 +9,10 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class checkgitversionCommand extends ContainerAwareCommand {
-
-    protected function configure() {
+class checkgitversionCommand extends ContainerAwareCommand
+{
+    protected function configure()
+    {
         $this
                 ->setName('pannelloamministrazione:checkgitversion')
                 ->setDescription('Controllo versioni bundles')
@@ -19,7 +20,8 @@ class checkgitversionCommand extends ContainerAwareCommand {
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         /* $rootdir = $this->getContainer()->get('kernel')->getRootDir().'/..';
           $appdir = $this->getContainer()->get('kernel')->getRootDir();
           $webdir = $rootdir.DIRECTORY_SEPARATOR.'/web';
@@ -32,39 +34,42 @@ class checkgitversionCommand extends ContainerAwareCommand {
 
         if (self::isWindows()) {
             $output->writeln('<info>Non previsto in ambiente windows</info>');
+
             return 0;
         }
 
         $composerbundles = array();
-        $composerbundlespath = $projectDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi';
+        $composerbundlespath = $projectDir.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'fi';
         $findercomposerbundle = new Finder();
         $findercomposerbundle->in($composerbundlespath)->sortByName()->directories()->depth('== 0');
 
         foreach ($findercomposerbundle as $file) {
-            $fullcomposerbundlepath = $composerbundlespath . DIRECTORY_SEPARATOR . $file->getBasename();
+            $fullcomposerbundlepath = $composerbundlespath.DIRECTORY_SEPARATOR.$file->getBasename();
             $local = $this->getGitVersion($fullcomposerbundlepath, false);
             $remote = $this->getGitVersion($fullcomposerbundlepath, true);
             $style = new OutputFormatterStyle('blue', 'white', array('bold', 'blink'));
             $output->getFormatter()->setStyle('warning', $style);
             if ($local !== $remote) {
-                $remote = '<warning> * ' . $remote . ' * </warning>';
+                $remote = '<warning> * '.$remote.' * </warning>';
             }
-            $output->writeln('<info>' . $file->getBasename() . '</info> ' . $local . ' -> ' . $remote);
+            $output->writeln('<info>'.$file->getBasename().'</info> '.$local.' -> '.$remote);
 
             $composerbundles[] = array('name' => $file->getBasename(), 'path' => $fullcomposerbundlepath, 'version' => $this->getGitVersion($fullcomposerbundlepath));
         }
+
         return 0;
     }
 
-    private function getGitVersion($path, $remote = false) {
+    private function getGitVersion($path, $remote = false)
+    {
         if (self::isWindows()) {
             return '';
         }
 
         if ($remote) {
             //Remote
-            $cmd = 'cd ' . $path;
-            $remotetag = $cmd . ";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
+            $cmd = 'cd '.$path;
+            $remotetag = $cmd.";git ls-remote -t | awk '{print $2}' | cut -d '/' -f 3 | cut -d '^' -f 1 | sort --version-sort | tail -1";
             $process = new Process($remotetag);
             $process->setTimeout(60 * 100);
             $process->run();
@@ -78,8 +83,8 @@ class checkgitversionCommand extends ContainerAwareCommand {
             return '?';
         } else {
             //Local
-            $cmd = 'cd ' . $path;
-            $process = new Process($cmd . ';git branch | ' . "grep ' * '");
+            $cmd = 'cd '.$path;
+            $process = new Process($cmd.';git branch | '."grep ' * '");
             $process->setTimeout(60 * 100);
             $process->run();
             if ($process->isSuccessful()) {
@@ -104,12 +109,12 @@ class checkgitversionCommand extends ContainerAwareCommand {
         }
     }
 
-    public static function isWindows() {
+    public static function isWindows()
+    {
         if (PHP_OS == 'WINNT') {
             return true;
         } else {
             return false;
         }
     }
-
 }
