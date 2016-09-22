@@ -411,28 +411,6 @@ EOF;
         }
     }
 
-    public function generateEntityClassAction(Request $request)
-    {
-        set_time_limit(0);
-        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-        if ($this->isLockedFile()) {
-            return $this->LockedFunctionMessage();
-        } else {
-            $bundleName = $request->get('bundlename');
-
-            $this->LockFile(true);
-
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
-
-            $result = $this->executeCommand($application, 'doctrine:generate:entities', array('--no-backup' => true, 'name' => str_replace('/', '', $bundleName)));
-
-            $this->LockFile(false);
-
-            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $result['errcode'], 'command' => $result['command'], 'message' => $result['message']));
-        }
-    }
-
     /* BUNDLE */
 
     public function generateBundleAction(Request $request)
