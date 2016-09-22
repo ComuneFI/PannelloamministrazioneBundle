@@ -436,7 +436,7 @@ EOF;
             }
             $this->LockFile(false);
 //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
-            exit;
+            return;
 //return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
         }
     }
@@ -542,7 +542,7 @@ EOF;
             $this->LockFile(false);
             echo $commanddev.'<br/>'.$cmdoutputdev.'<br/><br/>'.$commandprod.'<br/>'.$cmdoutputprod;
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-            exit;
+            return;
 //return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
         }
     }
@@ -626,12 +626,12 @@ EOF;
             if (!$process->isSuccessful()) {
                 echo 'Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>';
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-                exit;
+                return;
 //return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
             echo '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>';
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-            exit;
+            return;
 //return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
