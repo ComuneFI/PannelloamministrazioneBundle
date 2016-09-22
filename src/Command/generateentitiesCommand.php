@@ -133,7 +133,6 @@ class generateentitiesCommand extends ContainerAwareCommand {
     }
 
     private function getExportJsonCommand($bundlePath, $wbFile) {
-        $fs = new Filesystem();
         $exportJson = $this->getExportJsonFile();
         $scriptGenerator = $this->getScriptGenerator();
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
