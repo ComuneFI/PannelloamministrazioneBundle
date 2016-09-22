@@ -18,6 +18,8 @@ use MwbExporter\Model\Table;
 
 class generateentitiesCommand extends ContainerAwareCommand {
 
+    protected $apppaths;
+
     protected function configure() {
         $this
                 ->setName('pannelloamministrazione:generateentities')
@@ -33,7 +35,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         set_time_limit(0);
-        $apppaths = new ProjectPath($this->getContainer());
+        $this->apppaths = new ProjectPath($this->getContainer());
 
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
@@ -49,14 +51,24 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $schemaupdate = true;
         }
 
-        $wbFile = $apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $wbFile = $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
         $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
 
         if ($checkprerequisiti < 0) {
             return -1;
         }
-        $bundlePath = $bundlename;
-        $destinationPath = $apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+
+        $destinationPath = $this->getDestinationPath($bundlename);
+
+        $command = $this->getExportJsonCommand($bundlename, $wbFile);
+
+        $schemaupdateresult = $this->exportschema($command, $output);
+        if ($schemaupdateresult < 0) {
+            return -1;
+        }
+
+        $this->removeExportJsonFile();
+
         $tablecheck = $this->checktables($destinationPath, $wbFile, $output);
 
         if ($tablecheck < 0) {
@@ -64,39 +76,44 @@ class generateentitiesCommand extends ContainerAwareCommand {
         }
 
         $output->writeln('<info>Entities yml create</info>');
+        $this->clearCache($output);
 
-        $tablecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
-        if ($tablecheck < 0) {
+        $generatecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
+        if ($generatecheck < 0) {
             return -1;
         }
         return 0;
     }
 
+    private function getDestinationPath($bundlePath) {
+        return $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+    }
+
     private function checkprerequisiti($bundlename, $mwbfile, $output) {
         $fs = new Filesystem();
-        $apppaths = new ProjectPath($this->getContainer());
 
-        $bundlePath = $bundlename;
-        $wbFile = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $viewsPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
+        $wbFile = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $bundlePath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename;
+        $viewsPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $entityPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
+        $formPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
         $scriptGenerator = $this->getScriptGenerator();
 
-        $destinationPath = $apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
+        $destinationPath = $this->getDestinationPath($bundlename);
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
 
-        $exportJson = $this->getExportJson();
+        if (!$fs->exists($bundlePath)) {
+            $output->writeln("<error>Non esiste la cartella del bundle " . $bundlePath . '</error>');
+            return -1;
+        }
 
-        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $destinationPath));
-        $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
-
-        $exportjsonfile = file_get_contents($apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi/fifreecorebundle/src/FiTemplate/config/export.json');
-        $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
-        $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
-        file_put_contents($exportJson, $exportjsonreplaced);
+        /* Creazione cartelle se non esistono nel bundle per l'esportazione */
+        $fs->mkdir($destinationPath);
+        $fs->mkdir($entityPath);
+        $fs->mkdir($formPath);
+        $fs->mkdir($viewsPath);
 
         if (!$fs->exists($wbFile)) {
             $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
@@ -112,6 +129,20 @@ class generateentitiesCommand extends ContainerAwareCommand {
             return -1;
         }
 
+        return 0;
+    }
+
+    private function getExportJsonCommand($bundlePath, $wbFile) {
+        $fs = new Filesystem();
+        $exportJson = $this->getExportJsonFile();
+        $scriptGenerator = $this->getScriptGenerator();
+        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
+        $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
+
+        $exportjsonfile = file_get_contents($this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi/fifreecorebundle/src/FiTemplate/config/export.json');
+        $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
+        $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
+        file_put_contents($exportJson, $exportjsonreplaced);
         $sepchr = self::getSeparator();
         if (OsFunctions::isWindows()) {
             $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -119,38 +150,28 @@ class generateentitiesCommand extends ContainerAwareCommand {
             $phpPath = "/usr/bin/php";
         }
 
-        $command = 'cd ' . substr($apppaths->getRootPath(), 0, -4) . $sepchr
-                . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' . 
+        $command = 'cd ' . substr($this->apppaths->getRootPath(), 0, -4) . $sepchr
+                . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' .
                 $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
 
-        $schemaupdateresult = $this->exportschema($command, $output);
-        if ($schemaupdateresult < 0) {
-            return -1;
-        }
-
-        if ($fs->exists($exportJson)) {
-            $fs->remove($exportJson);
-        }
-
-        $fs->mkdir($destinationPath);
-        $fs->mkdir($entityPath);
-        $fs->mkdir($formPath);
-        $fs->mkdir($viewsPath);
-
-        return 0;
+        return $command;
     }
 
-    private function getExportJson() {
+    private function getExportJsonFile() {
         $fs = new Filesystem();
-        $apppaths = new ProjectPath($this->getContainer());
-        $exportJson = $apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
+        $exportJson = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
         }
         return $exportJson;
     }
 
-    private function exportschema($command,$output) {
+    private function removeExportJsonFile() {
+        $this->getExportJsonFile();
+        return true;
+    }
+
+    private function exportschema($command, $output) {
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
@@ -163,11 +184,10 @@ class generateentitiesCommand extends ContainerAwareCommand {
     }
 
     private function getScriptGenerator() {
-        $apppaths = new ProjectPath($this->getContainer());
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
         } else {
-            $scriptGenerator = $apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
         }
         return $scriptGenerator;
     }
@@ -177,9 +197,42 @@ class generateentitiesCommand extends ContainerAwareCommand {
         $output->writeln('Creazione entities class per il bundle ' . str_replace('/', '', $bundlename));
         //$application = new Application($this->getContainer()->get('kernel'));
         //$application->setAutoExit(false);
-        $command = $this->getApplication()->find('doctrine:generate:entities');
-        $inputdge = new ArrayInput(array('--no-backup' => true, 'name' => str_replace('/', '', $bundlename)));
-        $command->run($inputdge, $output);
+
+
+        $pathsrc = $this->apppaths->getRootPath();
+        $sepchr = self::getSeparator();
+        // Questo codice per versioni che usano un symfony 2 o 3
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "console doctrine:generate:entities";
+        } else {
+            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "console doctrine:generate:entities";
+        }
+
+        if (OsFunctions::isWindows()) {
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        } else {
+            $phpPath = "/usr/bin/php";
+        }
+
+        $command = 'cd ' . $pathsrc . $sepchr
+                . $phpPath . ' ' . $scriptGenerator . " --no-backup " . str_replace('/', '', $bundlename);
+        /* @var $process \Symfony\Component\Process\Process */
+        $process = new Process($command);
+        $process->setTimeout(60 * 100);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+        } else {
+            $output->writeln($process->getOutput());
+        }
+
+
+
+
+        /* $command = $this->getApplication()->find('doctrine:generate:entities');
+          $inputdge = new ArrayInput(array('--no-backup' => true, 'name' => str_replace('/', '', $bundlename)));
+          $command->run($inputdge, $output); */
 
         $output->writeln('<info>Entities class create</info>');
 
@@ -190,8 +243,7 @@ class generateentitiesCommand extends ContainerAwareCommand {
               $inputdsu = new ArrayInput(array('--force' => true, '--em' => $emdest));
               $result = $command->run($inputdsu, $output); */
 
-            $apppaths = new ProjectPath($this->getContainer());
-            $pathsrc = $apppaths->getRootPath();
+            $pathsrc = $this->apppaths->getRootPath();
             $sepchr = self::getSeparator();
             // Questo codice per versioni che usano un symfony 2 o 3
             if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
@@ -220,6 +272,37 @@ class generateentitiesCommand extends ContainerAwareCommand {
             }
         }
         return 0;
+    }
+
+    private function clearCache($output) {
+        $output->writeln('<info>Pulizia cache...</info>');
+        $pathsrc = $this->apppaths->getRootPath();
+        $sepchr = self::getSeparator();
+        // Questo codice per versioni che usano un symfony 2 o 3
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "bin" . DIRECTORY_SEPARATOR . "console cache:clear";
+        } else {
+            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "console cache:clear";
+        }
+
+        if (OsFunctions::isWindows()) {
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        } else {
+            $phpPath = "/usr/bin/php";
+        }
+
+        $command = 'cd ' . $pathsrc . $sepchr
+                . $phpPath . ' ' . $scriptGenerator;
+        /* @var $process \Symfony\Component\Process\Process */
+        $process = new Process($command);
+        $process->setTimeout(60 * 100);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+        } else {
+            $output->writeln($process->getOutput());
+        }
     }
 
     private function checktables($destinationPath, $wbFile, $output) {
