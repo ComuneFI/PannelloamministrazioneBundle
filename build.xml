@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Simplesamlphp Saml2" default="build">
+<project name="PannelloamministrazioneBundle" default="build">
     <target name="build"
             depends="prepare,composer-run-install,php-lint-ci,phpmd-ci,phpcs-ci,phpcpd-ci,php-security-checker,phpunit-ci"/>
 
