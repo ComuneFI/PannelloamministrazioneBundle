@@ -2,8 +2,8 @@
 
 namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
-class ProjectPath
-{
+class ProjectPath {
+
     /**
      * La funzione ritorna un array con i path dell'applicazione.
      *
@@ -18,48 +18,43 @@ class ProjectPath
     private $srcdir;
     private $appdir;
 
-    public function __construct($container)
-    {
+    public function __construct($container) {
         $this->container = $container;
         $this->getPaths();
     }
 
-    private function getPaths()
-    {
+    private function getPaths() {
         $path = array();
-        $rootdir = $this->container->get('kernel')->getRootDir().'/..';
+
+        $rootdir = dirname($this->container->get('kernel')->getRootDir());
         $this->rootdir = $rootdir;
         $this->prjdir = $rootdir;
-        $this->bindir = $this->getProjectPath().DIRECTORY_SEPARATOR.'bin';
-        $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
-        $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
-        $this->appdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'app';
+        $this->bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin';
+        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
+        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
+        $this->appdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'app';
 
         return $path;
     }
 
-    public function getRootPath()
-    {
+    public function getRootPath() {
         return $this->rootdir;
     }
 
-    public function getProjectPath()
-    {
+    public function getProjectPath() {
         return $this->prjdir;
     }
 
-    public function getBinPath()
-    {
+    public function getBinPath() {
         return $this->bindir;
     }
 
-    public function getSrcPath()
-    {
+    public function getSrcPath() {
         return $this->srcdir;
     }
 
-    public function getAppPath()
-    {
+    public function getAppPath() {
         return $this->appdir;
     }
+
 }

@@ -56,18 +56,16 @@ class GenerateCode {
         $fh = fopen($dest, 'a');
         fwrite($fh, $routingContext);
         fclose($fh);
-        $retmsg = 'Routing ' . $dest . " generato automaticamente da pannelloammonistrazionebundle\n* * * * FARE CLEAR CACHE !!!!! * * * *";
+        $retmsg = 'Routing ' . $dest . " generato automaticamente da pannelloammonistrazionebundle\n\n* * * * CLEAR CACHE * * * *\n";
 
         return $retmsg;
     }
 
-    
-    public function generateFormWiew($bundlename, $entityform, $view)
-    {
+    public function generateFormWiew($bundlename, $entityform, $view) {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $source = $prjPath.'/vendor/fi/fifreecorebundle/src/FiTemplate/views/'.$view.'.html.twig';
-        $dest = $prjPath.'/src/'.$bundlename.'/Resources/views/'.$entityform.'/'.$view.'.html.twig';
+        $source = $prjPath . '/vendor/fi/fifreecorebundle/src/FiTemplate/views/' . $view . '.html.twig';
+        $dest = $prjPath . '/src/' . $bundlename . '/Resources/views/' . $entityform . '/' . $view . '.html.twig';
         $fs->copy($source, $dest, true);
     }
 

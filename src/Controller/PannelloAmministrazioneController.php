@@ -80,12 +80,8 @@ class PannelloAmministrazioneController extends Controller {
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
-
             $commands = new Commands($this->container);
-            $result = $commands->executeCommand($application, 'doctrine:schema:update', array('--force' => true));
+            $result = $commands->aggiornaSchemaDatabase();
 
             $this->LockFile(false);
 
@@ -101,12 +97,10 @@ class PannelloAmministrazioneController extends Controller {
         } else {
             $this->LockFile(true);
 
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
             $commands = new Commands($this->container);
-            $resultform = $commands->executeCommand($application, 'doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
+            $resultform = $commands->executeCommand('doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
 
             $this->LockFile(false);
 
@@ -115,8 +109,6 @@ class PannelloAmministrazioneController extends Controller {
     }
 
     public function generateFormCrudAction(Request $request) {
-        /* @var $fs \Symfony\Component\Filesystem\Filesystem */
-        $fs = new Filesystem();
 
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -124,66 +116,21 @@ class PannelloAmministrazioneController extends Controller {
 
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
-//$entityform = "attolegale";
-
-            $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-            $srcPath = $prjPath . DIRECTORY_SEPARATOR . 'src';
-            $appPath = $prjPath . DIRECTORY_SEPARATOR . 'app';
-            if (!is_writable($appPath)) {
-                return new Response($appPath . ' non scrivibile');
-            }
-            $formPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . $entityform . 'Type.php';
-            $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Controller' . DIRECTORY_SEPARATOR . $entityform . 'Controller.php';
-            if ($fs->exists($formPath)) {
-                return new Response($formPath . ' esistente');
-            }
-
-            if ($fs->exists($controllerPath)) {
-                return new Response($controllerPath . ' esistente');
-            }
-
-            $viewPath = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . strtolower($entityform);
-            $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $entityform;
-            if ($fs->exists($viewPathSrc)) {
-                return new Response($viewPathSrc . ' esistente');
-            }
 
             $this->LockFile(true);
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
-            $commands = new Commands($this->container);
-            $resultcrud = $commands->executeCommand($application, 'doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename) . ':' . $entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
+
+            $command = new Commands($this->container);
+            $ret = $command->generateFormCrud($bundlename, $entityform);
 
             $this->LockFile(false);
-            if ($resultcrud['errcode'] == 0) {
-                $fs->rename($viewPath, $viewPathSrc);
-                $generator = new GenerateCode($this->container);
-
-                $retmsg = $generator->generateFormsTemplates($bundlename, $entityform);
-
-                $generator->generateFormsDefaultTableValues($entityform);
-
-                $appviews = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views';
-                if ($fs->exists($appviews)) {
-                    $finder = new Finder();
-                    $ret = $finder->files()->in($appviews);
-                    if (count($ret) == 0) {
-                        $fs->remove($appviews);
-                    }
-                }
-                $resourcesviews = $appPath . DIRECTORY_SEPARATOR . 'Resources';
-                if ($fs->exists($resourcesviews)) {
-                    $finder = new Finder();
-                    $ret = $finder->files()->in($resourcesviews);
-                    if (count($ret) == 0) {
-                        $fs->remove($resourcesviews);
-                    }
-                }
+            $retcc = "";
+            if ($ret["errcode"] < 0) {
+                return new Response($ret["message"]);
             } else {
-                $retmsg = $resultcrud['message'];
+                $retcc = $command->clearCache();
             }
 
-            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $resultcrud['errcode'], 'command' => $resultcrud['command'], 'message' => $resultcrud['message'] . $retmsg));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $ret['errcode'], 'command' => $ret['command'], 'message' => $ret['message'] . $retcc));
         }
     }
 
@@ -194,37 +141,12 @@ class PannelloAmministrazioneController extends Controller {
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-            $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
             $wbFile = $request->get('file');
             $bundlePath = $request->get('bundle');
-// Questo codice per versioni che usano un symfony 2 o 3
-            if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
-            } else {
-                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
-            }
-            if (OsFunctions::isWindows()) {
-                $phpPath = OsFunctions::getPHPExecutableFromPath();
-            } else {
-                $phpPath = '/usr/bin/php';
-            }
-            $pathsrc = $this->get('kernel')->getRootDir();
-            $sepchr = self::getSeparator();
-
-            $command = 'cd ' . substr($pathsrc, 0, -4) . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator;
-
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
-
+            $commands = new Commands($this->container);
+            $ret = $commands->generateEntity($wbFile, $bundlePath);
             $this->LockFile(false);
-
-            if (!$process->isSuccessful()) {
-                return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())) . 'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities ' . $wbFile . ' ' . $bundlePath . '<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
-            }
-
-            return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
+            return new Response($ret["message"]);
         }
     }
 
@@ -240,32 +162,24 @@ class PannelloAmministrazioneController extends Controller {
             $bundleName = $request->get('bundlename');
 
             $bundlePath = $prjPath . '/src/' . $bundleName;
+            $addmessage = "";
             if ($fs->exists($bundlePath)) {
-                echo "Il bundle esiste gia' in $bundlePath";
+                $result = array("errcode" => -1, "command" => "generate:bundle", "message" => "Il bundle esiste gia' in $bundlePath");
             } else {
-                $application = new Application($this->get('kernel'));
-                $application->setAutoExit(false);
                 $commands = new Commands($this->container);
-                $result = $commands->executeCommand($application, 'generate:bundle', array(' --namespace' => $bundleName, ' --dir' => $prjPath . '/src/', ' --format' => 'yml', ' --no-interaction' => true));
+                $result = $commands->executeCommand('generate:bundle', array('--namespace' => $bundleName, '--dir' => $prjPath . '/src/', '--format' => 'yml', '--no-interaction' => true));
                 $bundlePath = $prjPath . '/src/' . $bundleName;
-                $this->showBundleGenerationMessage($bundlePath, $result['message']);
+                if ($fs->exists($bundlePath)) {
+                    $addmessage = 'Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php e aggiornare la pagina';
+                    echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
+                } else {
+                    $addmessage = "Non e' stato creato il bundle in $bundlePath";
+                }
             }
             $this->LockFile(false);
-//Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
-            return;
-//return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"]));
-        }
-    }
-
-    private function showBundleGenerationMessage($bundlePath, $message) {
-        $fs = new Filesystem();
-        if ($fs->exists($bundlePath)) {
-            echo str_replace("\n", '<br/>', $message);
-            echo 'Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php e aggiornare la pagina';
-            echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
-        } else {
-            echo str_replace("\n", '<br/>', $message);
-            echo "Non e' stato creato il bundle in $bundlePath";
+            //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
+            //exit;
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array("errcode" => $result["errcode"], "command" => $result["command"], "message" => $result["message"] . $addmessage));
         }
     }
 
@@ -329,33 +243,15 @@ class PannelloAmministrazioneController extends Controller {
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
-            if (!OsFunctions::isWindows()) {
-                $phpPath = '/usr/bin/php';
-            } else {
-                $phpPath = OsFunctions::getPHPExecutableFromPath();
-            }
-            $pathsrc = $this->get('kernel')->getRootDir();
-            $sepchr = self::getSeparator();
+            $commands = new Commands($this->container);
+            
+            $result = $commands->clearcache();
 
-            $commanddev = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' console cache:clear';
-
-            $processdev = new Process($commanddev);
-            $processdev->setTimeout(60 * 100);
-            $processdev->run();
-            $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
-            $commandprod = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' console cache:clear --env=prod --no-debug';
-
-            $processprod = new Process($commandprod);
-            $processprod->setTimeout(60 * 100);
-            $processprod->run();
-            $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
             $this->LockFile(false);
-            echo $commanddev . '<br/>' . $cmdoutputdev . '<br/><br/>' . $commandprod . '<br/>' . $cmdoutputprod;
-//Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-            return;
-//return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
+
+            /* Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file */
+            //return $commanddev . '<br/>' . $cmdoutputdev . '<br/><br/>' . $commandprod . '<br/>' . $cmdoutputprod;
+            return new Response(nl2br($result));
         }
     }
 
