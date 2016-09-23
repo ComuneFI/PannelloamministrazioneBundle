@@ -222,7 +222,7 @@ class PannelloAmministrazioneController extends Controller
                         . '<br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
                 return new Response($responseout);
             }
-            $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . 
+            $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' .
                     str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
             return new Response($responseout);
         }
@@ -340,14 +340,16 @@ class PannelloAmministrazioneController extends Controller
                 '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
                 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
                 return;
-                //return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+                /* return new Response('Errore nel comando: <i style = "color: white;">' . 
+                 * $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>'); */
             }
             echo '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>' .
             str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/>' .
             str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
             //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             return;
-            //return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
+            /* return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . 
+             * '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>"); */
         }
     }
 
@@ -379,7 +381,9 @@ class PannelloAmministrazioneController extends Controller
                 (new LockSystem($this->container))->lockFile(false);
                 // eseguito deopo la fine del comando
                 /* if (!$process->isSuccessful()) {
-                  return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
+                  return new Response('Errore nel comando: <i style = "color: white;">' .
+                 * $command . '</i><br/><i style = "color: red;">' . str_replace("\n", 
+                 * '<br/>', $process->getErrorOutput()) . '</i>');
                   } */
                 $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' .
                         str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
