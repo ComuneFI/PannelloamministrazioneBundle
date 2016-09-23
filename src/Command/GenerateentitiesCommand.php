@@ -18,10 +18,9 @@ use MwbExporter\Model\Table;
 
 class GenerateentitiesCommand extends ContainerAwareCommand
 {
-
     protected $apppaths;
 
-    protected function configure() 
+    protected function configure()
     {
         $this
             ->setName('pannelloamministrazione:generateentities')
@@ -33,7 +32,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) 
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
@@ -52,7 +51,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $schemaupdate = true;
         }
 
-        $wbFile = $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $wbFile = $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.'doc'.DIRECTORY_SEPARATOR.$mwbfile;
         $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
 
         if ($checkprerequisiti < 0) {
@@ -87,35 +86,35 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function getDestinationPath($bundlePath) 
+    private function getDestinationPath($bundlePath)
     {
-        return $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .
-                $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
-                'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+        return $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.
+                $bundlePath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.
+                'config'.DIRECTORY_SEPARATOR.'doctrine'.DIRECTORY_SEPARATOR;
     }
 
-    private function checkprerequisiti($bundlename, $mwbfile, $output) 
+    private function checkprerequisiti($bundlename, $mwbfile, $output)
     {
         $fs = new Filesystem();
 
-        $wbFile = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $bundlePath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename;
+        $wbFile = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'doc'.DIRECTORY_SEPARATOR.$mwbfile;
+        $bundlePath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename;
 
-        $viewsPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
-                DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
-                DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
-                DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
+        $viewsPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR;
+        $entityPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Entity'.DIRECTORY_SEPARATOR;
+        $formPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR;
 
         $scriptGenerator = $this->getScriptGenerator();
 
         $destinationPath = $this->getDestinationPath($bundlename);
-        $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
-        $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
+        $output->writeln('Creazione entities yml in '.$destinationPath.' da file '.$mwbfile);
+        $destinationPath = $destinationPath.'doctrine'.DIRECTORY_SEPARATOR;
 
         if (!$fs->exists($bundlePath)) {
-            $output->writeln('<error>Non esiste la cartella del bundle ' . $bundlePath . '</error>');
+            $output->writeln('<error>Non esiste la cartella del bundle '.$bundlePath.'</error>');
 
             return -1;
         }
@@ -127,18 +126,18 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $fs->mkdir($viewsPath);
 
         if (!$fs->exists($wbFile)) {
-            $output->writeln("<error>Nella cartella 'doc' non è presente il file " . $mwbfile . '!');
+            $output->writeln("<error>Nella cartella 'doc' non è presente il file ".$mwbfile.'!');
 
             return -1;
         }
 
         if (!$fs->exists($scriptGenerator)) {
-            $output->writeln('<error>Non è presente il comando ' . $scriptGenerator . ' per esportare il modello!</error>');
+            $output->writeln('<error>Non è presente il comando '.$scriptGenerator.' per esportare il modello!</error>');
 
             return -1;
         }
         if (!$fs->exists($destinationPath)) {
-            $output->writeln("<error>Non esiste la cartella per l'esportazione " . $destinationPath . ', controllare il nome del Bundle!</error>');
+            $output->writeln("<error>Non esiste la cartella per l'esportazione ".$destinationPath.', controllare il nome del Bundle!</error>');
 
             return -1;
         }
@@ -146,7 +145,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function getExportJsonCommand($bundlePath, $wbFile) 
+    private function getExportJsonCommand($bundlePath, $wbFile)
     {
         $exportJson = $this->getExportJsonFile();
         $scriptGenerator = $this->getScriptGenerator();
@@ -154,31 +153,31 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
 
         $exportjsonfile = file_get_contents(
-            $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR .
-            'vendor' . DIRECTORY_SEPARATOR . 'fi/fifreecorebundle/src/FiTemplate/config/export.json'
+            $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.
+            'vendor'.DIRECTORY_SEPARATOR.'fi/fifreecorebundle/src/FiTemplate/config/export.json'
         );
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
         $sepchr = self::getSeparator();
         if (OsFunctions::isWindows()) {
-            $command = 'cd ' . substr($this->apppaths->getRootPath(), 0, -4) . $sepchr
-                    . $scriptGenerator . '.bat --export=doctrine2-yaml --config=' .
-                    $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
+            $command = 'cd '.substr($this->apppaths->getRootPath(), 0, -4).$sepchr
+                    .$scriptGenerator.'.bat --export=doctrine2-yaml --config='.
+                    $exportJson.' '.$wbFile.' '.$destinationPathEscaped;
         } else {
             $phpPath = '/usr/bin/php';
-            $command = 'cd ' . substr($this->apppaths->getRootPath(), 0, -4) . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' .
-                    $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
+            $command = 'cd '.substr($this->apppaths->getRootPath(), 0, -4).$sepchr
+                    .$phpPath.' '.$scriptGenerator.' --export=doctrine2-yaml --config='.
+                    $exportJson.' '.$wbFile.' '.$destinationPathEscaped;
         }
 
         return $command;
     }
 
-    private function getExportJsonFile() 
+    private function getExportJsonFile()
     {
         $fs = new Filesystem();
-        $exportJson = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
+        $exportJson = $this->apppaths->getAppPath().DIRECTORY_SEPARATOR.'tmp/export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
         }
@@ -186,21 +185,21 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return $exportJson;
     }
 
-    private function removeExportJsonFile() 
+    private function removeExportJsonFile()
     {
         $this->getExportJsonFile();
 
         return true;
     }
 
-    private function exportschema($command, $output) 
+    private function exportschema($command, $output)
     {
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+            $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
 
             return -1;
         }
@@ -208,22 +207,22 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function getScriptGenerator() 
+    private function getScriptGenerator()
     {
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR .
-                    'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.
+                    'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         } else {
-            $scriptGenerator = $this->apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getBinPath().DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         }
 
         return $scriptGenerator;
     }
 
-    private function generateentities($bundlename, $emdest, $schemaupdate, $output) 
+    private function generateentities($bundlename, $emdest, $schemaupdate, $output)
     {
         /* GENERATE ENTITIES */
-        $output->writeln('Creazione entities class per il bundle ' . str_replace('/', '', $bundlename));
+        $output->writeln('Creazione entities class per il bundle '.str_replace('/', '', $bundlename));
         //$application = new Application($this->getContainer()->get('kernel'));
         //$application->setAutoExit(false);
 
@@ -231,9 +230,9 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $sepchr = self::getSeparator();
         // Questo codice per versioni che usano un symfony 2 o 3
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console doctrine:generate:entities';
+            $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console doctrine:generate:entities';
         } else {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console doctrine:generate:entities';
+            $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'console doctrine:generate:entities';
         }
 
         if (OsFunctions::isWindows()) {
@@ -242,15 +241,15 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $phpPath = '/usr/bin/php';
         }
 
-        $command = 'cd ' . $pathsrc . $sepchr
-                . $phpPath . ' ' . $scriptGenerator . ' --no-backup ' . str_replace('/', '', $bundlename);
+        $command = 'cd '.$pathsrc.$sepchr
+                .$phpPath.' '.$scriptGenerator.' --no-backup '.str_replace('/', '', $bundlename);
         /* @var $process \Symfony\Component\Process\Process */
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+            $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
 
             return -1;
         } else {
@@ -274,9 +273,9 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $sepchr = self::getSeparator();
             // Questo codice per versioni che usano un symfony 2 o 3
             if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console doctrine:schema:update';
+                $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console doctrine:schema:update';
             } else {
-                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console doctrine:schema:update';
+                $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'console doctrine:schema:update';
             }
 
             if (OsFunctions::isWindows()) {
@@ -284,15 +283,15 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             } else {
                 $phpPath = '/usr/bin/php';
             }
-            $command = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest;
+            $command = 'cd '.$pathsrc.$sepchr
+                    .$phpPath.' '.$scriptGenerator.' --force --em='.$emdest;
             /* @var $process \Symfony\Component\Process\Process */
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
 
             if (!$process->isSuccessful()) {
-                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+                $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
             } else {
                 $output->writeln($process->getOutput());
                 $output->writeln('<info>Aggiornamento database completato</info>');
@@ -302,16 +301,16 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function clearCache($output) 
+    private function clearCache($output)
     {
         $output->writeln('<info>Pulizia cache...</info>');
         $pathsrc = $this->apppaths->getRootPath();
         $sepchr = self::getSeparator();
         // Questo codice per versioni che usano un symfony 2 o 3
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console cache:clear';
+            $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'console cache:clear';
         } else {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console cache:clear';
+            $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'console cache:clear';
         }
 
         if (OsFunctions::isWindows()) {
@@ -320,21 +319,21 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $phpPath = '/usr/bin/php';
         }
 
-        $command = 'cd ' . $pathsrc . $sepchr
-                . $phpPath . ' ' . $scriptGenerator;
+        $command = 'cd '.$pathsrc.$sepchr
+                .$phpPath.' '.$scriptGenerator;
         /* @var $process \Symfony\Component\Process\Process */
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+            $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
         } else {
             $output->writeln($process->getOutput());
         }
     }
 
-    private function checktables($destinationPath, $wbFile, $output) 
+    private function checktables($destinationPath, $wbFile, $output)
     {
         $finder = new Finder();
         $fs = new Filesystem();
@@ -347,7 +346,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         foreach ($finder as $file) {
             $oldfilename = $file->getPathName();
-            $newfilename = $pathdoctrineyml . DIRECTORY_SEPARATOR . $table->beautify($file->getFileName());
+            $newfilename = $pathdoctrineyml.DIRECTORY_SEPARATOR.$table->beautify($file->getFileName());
             $fs->rename($oldfilename, $newfilename, true);
         }
 
@@ -358,7 +357,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         if (count($finderwrong) > 0) {
             foreach ($finderwrong as $file) {
                 $wrongfilename[] = $file->getFileName();
-                $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
+                $fs->remove($pathdoctrineyml.DIRECTORY_SEPARATOR.$file->getFileName());
             }
         }
         $finderwrongcapitalize = new Finder();
@@ -366,14 +365,14 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         foreach ($finderwrongcapitalize as $file) {
             if (!ctype_upper(substr($file->getFileName(), 0, 1))) {
                 $wrongfilename[] = $file->getFileName();
-                $fs->remove($pathdoctrineyml . DIRECTORY_SEPARATOR . $file->getFileName());
+                $fs->remove($pathdoctrineyml.DIRECTORY_SEPARATOR.$file->getFileName());
             }
         }
 
         if (count($wrongfilename) > 0) {
             $output->writeln(
-                '<error>Ci sono tabelle nel file ' . $wbFile . ' con nomi non consentiti:' .
-                    implode(',', $wrongfilename) .
+                '<error>Ci sono tabelle nel file '.$wbFile.' con nomi non consentiti:'.
+                    implode(',', $wrongfilename).
                 '. I nomi tabella devono essere : con la prima lettera maiuscola,underscore ammesso,doppio underscore non ammesso</error>'
             );
 
@@ -383,7 +382,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
     }
 
-    public static function getSeparator() 
+    public static function getSeparator()
     {
         if (OsFunctions::isWindows()) {
             return '&';
@@ -391,5 +390,4 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return ';';
         }
     }
-
 }
