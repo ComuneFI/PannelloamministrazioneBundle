@@ -5,7 +5,7 @@ namespace Fi\PannelloAmministrazioneBundle\Tests\Controller;
 use Symfony\Component\DomCrawler\Crawler;
 use Fi\CoreBundle\DependencyInjection\FifreeTest;
 
-class adminpanelControllerTest extends FifreeTest
+class AdminpanelControllerTest extends FifreeTest
 {
     public function testAdminpanel()
     {

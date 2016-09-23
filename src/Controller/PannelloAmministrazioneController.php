@@ -79,13 +79,13 @@ class PannelloAmministrazioneController extends Controller
     public function aggiornaSchemaDatabaseAction()
     {
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             $commands = new Commands($this->container);
             $result = $commands->aggiornaSchemaDatabase();
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
 
             return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $result['errcode'], 'command' => $result['command'], 'message' => $result['message']));
         }
@@ -96,17 +96,17 @@ class PannelloAmministrazioneController extends Controller
     public function generateFormCrudAction(Request $request)
     {
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
 
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
 
             $command = new Commands($this->container);
             $ret = $command->generateFormCrud($bundlename, $entityform);
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
             $retcc = '';
             if ($ret['errcode'] < 0) {
                 return new Response($ret['message']);
@@ -123,14 +123,14 @@ class PannelloAmministrazioneController extends Controller
     public function generateEntityAction(Request $request)
     {
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             $wbFile = $request->get('file');
             $bundlePath = $request->get('bundle');
             $commands = new Commands($this->container);
             $ret = $commands->generateEntity($wbFile, $bundlePath);
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
 
             return new Response($ret['message']);
         }
@@ -142,9 +142,9 @@ class PannelloAmministrazioneController extends Controller
     {
         $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
             $bundleName = $request->get('bundlename');
 
@@ -163,7 +163,7 @@ class PannelloAmministrazioneController extends Controller
                     $addmessage = "Non e' stato creato il bundle in $bundlePath";
                 }
             }
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
             //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
             //exit;
             return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $result['errcode'], 'command' => $result['command'], 'message' => $result['message'].$addmessage));
@@ -177,9 +177,9 @@ class PannelloAmministrazioneController extends Controller
         set_time_limit(0);
         $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             $sepchr = OsFunctions::getSeparator();
             $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
             if ($fs->exists($projectDir.'/.svn')) {
@@ -194,7 +194,7 @@ class PannelloAmministrazioneController extends Controller
             $process->setTimeout(60 * 100);
             $process->run();
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
             if (!$process->isSuccessful()) {
                 return new Response('Errore nel comando: <i style = "color: white;">'.$command.'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
             }
@@ -209,14 +209,14 @@ class PannelloAmministrazioneController extends Controller
     {
         set_time_limit(0);
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             $commands = new Commands($this->container);
 
             $result = $commands->clearcache();
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
 
             /* Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file */
             //return $commanddev . '<br/>' . $cmdoutputdev . '<br/><br/>' . $commandprod . '<br/>' . $cmdoutputprod;
@@ -231,9 +231,9 @@ class PannelloAmministrazioneController extends Controller
         set_time_limit(0);
         $comando = $request->get('symfonycommand');
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
 
             if (!OsFunctions::isWindows()) {
                 $phpPath = '/usr/bin/php';
@@ -250,7 +250,7 @@ class PannelloAmministrazioneController extends Controller
             $process->setTimeout(60 * 100);
             $process->run();
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
             if (!$process->isSuccessful()) {
                 return new Response('Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
             }
@@ -290,15 +290,15 @@ class PannelloAmministrazioneController extends Controller
         }
 
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
-            (new LockSystem($this->container))->LockFile(true);
+            (new LockSystem($this->container))->lockFile(true);
             //$phpPath = OsFunctions::getPHPExecutableFromPath();
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
 
-            (new LockSystem($this->container))->LockFile(false);
+            (new LockSystem($this->container))->lockFile(false);
             // eseguito deopo la fine del comando
             if (!$process->isSuccessful()) {
                 echo 'Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>';
@@ -318,10 +318,10 @@ class PannelloAmministrazioneController extends Controller
         set_time_limit(0);
 
         if ((new LockSystem($this->container))->isLockedFile()) {
-            return (new LockSystem($this->container))->LockedFunctionMessage();
+            return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
             if (!OsFunctions::isWindows()) {
-                (new LockSystem($this->container))->LockFile(true);
+                (new LockSystem($this->container))->lockFile(true);
                 //$phpPath = OsFunctions::getPHPExecutableFromPath();
                 $sepchr = OsFunctions::getSeparator();
                 $phpPath = '/usr/bin/php';
@@ -336,7 +336,7 @@ class PannelloAmministrazioneController extends Controller
                 $process = new Process($command);
                 $process->run();
 
-                (new LockSystem($this->container))->LockFile(false);
+                (new LockSystem($this->container))->lockFile(false);
                 // eseguito deopo la fine del comando
                 /* if (!$process->isSuccessful()) {
                   return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');

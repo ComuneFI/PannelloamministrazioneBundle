@@ -22,7 +22,7 @@ class LockSystem
         return file_exists($this->getFileLock());
     }
 
-    public function LockFile($lockstate)
+    public function lockFile($lockstate)
     {
         if ($lockstate) {
             file_put_contents($this->getFileLock(), 0777);
@@ -31,7 +31,7 @@ class LockSystem
         }
     }
 
-    public function LockedFunctionMessage()
+    public function lockedFunctionMessage()
     {
         return new Response(
             "<h2 style='color: orange;
