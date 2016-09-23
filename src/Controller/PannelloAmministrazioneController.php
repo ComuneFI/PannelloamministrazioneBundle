@@ -79,7 +79,7 @@ class PannelloAmministrazioneController extends Controller
             'lockfile' => $this->fixSlash($dellockfile),
             'composerlock' => $this->fixSlash($delcomposerfile),
             'logsfiles' => $this->fixSlash($dellogsfiles),
-            'cacheprodfiles' => $this->fixSlash($delcachefiles),
+            'cacheprodfiles' => $this->fixSlash($delcacheprodfiles),
             'cachedevfiles' => $this->fixSlash($delcachedevfiles),
         );
 
