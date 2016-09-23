@@ -12,11 +12,11 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\GenerateCode;
 
-class PannelloAmministrazioneController extends Controller
-{
-    public function indexAction()
-    {
+class PannelloAmministrazioneController extends Controller {
+
+    public function indexAction() {
         $finder = new Finder();
         $fs = new Filesystem();
 
@@ -26,12 +26,12 @@ class PannelloAmministrazioneController extends Controller
         foreach ($bundlelists as $bundle) {
             if (substr($bundle, 0, 2) === 'Fi') {
                 $bundle = str_replace('\\', '/', $bundle);
-                if ($fs->exists($projectDir.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.substr($bundle, 0, strripos($bundle, '/')))) {
+                if ($fs->exists($projectDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . substr($bundle, 0, strripos($bundle, '/')))) {
                     $bundles[] = substr($bundle, 0, strripos($bundle, '/'));
                 }
             }
         }
-        $docDir = $projectDir.'/doc/';
+        $docDir = $projectDir . '/doc/';
 
         $mwbs = array();
 
@@ -42,13 +42,13 @@ class PannelloAmministrazioneController extends Controller
             }
         }
 
-        if ($fs->exists($projectDir.'/.svn')) {
+        if ($fs->exists($projectDir . '/.svn')) {
             $svn = true;
         } else {
             $svn = false;
         }
 
-        if ($fs->exists($projectDir.'/.git')) {
+        if ($fs->exists($projectDir . '/.git')) {
             $git = true;
         } else {
             $git = false;
@@ -65,30 +65,28 @@ class PannelloAmministrazioneController extends Controller
         }
 
         $comandishell = array(
-            'lockfile' => str_replace('\\', '\\\\', $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'running.run'),
-            'composerlock' => str_replace('\\', '\\\\', $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'composer.lock'),
-            'logsfiles' => str_replace('\\', '\\\\', $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR.'*'),
-            'cacheprodfiles' => str_replace('\\', '\\\\', $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'prod'.DIRECTORY_SEPARATOR.'*'),
-            'cachedevfiles' => str_replace('\\', '\\\\', $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'dev'.DIRECTORY_SEPARATOR.'*'),
+            'lockfile' => str_replace('\\', '\\\\', $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run'),
+            'composerlock' => str_replace('\\', '\\\\', $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'composer.lock'),
+            'logsfiles' => str_replace('\\', '\\\\', $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . '*'),
+            'cacheprodfiles' => str_replace('\\', '\\\\', $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'prod' . DIRECTORY_SEPARATOR . '*'),
+            'cachedevfiles' => str_replace('\\', '\\\\', $delcmd . ' ' . $projectDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'dev' . DIRECTORY_SEPARATOR . '*'),
         );
 
         return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:index.html.twig', array('svn' => $svn, 'git' => $git, 'bundles' => $bundles, 'mwbs' => $mwbs, 'rootdir' => str_replace('\\', '\\\\', $projectDir), 'comandishell' => $comandishell, 'iswindows' => $windows)
         );
     }
 
-    private function getOutput($fpOutupStream)
-    {
+    private function getOutput($fpOutupStream) {
         fseek($fpOutupStream, 0);
         $output = '';
         while (!feof($fpOutupStream)) {
-            $output = $output.fread($fpOutupStream, 4096);
+            $output = $output . fread($fpOutupStream, 4096);
         }
 
         return $output;
     }
 
-    private function executeCommand($application, $command, array $options = array())
-    {
+    private function executeCommand($application, $command, array $options = array()) {
         $cmdoptions = array_merge(array('command' => $command), $options);
 
         $fp = tmpfile();
@@ -100,8 +98,7 @@ class PannelloAmministrazioneController extends Controller
         return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
     }
 
-    public function aggiornaSchemaDatabaseAction()
-    {
+    public function aggiornaSchemaDatabaseAction() {
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -120,8 +117,7 @@ class PannelloAmministrazioneController extends Controller
 
     /* FORMS */
 
-    public function generateFormAction(Request $request)
-    {
+    public function generateFormAction(Request $request) {
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -132,7 +128,7 @@ class PannelloAmministrazioneController extends Controller
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
 
-            $resultform = $this->executeCommand($application, 'doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename).':'.$entityform));
+            $resultform = $this->executeCommand($application, 'doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
 
             $this->LockFile(false);
 
@@ -140,8 +136,7 @@ class PannelloAmministrazioneController extends Controller
         }
     }
 
-    public function generateFormCrudAction(Request $request)
-    {
+    public function generateFormCrudAction(Request $request) {
         /* @var $fs \Symfony\Component\Filesystem\Filesystem */
         $fs = new Filesystem();
 
@@ -153,42 +148,43 @@ class PannelloAmministrazioneController extends Controller
 //$entityform = "attolegale";
 
             $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-            $srcPath = $prjPath.DIRECTORY_SEPARATOR.'src';
-            $appPath = $prjPath.DIRECTORY_SEPARATOR.'app';
+            $srcPath = $prjPath . DIRECTORY_SEPARATOR . 'src';
+            $appPath = $prjPath . DIRECTORY_SEPARATOR . 'app';
             if (!is_writable($appPath)) {
-                return new Response($appPath.' non scrivibile');
+                return new Response($appPath . ' non scrivibile');
             }
-            $formPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR.$entityform.'Type.php';
-            $controllerPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$entityform.'Controller.php';
+            $formPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . $entityform . 'Type.php';
+            $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Controller' . DIRECTORY_SEPARATOR . $entityform . 'Controller.php';
             if ($fs->exists($formPath)) {
-                return new Response($formPath.' esistente');
+                return new Response($formPath . ' esistente');
             }
 
             if ($fs->exists($controllerPath)) {
-                return new Response($controllerPath.' esistente');
+                return new Response($controllerPath . ' esistente');
             }
 
-            $viewPath = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.strtolower($entityform);
-            $viewPathSrc = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$entityform;
+            $viewPath = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . strtolower($entityform);
+            $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $entityform;
             if ($fs->exists($viewPathSrc)) {
-                return new Response($viewPathSrc.' esistente');
+                return new Response($viewPathSrc . ' esistente');
             }
 
             $this->LockFile(true);
             $application = new Application($this->get('kernel'));
             $application->setAutoExit(false);
 
-            $resultcrud = $this->executeCommand($application, 'doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename).':'.$entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
+            $resultcrud = $this->executeCommand($application, 'doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename) . ':' . $entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
 
             $this->LockFile(false);
             if ($resultcrud['errcode'] == 0) {
                 $fs->rename($viewPath, $viewPathSrc);
+                $generator = new GenerateCode($this->container);
+                
+                $retmsg = $generator->generateFormsTemplates($bundlename, $entityform);
 
-                $retmsg = $this->generateFormsTemplates($bundlename, $entityform);
+                $generator->generateFormsDefaultTableValues($entityform);
 
-                $this->generateFormsDefaultTableValues($entityform);
-
-                $appviews = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views';
+                $appviews = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views';
                 if ($fs->exists($appviews)) {
                     $finder = new Finder();
                     $ret = $finder->files()->in($appviews);
@@ -196,7 +192,7 @@ class PannelloAmministrazioneController extends Controller
                         $fs->remove($appviews);
                     }
                 }
-                $resourcesviews = $appPath.DIRECTORY_SEPARATOR.'Resources';
+                $resourcesviews = $appPath . DIRECTORY_SEPARATOR . 'Resources';
                 if ($fs->exists($resourcesviews)) {
                     $finder = new Finder();
                     $ret = $finder->files()->in($resourcesviews);
@@ -208,171 +204,13 @@ class PannelloAmministrazioneController extends Controller
                 $retmsg = $resultcrud['message'];
             }
 
-            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $resultcrud['errcode'], 'command' => $resultcrud['command'], 'message' => $resultcrud['message'].$retmsg));
+            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $resultcrud['errcode'], 'command' => $resultcrud['command'], 'message' => $resultcrud['message'] . $retmsg));
         }
-    }
-
-    private function generateFormsDefaultTableValues($entityform)
-    {
-        //Si inserisce il record di default nella tabella permessi
-        $em = $this->container->get('doctrine')->getManager();
-        $ruoloAmm = $em->getRepository('FiCoreBundle:ruoli')->findOneBy(array('is_superadmin' => true)); //SuperAdmin
-
-        $newPermesso = new \Fi\CoreBundle\Entity\permessi();
-        $newPermesso->setCrud('crud');
-        $newPermesso->setModulo($entityform);
-        $newPermesso->setRuoli($ruoloAmm);
-        $em->persist($newPermesso);
-        $em->flush();
-
-        $tabelle = new \Fi\CoreBundle\Entity\tabelle();
-        $tabelle->setNometabella($entityform);
-        $em->persist($tabelle);
-        $em->flush();
-    }
-
-    private function generateFormsTemplates($bundlename, $entityform)
-    {
-        $fs = new Filesystem();
-        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-//Controller
-        $controlleFile = $prjPath.'/src/'.$bundlename.'/Controller/'.$entityform.'Controller.php';
-        $code = $this->getControllerCode(str_replace('/', '\\', $bundlename), $entityform);
-        $fs->dumpFile($controlleFile, $code);
-
-//Routing
-        $retmsg = $this->generateFormRouting($bundlename, $entityform);
-//Twig template (Crea i template per new edit show)
-        $this->generateFormWiew($bundlename, $entityform, 'edit');
-        $this->generateFormWiew($bundlename, $entityform, 'index');
-        $this->generateFormWiew($bundlename, $entityform, 'new');
-
-        return $retmsg;
-    }
-
-    private function getControllerCode($bundlename, $tabella)
-    {
-        $codeTemplate = <<<EOF
-<?php
-namespace [bundle]\Controller;
-
-use Fi\CoreBundle\Controller\FiController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Fi\CoreBundle\Controller\Griglia;
-use Fi\CoreBundle\Controller\gestionepermessiController;
-use [bundle]\Entity\[tabella];
-use [bundle]\Form\[tabella]Type;
-
-
-/**
-* [tabella] controller.
-*
-*/
-
-class [tabella]Controller extends FiController {
-
-}
-EOF;
-        $codebundle = str_replace('[bundle]', $bundlename, $codeTemplate);
-        $code = str_replace('[tabella]', $tabella, $codebundle);
-
-        return $code;
-    }
-
-    private function getRoutingCode($bundlename, $tabella)
-    {
-        $codeTemplate = <<<'EOF'
-[tabella]_container:
-    path:  /
-    defaults: { _controller: "[bundle]:[tabella]:index" }
-
-[tabella]_new:
-    path:  /new
-    defaults: { _controller: "[bundle]:[tabella]:new" }
-
-[tabella]_create:
-    path:  /create
-    defaults: { _controller: "[bundle]:[tabella]:create" }
-    requirements: { methods: post }
-
-[tabella]_edit:
-    path:  /{id}/edit
-    defaults: { _controller: "[bundle]:[tabella]:edit" }
-
-[tabella]_update:
-    path:  /{id}/update
-    defaults: { _controller: "[bundle]:[tabella]:update" }
-    requirements: { methods: post|put }
-
-[tabella]_aggiorna:
-    path:  /aggiorna
-    defaults: { _controller: "[bundle]:[tabella]:aggiorna" }
-    requirements: { methods: post|put }
-
-[tabella]_delete:
-    path:  /{id}/delete
-    defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { methods: post|delete }
-
-[tabella]_deletemultiple:
-    path:  /delete
-    defaults: { _controller: "[bundle]:[tabella]:delete" }
-    requirements: { methods: post|delete }
-
-[tabella]_griglia:
-    path:  /griglia
-    defaults: { _controller: "[bundle]:[tabella]:Griglia" }
-    requirements: { methods: get|post }
-EOF;
-        $codebundle = str_replace('[bundle]', $bundlename, $codeTemplate);
-        $code = str_replace('[tabella]', $tabella, $codebundle);
-
-        return $code;
-    }
-
-    private function generateFormRouting($bundlename, $entityform)
-    {
-        //Routing del form
-        $fs = new Filesystem();
-        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-
-        $routingFile = $prjPath.'/src/'.$bundlename.'/Resources/config/routing/'.strtolower($entityform).'.yml';
-
-        $code = $this->getRoutingCode(str_replace('/', '', $bundlename), $entityform);
-        $fs->dumpFile($routingFile, $code);
-
-//Fixed: Adesso questa parte la fa da solo symfony (05/2015)
-//Refixed dalla versione 2.8 non lo fa più (04/2016)
-
-        $dest = $prjPath.'/src/'.$bundlename.'/Resources/config/routing.yml';
-
-        $routingContext = "\n".str_replace('/', '', $bundlename).'_'.$entityform.': '."\n".
-                '  resource: "@'.str_replace('/', '', $bundlename).'/Resources/config/routing/'.strtolower($entityform).'.yml"'."\n".
-                '  prefix: /'.$entityform."\n";
-
-//Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
-        $fh = fopen($dest, 'a');
-        fwrite($fh, $routingContext);
-        fclose($fh);
-        $retmsg = 'Routing '.$dest." generato automaticamente da pannelloammonistrazionebundle\n* * * * FARE CLEAR CACHE !!!!! * * * *";
-
-        return $retmsg;
-    }
-
-    private function generateFormWiew($bundlename, $entityform, $view)
-    {
-        $fs = new Filesystem();
-        $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
-        $source = $prjPath.'/vendor/fi/fifreecorebundle/src/FiTemplate/views/'.$view.'.html.twig';
-        $dest = $prjPath.'/src/'.$bundlename.'/Resources/views/'.$entityform.'/'.$view.'.html.twig';
-        $fs->copy($source, $dest, true);
     }
 
     /* ENTITIES */
 
-    public function generateEntityAction(Request $request)
-    {
+    public function generateEntityAction(Request $request) {
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
@@ -382,9 +220,9 @@ EOF;
             $bundlePath = $request->get('bundle');
 // Questo codice per versioni che usano un symfony 2 o 3
             if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
+                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
             } else {
-                $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
+                $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
             }
             if (OsFunctions::isWindows()) {
                 $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -394,8 +232,8 @@ EOF;
             $pathsrc = $this->get('kernel')->getRootDir();
             $sepchr = self::getSeparator();
 
-            $command = 'cd '.substr($pathsrc, 0, -4).$sepchr
-                    .$phpPath.' '.$scriptGenerator;
+            $command = 'cd ' . substr($pathsrc, 0, -4) . $sepchr
+                    . $phpPath . ' ' . $scriptGenerator;
 
             $process = new Process($command);
             $process->setTimeout(60 * 100);
@@ -404,17 +242,16 @@ EOF;
             $this->LockFile(false);
 
             if (!$process->isSuccessful()) {
-                return new Response('Errore nel comando: <i style="color: white;">'.$command.'</i><br/><i style="color: red;">'.str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())).'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities '.$wbFile.' '.$bundlePath.'<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
+                return new Response('Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())) . 'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities ' . $wbFile . ' ' . $bundlePath . '<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
             }
 
-            return new Response('<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+            return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
         }
     }
 
     /* BUNDLE */
 
-    public function generateBundleAction(Request $request)
-    {
+    public function generateBundleAction(Request $request) {
         $fs = new Filesystem();
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -423,15 +260,15 @@ EOF;
             $prjPath = substr($this->get('kernel')->getRootDir(), 0, -4);
             $bundleName = $request->get('bundlename');
 
-            $bundlePath = $prjPath.'/src/'.$bundleName;
+            $bundlePath = $prjPath . '/src/' . $bundleName;
             if ($fs->exists($bundlePath)) {
                 echo "Il bundle esiste gia' in $bundlePath";
             } else {
                 $application = new Application($this->get('kernel'));
                 $application->setAutoExit(false);
 
-                $result = $this->executeCommand($application, 'generate:bundle', array(' --namespace' => $bundleName, ' --dir' => $prjPath.'/src/', ' --format' => 'yml', ' --no-interaction' => true));
-                $bundlePath = $prjPath.'/src/'.$bundleName;
+                $result = $this->executeCommand($application, 'generate:bundle', array(' --namespace' => $bundleName, ' --dir' => $prjPath . '/src/', ' --format' => 'yml', ' --no-interaction' => true));
+                $bundlePath = $prjPath . '/src/' . $bundleName;
                 $this->showBundleGenerationMessage($bundlePath, $result['message']);
             }
             $this->LockFile(false);
@@ -441,8 +278,7 @@ EOF;
         }
     }
 
-    private function showBundleGenerationMessage($bundlePath, $message)
-    {
+    private function showBundleGenerationMessage($bundlePath, $message) {
         $fs = new Filesystem();
         if ($fs->exists($bundlePath)) {
             echo str_replace("\n", '<br/>', $message);
@@ -456,8 +292,7 @@ EOF;
 
     /* SVN */
 
-    public function getSvnAction()
-    {
+    public function getSvnAction() {
         set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -466,17 +301,17 @@ EOF;
                 $this->LockFile(true);
                 $sepchr = self::getSeparator();
 //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
-                $command = 'cd '.substr($this->get('kernel')->getRootDir(), 0, -4).$sepchr.'svn update';
+                $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . 'svn update';
                 $process = new Process($command);
                 $process->setTimeout(60 * 100);
                 $process->run();
 
                 $this->LockFile(false);
                 if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style = "color: white;">'.$command.'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
+                    return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
 
-                return new Response('<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+                return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
             } else {
                 return new Response('Non previsto in ambiente windows!');
             }
@@ -485,8 +320,7 @@ EOF;
 
     /* GIT */
 
-    public function getGitAction()
-    {
+    public function getGitAction() {
         set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -494,24 +328,23 @@ EOF;
             $this->LockFile(true);
             $sepchr = self::getSeparator();
 //Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
-            $command = 'cd '.substr($this->get('kernel')->getRootDir(), 0, -4).$sepchr.'git pull';
+            $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . 'git pull';
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
 
             $this->LockFile(false);
             if (!$process->isSuccessful()) {
-                return new Response('Errore nel comando: <i style = "color: white;">'.$command.'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
+                return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
 
-            return new Response('<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+            return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
         }
     }
 
     /* CLEAR CACHE */
 
-    public function clearCacheAction(Request $request)
-    {
+    public function clearCacheAction(Request $request) {
         set_time_limit(0);
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -525,22 +358,22 @@ EOF;
             $pathsrc = $this->get('kernel')->getRootDir();
             $sepchr = self::getSeparator();
 
-            $commanddev = 'cd '.$pathsrc.$sepchr
-                    .$phpPath.' console cache:clear';
+            $commanddev = 'cd ' . $pathsrc . $sepchr
+                    . $phpPath . ' console cache:clear';
 
             $processdev = new Process($commanddev);
             $processdev->setTimeout(60 * 100);
             $processdev->run();
             $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $processdev->getErrorOutput();
-            $commandprod = 'cd '.$pathsrc.$sepchr
-                    .$phpPath.' console cache:clear --env=prod --no-debug';
+            $commandprod = 'cd ' . $pathsrc . $sepchr
+                    . $phpPath . ' console cache:clear --env=prod --no-debug';
 
             $processprod = new Process($commandprod);
             $processprod->setTimeout(60 * 100);
             $processprod->run();
             $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $processprod->getErrorOutput();
             $this->LockFile(false);
-            echo $commanddev.'<br/>'.$cmdoutputdev.'<br/><br/>'.$commandprod.'<br/>'.$cmdoutputprod;
+            echo $commanddev . '<br/>' . $cmdoutputdev . '<br/><br/>' . $commandprod . '<br/>' . $cmdoutputprod;
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             return;
 //return new Response($commanddev . "<br/>" . $cmdoutputdev . "<br/><br/>" . $commandprod . "<br/>" . $cmdoutputprod);
@@ -549,8 +382,7 @@ EOF;
 
     /* CLEAR CACHE */
 
-    public function symfonyCommandAction(Request $request)
-    {
+    public function symfonyCommandAction(Request $request) {
         set_time_limit(0);
         $comando = $request->get('symfonycommand');
         if ($this->isLockedFile()) {
@@ -566,8 +398,8 @@ EOF;
             $pathsrc = $this->get('kernel')->getRootDir();
             $sepchr = self::getSeparator();
 
-            $command = 'cd '.$pathsrc.$sepchr
-                    .$phpPath.' console '.$comando;
+            $command = 'cd ' . $pathsrc . $sepchr
+                    . $phpPath . ' console ' . $comando;
 
             $process = new Process($command);
             $process->setTimeout(60 * 100);
@@ -575,15 +407,14 @@ EOF;
 
             $this->LockFile(false);
             if (!$process->isSuccessful()) {
-                return new Response('Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
+                return new Response('Errore nel comando: <i style = "color: white;">' . str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
 
-            return new Response('<pre>Eseguito comando:<br/><br/><i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+            return new Response('<pre>Eseguito comando:<br/><br/><i style = "color: white;">' . str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
         }
     }
 
-    public function unixCommandAction(Request $request)
-    {
+    public function unixCommandAction(Request $request) {
         set_time_limit(0);
         $command = $request->get('unixcommand');
         if (!OsFunctions::isWindows()) {
@@ -593,10 +424,10 @@ EOF;
         }
 //Se viene lanciato il comando per cancellare il file di lock su bypassa tutto e si lancia
         $filelock = str_replace('\\', '\\\\', $this->getFileLock());
-        if (str_replace('\\\\', '/', $command) == str_replace('\\\\', '\\', $lockdelcmd.$filelock)) {
+        if (str_replace('\\\\', '/', $command) == str_replace('\\\\', '\\', $lockdelcmd . $filelock)) {
             $fs = new Filesystem();
             if ((!($fs->exists($filelock)))) {
-                return new Response('Non esiste il file di lock: <i style = "color: white;">'.$filelock.'</i><br/>');
+                return new Response('Non esiste il file di lock: <i style = "color: white;">' . $filelock . '</i><br/>');
             } else {
                 //Sblocca pannello di controllo da lock
                 $process = new Process($command);
@@ -605,7 +436,7 @@ EOF;
 
 // eseguito deopo la fine del comando
                 if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>');
+                    return new Response('Errore nel comando: <i style = "color: white;">' . str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                 }
 
                 return new Response('File di lock cancellato');
@@ -624,20 +455,19 @@ EOF;
             $this->LockFile(false);
 // eseguito deopo la fine del comando
             if (!$process->isSuccessful()) {
-                echo 'Errore nel comando: <i style = "color: white;">'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>';
+                echo 'Errore nel comando: <i style = "color: white;">' . str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
                 return;
 //return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
             }
-            echo '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>'.str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>';
+            echo '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>' . str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             return;
 //return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>");
         }
     }
 
-    public function phpunittestAction(Request $request)
-    {
+    public function phpunittestAction(Request $request) {
         set_time_limit(0);
 
         if ($this->isLockedFile()) {
@@ -651,9 +481,9 @@ EOF;
 
                 // Questo codice per versioni che usano un symfony 2 o 3
                 if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                    $command = 'cd '.substr($this->get('kernel')->getRootDir(), 0, -4).$sepchr.$phpPath.' '.'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'phpunit';
+                    $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . ' ' . 'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
                 } else {
-                    $command = 'cd '.substr($this->get('kernel')->getRootDir(), 0, -4).$sepchr.$phpPath.' '.'bin'.DIRECTORY_SEPARATOR.'phpunit -c app';
+                    $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $phpPath . ' ' . 'bin' . DIRECTORY_SEPARATOR . 'phpunit -c app';
                 }
 
                 $process = new Process($command);
@@ -664,15 +494,14 @@ EOF;
                 /* if (!$process->isSuccessful()) {
                   return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
                   } */
-                return new Response('<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+                return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
             } else {
                 return new Response('Non previsto in ambiente windows!');
             }
         }
     }
 
-    public static function getSeparator()
-    {
+    public static function getSeparator() {
         if (OsFunctions::isWindows()) {
             return '&';
         } else {
@@ -680,18 +509,15 @@ EOF;
         }
     }
 
-    public function getFileLock()
-    {
-        return $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'running.run';
+    public function getFileLock() {
+        return $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'running.run';
     }
 
-    public function isLockedFile()
-    {
+    public function isLockedFile() {
         return file_exists($this->getFileLock());
     }
 
-    public function LockFile($lockstate)
-    {
+    public function LockFile($lockstate) {
         if ($lockstate) {
             file_put_contents($this->getFileLock(), 0777);
         } else {
@@ -699,14 +525,13 @@ EOF;
         }
     }
 
-    public function LockedFunctionMessage()
-    {
+    public function LockedFunctionMessage() {
         return new Response("<h2 style='color: orange;
 '>E' già in esecuzione un comando, riprova tra qualche secondo!</h2>");
     }
 
-    public function forceCleanLockFile()
-    {
+    public function forceCleanLockFile() {
         $this->LockFile(false);
     }
+
 }
