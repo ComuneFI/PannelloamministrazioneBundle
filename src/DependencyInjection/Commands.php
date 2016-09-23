@@ -91,24 +91,31 @@ class Commands
         $pathsrc = $this->apppath->getAppPath();
         $sepchr = self::getSeparator();
 
-        $commanddev = 'cd '.$pathsrc.$sepchr
-                .$phpPath.' console cache:clear';
+        $commanddev = 'cd '.$pathsrc.$sepchr.$phpPath.' console cache:clear';
 
         $processdev = new Process($commanddev);
         $processdev->setTimeout(60 * 100);
         $processdev->run();
-        $erroroutputdev = $processdev->getErrorOutput() ? $processdev->getErrorOutput() : $processdev->getOutput();
-        $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $erroroutputdev;
-        $commandprod = 'cd '.$pathsrc.$sepchr
-                .$phpPath.' console cache:clear --env=prod --no-debug';
+
+        $erroroutputdev = $this->getProcessOutput($processdev);
+
+        $commandprod = 'cd '.$pathsrc.$sepchr.$phpPath.' console cache:clear --env=prod --no-debug';
 
         $processprod = new Process($commandprod);
         $processprod->setTimeout(60 * 100);
         $processprod->run();
-        $erroroutputprod = $processprod->getErrorOutput() ? $processprod->getErrorOutput() : $processprod->getOutput();
-        $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $erroroutputprod;
+
+        $erroroutputprod = $this->getProcessOutput($processprod);
 
         return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
+    }
+
+    private function getProcessOutput($process)
+    {
+        $erroroutput = $process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput();
+        $output = ($process->isSuccessful()) ? $process->getOutput() : $erroroutput;
+
+        return $output;
     }
 
     public function generateFormCrud($bundlename, $entityform)
