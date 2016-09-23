@@ -1,5 +1,8 @@
 PannelloAmministrazioneBundle
 =============
+[![Build Status](https://travis-ci.org/ComuneFI/PannelloamministrazioneBundle.svg?branch=master)]
+(https://travis-ci.org/ComuneFI/PannelloamministrazioneBundle) [![Coverage Status](https://img.shields.io/coveralls/ComuneFI/PannelloamministrazioneBundle.svg)] 
+(https://coveralls.io/r/ComuneFI/PannelloamministrazioneBundle)
 
 Installazione:
 -------------
@@ -15,7 +18,7 @@ Installazione:
     "autoload": {
             "psr-4" : {
                 "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/",
-                "Fi\\OsBundle\\": "vendor/fi/osbundle/"
+                "Fi\\PannelloamministrazioneBundle\\": "vendor/fi/osbundle/"
 
             }
         },
