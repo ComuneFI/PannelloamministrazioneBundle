@@ -3,12 +3,11 @@
 namespace Fi\PannelloAmministrazioneBundle\Tests\Controller;
 
 use Symfony\Component\DomCrawler\Crawler;
-use Fi\CoreBundle\DependencyInjection\FifreeTest;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class AdminpanelControllerTest extends FifreeTest
-{
-    public function testAdminpanel()
-    {
+class AdminpanelControllerTest extends WebTestCase {
+
+    public function testAdminpanel() {
         $this->assertTrue(true);
         /* parent::__construct();
           $this->setClassName(get_class());
@@ -21,4 +20,5 @@ class AdminpanelControllerTest extends FifreeTest
 
          */
     }
+
 }
