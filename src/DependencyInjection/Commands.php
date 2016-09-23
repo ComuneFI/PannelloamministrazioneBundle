@@ -97,7 +97,7 @@ class Commands
         $processdev->setTimeout(60 * 100);
         $processdev->run();
 
-        $erroroutputdev = $this->getProcessOutput($processdev);
+        $cmdoutputdev = $this->getProcessOutput($processdev);
 
         $commandprod = 'cd '.$pathsrc.$sepchr.$phpPath.' console cache:clear --env=prod --no-debug';
 
@@ -105,7 +105,7 @@ class Commands
         $processprod->setTimeout(60 * 100);
         $processprod->run();
 
-        $erroroutputprod = $this->getProcessOutput($processprod);
+        $cmdoutputprod = $this->getProcessOutput($processprod);
 
         return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
     }
