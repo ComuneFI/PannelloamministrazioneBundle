@@ -14,7 +14,7 @@ script:
 
 after_success:
   - if [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then php vendor/satooshi/php-coveralls/bin/coveralls -v; fi
-  - bin/security-checker -n security:check
+  - vendor/bin/security-checker -n security:check
 
 notifications:
   email:
