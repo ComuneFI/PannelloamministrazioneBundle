@@ -15,12 +15,6 @@
             "Fi\\PannelloAmministrazioneBundle\\": "src"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://satis.comune.intranet"
-        }
-    ],
     "require": {
         "php": ">=5.4.0",
         "fi/osbundle": "~2.0"
