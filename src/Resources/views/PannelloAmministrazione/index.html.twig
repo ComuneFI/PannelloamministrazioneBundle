@@ -50,12 +50,12 @@
                     </div>
                 </div>
                 <div>
-                    <button id="adminpanelgenerateform" class="active btn btn-default" data-reactid=".3.0" type="button">Genera form</button>
+                    <button id="adminpanelgenerateformcrud" class="active btn btn-default" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
+                    <!--<button id="adminpanelgenerateform" class="active btn btn-default" data-reactid=".3.0" type="button">Genera form</button>-->
                     <br/><br/>
                     <label for='entityform'>Entità:</label>
                     <input class="form-control" type="text" id="entityform" value="ffprincipale"/><br/>
                 </div>
-                <button id="adminpanelgenerateformcrud" class="active btn btn-default" data-reactid=".3.0" type="button">Genera CRUD per il form</button>
             </fieldset>
         </div>
 
@@ -130,7 +130,7 @@
                 });
                 $("#unixcommand, #symfonycommand").bind('blur', function () {
                     $(this).animate({width: "300px"}, {duration: 300, complete: function () {
-                            
+
                         }});
                 });
                 //Symfony command autocomplete
@@ -249,31 +249,31 @@
                 });
             });
             /*$("#adminpanelgenerateclassentity").click(function () {
-                var entitybundle = $("#entitybundle").val();
-                var domanda = "Vuoi creare le classi per le entità del bundle: " + entitybundle;
-                conferma(domanda).then(function (answer) {
-                    if ((String(answer) == "true")) {
-                        $("#risultato").hide();
-                        $("#risultato").html("");
-                        $.ajax({
-                            url: "{{ path("fi_pannello_amministrazione_generateentityclass") }}",
-                            data: {bundlename: entitybundle},
-                            context: document.body
-                        }).done(function (data) {
-                            $("#risultato").html(data);
-                            opendialogrisultato();
-                            $("#risultato").slideDown("slow");
-                        }).fail(function (jqXHR, textStatus) {
-                            $("#risultato").html(jqXHR.responseText);
-                            $("#risultato").show();
-                            msgbox("Si è verificato un errore!");
-                            return false;
-                        });
-                    } else {
-                        //FALSE
-                    }
-                });
-            });*/
+             var entitybundle = $("#entitybundle").val();
+             var domanda = "Vuoi creare le classi per le entità del bundle: " + entitybundle;
+             conferma(domanda).then(function (answer) {
+             if ((String(answer) == "true")) {
+             $("#risultato").hide();
+             $("#risultato").html("");
+             $.ajax({
+             url: "{{ path("fi_pannello_amministrazione_generateentityclass") }}",
+             data: {bundlename: entitybundle},
+             context: document.body
+             }).done(function (data) {
+             $("#risultato").html(data);
+             opendialogrisultato();
+             $("#risultato").slideDown("slow");
+             }).fail(function (jqXHR, textStatus) {
+             $("#risultato").html(jqXHR.responseText);
+             $("#risultato").show();
+             msgbox("Si è verificato un errore!");
+             return false;
+             });
+             } else {
+             //FALSE
+             }
+             });
+             });*/
             $("#adminpanelgeneratebundle").click(function () {
                 var bundlename = $("#bundlename").val();
                 var domanda = "Vuoi creare il bundle: " + bundlename;

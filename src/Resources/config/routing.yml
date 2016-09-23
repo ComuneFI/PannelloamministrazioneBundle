@@ -10,13 +10,9 @@ fi_pannello_amministrazione_chown:
     path:  /adminpanel/chown
     defaults: { _controller: FiPannelloAmministrazioneBundle:PannelloAmministrazione:chown }
 
-fi_pannello_amministrazione_getSvn:
-    path:  /adminpanel/getSvn
-    defaults: { _controller: FiPannelloAmministrazioneBundle:PannelloAmministrazione:getSvn }
-
-fi_pannello_amministrazione_getGit:
-    path:  /adminpanel/getGit
-    defaults: { _controller: FiPannelloAmministrazioneBundle:PannelloAmministrazione:getGit }
+fi_pannello_amministrazione_getVcs:
+    path:  /adminpanel/getVcs
+    defaults: { _controller: FiPannelloAmministrazioneBundle:PannelloAmministrazione:getVcs }
 
 fi_pannello_amministrazione_generateentity:
     path:  /adminpanel/generateEntity

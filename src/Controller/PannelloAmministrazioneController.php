@@ -91,23 +91,6 @@ class PannelloAmministrazioneController extends Controller {
 
     /* FORMS */
 
-    public function generateFormAction(Request $request) {
-        if ($this->isLockedFile()) {
-            return $this->LockedFunctionMessage();
-        } else {
-            $this->LockFile(true);
-
-            $bundlename = $request->get('bundlename');
-            $entityform = $request->get('entityform');
-            $commands = new Commands($this->container);
-            $resultform = $commands->executeCommand('doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
-
-            $this->LockFile(false);
-
-            return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', array('errcode' => $resultform['errcode'], 'command' => $resultform['command'], 'message' => $resultform['message']));
-        }
-    }
-
     public function generateFormCrudAction(Request $request) {
 
         if ($this->isLockedFile()) {
@@ -183,45 +166,25 @@ class PannelloAmministrazioneController extends Controller {
         }
     }
 
-    /* SVN */
+    /* VCS (GIT,SVN) */
 
-    public function getSvnAction() {
+    public function getVcsAction() {
         set_time_limit(0);
-        if ($this->isLockedFile()) {
-            return $this->LockedFunctionMessage();
-        } else {
-            if (!OsFunctions::isWindows()) {
-                $this->LockFile(true);
-                $sepchr = self::getSeparator();
-//Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
-                $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . 'svn update';
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
-
-                $this->LockFile(false);
-                if (!$process->isSuccessful()) {
-                    return new Response('Errore nel comando: <i style = "color: white;">' . $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>');
-                }
-
-                return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
-            } else {
-                return new Response('Non previsto in ambiente windows!');
-            }
-        }
-    }
-
-    /* GIT */
-
-    public function getGitAction() {
-        set_time_limit(0);
+        $fs = new Filesystem();
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
             $this->LockFile(true);
             $sepchr = self::getSeparator();
-//Si fa la substr per togliere app/ perchè getRootDir() ci restituisce appunto .../app/
-            $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . 'git pull';
+            $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
+            if ($fs->exists($projectDir . '/.svn')) {
+                $vcscommand = "svn update";
+            }
+            if ($fs->exists($projectDir . '/.git')) {
+                $vcscommand = "git pull";
+            }
+
+            $command = 'cd ' . substr($this->get('kernel')->getRootDir(), 0, -4) . $sepchr . $vcscommand;
             $process = new Process($command);
             $process->setTimeout(60 * 100);
             $process->run();
@@ -244,7 +207,7 @@ class PannelloAmministrazioneController extends Controller {
         } else {
             $this->LockFile(true);
             $commands = new Commands($this->container);
-            
+
             $result = $commands->clearcache();
 
             $this->LockFile(false);
