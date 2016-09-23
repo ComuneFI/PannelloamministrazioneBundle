@@ -29,9 +29,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
             ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
             ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
-            ->addOption(
-                'schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db'
-            );
+            ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -90,7 +88,9 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     private function getDestinationPath($bundlePath)
     {
-        return $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlePath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'doctrine'.DIRECTORY_SEPARATOR;
+        return $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.
+                $bundlePath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.
+                'config'.DIRECTORY_SEPARATOR.'doctrine'.DIRECTORY_SEPARATOR;
     }
 
     private function checkprerequisiti($bundlename, $mwbfile, $output)
@@ -99,9 +99,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $wbFile = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'doc'.DIRECTORY_SEPARATOR.$mwbfile;
         $bundlePath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename;
-        $viewsPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR;
-        $entityPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Entity'.DIRECTORY_SEPARATOR;
-        $formPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR;
+
+        $viewsPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR;
+        $entityPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Entity'.DIRECTORY_SEPARATOR;
+        $formPath = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$bundlename.
+                DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR;
 
         $scriptGenerator = $this->getScriptGenerator();
 
@@ -203,7 +207,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     private function getScriptGenerator()
     {
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.
+                    'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         } else {
             $scriptGenerator = $this->apppaths->getBinPath().DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         }
