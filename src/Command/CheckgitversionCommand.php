@@ -9,7 +9,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class checkgitversionCommand extends ContainerAwareCommand
+class CheckgitversionCommand extends ContainerAwareCommand
 {
     protected function configure()
     {

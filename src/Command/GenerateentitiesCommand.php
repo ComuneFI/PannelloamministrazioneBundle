@@ -16,7 +16,7 @@ use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
 use MwbExporter\Model\Table;
 
-class generateentitiesCommand extends ContainerAwareCommand
+class GenerateentitiesCommand extends ContainerAwareCommand
 {
     protected $apppaths;
 
