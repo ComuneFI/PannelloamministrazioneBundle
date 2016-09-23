@@ -16,22 +16,25 @@ use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
 use MwbExporter\Model\Table;
 
-class GenerateentitiesCommand extends ContainerAwareCommand {
+class GenerateentitiesCommand extends ContainerAwareCommand
+{
 
     protected $apppaths;
 
-    protected function configure() {
+    protected function configure() 
+    {
         $this
-                ->setName('pannelloamministrazione:generateentities')
-                ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
-                ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
-                ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
-                ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
-                ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
-                ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
+            ->setName('pannelloamministrazione:generateentities')
+            ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
+            ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
+            ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
+            ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
+            ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
+            ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output) 
+    {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
 
@@ -84,13 +87,15 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
-    private function getDestinationPath($bundlePath) {
+    private function getDestinationPath($bundlePath) 
+    {
         return $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .
                 $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
                 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
     }
 
-    private function checkprerequisiti($bundlename, $mwbfile, $output) {
+    private function checkprerequisiti($bundlename, $mwbfile, $output) 
+    {
         $fs = new Filesystem();
 
         $wbFile = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
@@ -141,7 +146,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
-    private function getExportJsonCommand($bundlePath, $wbFile) {
+    private function getExportJsonCommand($bundlePath, $wbFile) 
+    {
         $exportJson = $this->getExportJsonFile();
         $scriptGenerator = $this->getScriptGenerator();
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
@@ -169,7 +175,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return $command;
     }
 
-    private function getExportJsonFile() {
+    private function getExportJsonFile() 
+    {
         $fs = new Filesystem();
         $exportJson = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'tmp/export.json';
         if ($fs->exists($exportJson)) {
@@ -179,13 +186,15 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return $exportJson;
     }
 
-    private function removeExportJsonFile() {
+    private function removeExportJsonFile() 
+    {
         $this->getExportJsonFile();
 
         return true;
     }
 
-    private function exportschema($command, $output) {
+    private function exportschema($command, $output) 
+    {
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
@@ -199,7 +208,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
-    private function getScriptGenerator() {
+    private function getScriptGenerator() 
+    {
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
             $scriptGenerator = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR .
                     'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
@@ -210,7 +220,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return $scriptGenerator;
     }
 
-    private function generateentities($bundlename, $emdest, $schemaupdate, $output) {
+    private function generateentities($bundlename, $emdest, $schemaupdate, $output) 
+    {
         /* GENERATE ENTITIES */
         $output->writeln('Creazione entities class per il bundle ' . str_replace('/', '', $bundlename));
         //$application = new Application($this->getContainer()->get('kernel'));
@@ -291,7 +302,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         return 0;
     }
 
-    private function clearCache($output) {
+    private function clearCache($output) 
+    {
         $output->writeln('<info>Pulizia cache...</info>');
         $pathsrc = $this->apppaths->getRootPath();
         $sepchr = self::getSeparator();
@@ -322,7 +334,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         }
     }
 
-    private function checktables($destinationPath, $wbFile, $output) {
+    private function checktables($destinationPath, $wbFile, $output) 
+    {
         $finder = new Finder();
         $fs = new Filesystem();
 
@@ -370,7 +383,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand {
         }
     }
 
-    public static function getSeparator() {
+    public static function getSeparator() 
+    {
         if (OsFunctions::isWindows()) {
             return '&';
         } else {
