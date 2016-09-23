@@ -6,13 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\GenerateCode;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\Commands;
 
 class PannelloAmministrazioneController extends Controller {
 
@@ -76,28 +75,6 @@ class PannelloAmministrazioneController extends Controller {
         );
     }
 
-    private function getOutput($fpOutupStream) {
-        fseek($fpOutupStream, 0);
-        $output = '';
-        while (!feof($fpOutupStream)) {
-            $output = $output . fread($fpOutupStream, 4096);
-        }
-
-        return $output;
-    }
-
-    private function executeCommand($application, $command, array $options = array()) {
-        $cmdoptions = array_merge(array('command' => $command), $options);
-
-        $fp = tmpfile();
-        $outputStream = new StreamOutput($fp);
-        $returncode = $application->run(new ArrayInput($cmdoptions), $outputStream);
-        $output = $this->getOutput($fp);
-        fclose($fp);
-
-        return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
-    }
-
     public function aggiornaSchemaDatabaseAction() {
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
@@ -107,7 +84,8 @@ class PannelloAmministrazioneController extends Controller {
             $application = new Application($this->get('kernel'));
             $application->setAutoExit(false);
 
-            $result = $this->executeCommand($application, 'doctrine:schema:update', array('--force' => true));
+            $commands = new Commands($this->container);
+            $result = $commands->executeCommand($application, 'doctrine:schema:update', array('--force' => true));
 
             $this->LockFile(false);
 
@@ -127,8 +105,8 @@ class PannelloAmministrazioneController extends Controller {
             $application->setAutoExit(false);
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
-
-            $resultform = $this->executeCommand($application, 'doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
+            $commands = new Commands($this->container);
+            $resultform = $commands->executeCommand($application, 'doctrine:generate:form', array('entity' => str_replace('/', '', $bundlename) . ':' . $entityform));
 
             $this->LockFile(false);
 
@@ -143,6 +121,7 @@ class PannelloAmministrazioneController extends Controller {
         if ($this->isLockedFile()) {
             return $this->LockedFunctionMessage();
         } else {
+
             $bundlename = $request->get('bundlename');
             $entityform = $request->get('entityform');
 //$entityform = "attolegale";
@@ -172,14 +151,14 @@ class PannelloAmministrazioneController extends Controller {
             $this->LockFile(true);
             $application = new Application($this->get('kernel'));
             $application->setAutoExit(false);
-
-            $resultcrud = $this->executeCommand($application, 'doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename) . ':' . $entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
+            $commands = new Commands($this->container);
+            $resultcrud = $commands->executeCommand($application, 'doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename) . ':' . $entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
 
             $this->LockFile(false);
             if ($resultcrud['errcode'] == 0) {
                 $fs->rename($viewPath, $viewPathSrc);
                 $generator = new GenerateCode($this->container);
-                
+
                 $retmsg = $generator->generateFormsTemplates($bundlename, $entityform);
 
                 $generator->generateFormsDefaultTableValues($entityform);
@@ -266,8 +245,8 @@ class PannelloAmministrazioneController extends Controller {
             } else {
                 $application = new Application($this->get('kernel'));
                 $application->setAutoExit(false);
-
-                $result = $this->executeCommand($application, 'generate:bundle', array(' --namespace' => $bundleName, ' --dir' => $prjPath . '/src/', ' --format' => 'yml', ' --no-interaction' => true));
+                $commands = new Commands($this->container);
+                $result = $commands->executeCommand($application, 'generate:bundle', array(' --namespace' => $bundleName, ' --dir' => $prjPath . '/src/', ' --format' => 'yml', ' --no-interaction' => true));
                 $bundlePath = $prjPath . '/src/' . $bundleName;
                 $this->showBundleGenerationMessage($bundlePath, $result['message']);
             }
