@@ -26,9 +26,11 @@ class Commands
         $prjPath = $this->apppath->getRootPath();
         /* Questo codice per versioni che usano un symfony 2 o 3 */
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
+            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.
+                    "console pannelloamministrazione:generateentities $wbFile $bundlePath";
         } else {
-            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
+            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.
+                    "console pannelloamministrazione:generateentities $wbFile $bundlePath";
         }
         if (OsFunctions::isWindows()) {
             $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -45,10 +47,20 @@ class Commands
         $process->run();
 
         if (!$process->isSuccessful()) {
-            return array('errcode' => -1, 'message' => 'Errore nel comando: <i style="color: white;">'.$command.'</i><br/><i style="color: red;">'.str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())).'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities '.$wbFile.' '.$bundlePath.'<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
+            return array(
+                'errcode' => -1,
+                'message' => 'Errore nel comando: <i style="color: white;">'.
+                $command.'</i><br/><i style="color: red;">'.
+                str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())).
+                'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities '.
+                $wbFile.' '.$bundlePath.'<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>',
+            );
         }
 
-        return array('errcode' => 0, 'message' => '<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
+        return array(
+            'errcode' => 0,
+            'message' => '<pre>Eseguito comando: <i style = "color: white;">'.
+            $command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>', );
     }
 
     public function aggiornaSchemaDatabase()
@@ -85,14 +97,16 @@ class Commands
         $processdev = new Process($commanddev);
         $processdev->setTimeout(60 * 100);
         $processdev->run();
-        $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : ($processdev->getErrorOutput() ? $processdev->getErrorOutput() : $processdev->getOutput());
+        $erroroutputdev = $processdev->getErrorOutput() ? $processdev->getErrorOutput() : $processdev->getOutput();
+        $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : $erroroutputdev;
         $commandprod = 'cd '.$pathsrc.$sepchr
                 .$phpPath.' console cache:clear --env=prod --no-debug';
 
         $processprod = new Process($commandprod);
         $processprod->setTimeout(60 * 100);
         $processprod->run();
-        $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : ($processprod->getErrorOutput() ? $processprod->getErrorOutput() : $processprod->getOutput());
+        $erroroutputprod = $processprod->getErrorOutput() ? $processprod->getErrorOutput() : $processprod->getOutput();
+        $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : $erroroutputprod;
 
         return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
     }
@@ -107,8 +121,11 @@ class Commands
         if (!is_writable($appPath)) {
             return array('errcode' => -1, 'message' => $appPath.' non scrivibile');
         }
-        $formPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR.$entityform.'Type.php';
-        $controllerPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$entityform.'Controller.php';
+        $formPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.
+                'Form'.DIRECTORY_SEPARATOR.$entityform.'Type.php';
+        $controllerPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.
+                'Controller'.DIRECTORY_SEPARATOR.$entityform.'Controller.php';
+
         if ($fs->exists($formPath)) {
             return array('errcode' => -1, 'message' => $formPath.' esistente');
         }
@@ -117,13 +134,19 @@ class Commands
             return array('errcode' => -1, 'message' => $controllerPath.' esistente');
         }
 
-        $viewPath = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.strtolower($entityform);
-        $viewPathSrc = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$entityform;
+        $viewPath = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.
+                'views'.DIRECTORY_SEPARATOR.strtolower($entityform);
+        $viewPathSrc = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.
+                'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$entityform;
         if ($fs->exists($viewPathSrc)) {
             return array('errcode' => -1, 'message' => $viewPathSrc.' esistente');
         }
+        $crudparms = array(
+            '--entity' => str_replace('/', '', $bundlename).':'.$entityform,
+            '--route-prefix' => $entityform,
+            '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true, );
 
-        $resultcrud = $this->executeCommand('doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename).':'.$entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
+        $resultcrud = $this->executeCommand('doctrine:generate:crud', $crudparms);
 
         if ($resultcrud['errcode'] == 0) {
             $fs->rename($viewPath, $viewPathSrc);
@@ -149,9 +172,17 @@ class Commands
                     $fs->remove($resourcesviews);
                 }
             }
-            $retmsg = array('errcode' => 0, 'command' => $resultcrud['command'], 'message' => $resultcrud['message'].$retmsg);
+            $retmsg = array(
+                'errcode' => 0,
+                'command' => $resultcrud['command'],
+                'message' => $resultcrud['message'].$retmsg,
+            );
         } else {
-            $retmsg = array('errcode' => $resultcrud['errcode'], 'command' => $resultcrud['command'], 'message' => $resultcrud['message']);
+            $retmsg = array(
+                'errcode' => $resultcrud['errcode'],
+                'command' => $resultcrud['command'],
+                'message' => $resultcrud['message'],
+            );
         }
 
         return $retmsg;
