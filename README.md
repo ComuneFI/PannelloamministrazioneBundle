@@ -10,7 +10,7 @@ Installazione:
 - Aggiungere nel file composer.json (root del progetto) nella sezione:
 ```
     {
-    "name": "symfony/framework-standard-edition",
+    "name": "ComuneFI/NomeProgetto",
         "license": "MIT",
         "type": "project",
         "description": "The \"Symfony Standard Edition\" distribution",
@@ -26,18 +26,7 @@ Installazione:
 ```
 - Aggiungere sempre in composer.json:
 ```
-    "repositories": [
-            {   
-                {"type": "vcs","url": "https://github.com/manzolo/pannelloamministrazionebundle.git"},
-                {"type": "vcs", "url": "http://pobogdso:Sviluppo2015@gitserver.comune.intranet/git/osbundle.git/"}
-
-            }
-    ]
-```
-- E sempre nel composer.json, nella sezione require aggiungere:
-```
-    "fi/pannelloamministrazionebundle": "1.0.*",
-    "fi/osbundle": "1.0.*",
+    "fi/pannelloamministrazionebundle": "2.0.*"
 ```
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ```
