@@ -12,9 +12,11 @@ use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\Commands;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\LockSystem;
 
-class PannelloAmministrazioneController extends Controller {
+class PannelloAmministrazioneController extends Controller
+{
 
-    public function indexAction() {
+    public function indexAction() 
+    {
         $finder = new Finder();
         $fs = new Filesystem();
 
@@ -88,11 +90,13 @@ class PannelloAmministrazioneController extends Controller {
         return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:index.html.twig', $twigparms);
     }
 
-    private function fixSlash($path) {
+    private function fixSlash($path) 
+    {
         return str_replace('\\', '\\\\', $path);
     }
 
-    public function aggiornaSchemaDatabaseAction() {
+    public function aggiornaSchemaDatabaseAction() 
+    {
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
@@ -108,7 +112,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* FORMS */
 
-    public function generateFormCrudAction(Request $request) {
+    public function generateFormCrudAction(Request $request) 
+    {
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
@@ -134,7 +139,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* ENTITIES */
 
-    public function generateEntityAction(Request $request) {
+    public function generateEntityAction(Request $request) 
+    {
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
@@ -151,7 +157,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* BUNDLE */
 
-    public function generateBundleAction(Request $request) {
+    public function generateBundleAction(Request $request) 
+    {
         $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
@@ -187,7 +194,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* VCS (GIT,SVN) */
 
-    public function getVcsAction() {
+    public function getVcsAction() 
+    {
         set_time_limit(0);
         $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
@@ -222,7 +230,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* CLEAR CACHE */
 
-    public function clearCacheAction(Request $request) {
+    public function clearCacheAction(Request $request) 
+    {
         set_time_limit(0);
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
@@ -242,7 +251,8 @@ class PannelloAmministrazioneController extends Controller {
 
     /* CLEAR CACHE */
 
-    public function symfonyCommandAction(Request $request) {
+    public function symfonyCommandAction(Request $request) 
+    {
         set_time_limit(0);
         $comando = $request->get('symfonycommand');
         if ((new LockSystem($this->container))->isLockedFile()) {
@@ -280,7 +290,8 @@ class PannelloAmministrazioneController extends Controller {
         }
     }
 
-    public function unixCommandAction(Request $request) {
+    public function unixCommandAction(Request $request) 
+    {
         set_time_limit(0);
         $command = $request->get('unixcommand');
         if (!OsFunctions::isWindows()) {
@@ -340,7 +351,8 @@ class PannelloAmministrazioneController extends Controller {
         }
     }
 
-    public function phpunittestAction(Request $request) {
+    public function phpunittestAction(Request $request) 
+    {
         set_time_limit(0);
 
         if ((new LockSystem($this->container))->isLockedFile()) {
