@@ -5,9 +5,10 @@ namespace Fi\PannelloAmministrazioneBundle\Tests\Controller;
 use Symfony\Component\DomCrawler\Crawler;
 use Fi\CoreBundle\DependencyInjection\FifreeTest;
 
-class AdminpanelControllerTest extends FifreeTest {
-
-    public function testAdminpanel() {
+class AdminpanelControllerTest extends FifreeTest
+{
+    public function testAdminpanel()
+    {
         $this->assertTrue(true);
         /* parent::__construct();
           $this->setClassName(get_class());
@@ -20,5 +21,4 @@ class AdminpanelControllerTest extends FifreeTest {
 
          */
     }
-
 }
