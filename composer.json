@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "fi/osbundle": "~1.0"
+        "fi/osbundle": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5",
