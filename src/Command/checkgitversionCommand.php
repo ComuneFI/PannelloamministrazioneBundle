@@ -14,10 +14,9 @@ class checkgitversionCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-                ->setName('pannelloamministrazione:checkgitversion')
-                ->setDescription('Controllo versioni bundles')
-                ->setHelp('Controlla le versioni git dei bundles')
-        ;
+            ->setName('pannelloamministrazione:checkgitversion')
+            ->setDescription('Controllo versioni bundles')
+            ->setHelp('Controlla le versioni git dei bundles');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

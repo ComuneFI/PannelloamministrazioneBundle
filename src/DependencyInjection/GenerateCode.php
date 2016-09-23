@@ -2,30 +2,31 @@
 
 namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 
-class GenerateCode {
-
+class GenerateCode
+{
     private $container;
     private $apppath;
 
-    public function __construct($container) {
+    public function __construct($container)
+    {
         $this->container = $container;
         $this->apppath = new ProjectPath($container);
     }
 
-    public function generateFormsTemplates($bundlename, $entityform) {
+    public function generateFormsTemplates($bundlename, $entityform)
+    {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-//Controller
-        $controlleFile = $prjPath . '/src/' . $bundlename . '/Controller/' . $entityform . 'Controller.php';
+        //Controller
+        $controlleFile = $prjPath.'/src/'.$bundlename.'/Controller/'.$entityform.'Controller.php';
         $code = $this->getControllerCode(str_replace('/', '\\', $bundlename), $entityform);
         $fs->dumpFile($controlleFile, $code);
 
-//Routing
+        //Routing
         $retmsg = $this->generateFormRouting($bundlename, $entityform);
-//Twig template (Crea i template per new edit show)
+        //Twig template (Crea i template per new edit show)
         $this->generateFormWiew($bundlename, $entityform, 'edit');
         $this->generateFormWiew($bundlename, $entityform, 'index');
         $this->generateFormWiew($bundlename, $entityform, 'new');
@@ -33,43 +34,46 @@ class GenerateCode {
         return $retmsg;
     }
 
-    public function generateFormRouting($bundlename, $entityform) {
+    public function generateFormRouting($bundlename, $entityform)
+    {
         //Routing del form
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
 
-        $routingFile = $prjPath . '/src/' . $bundlename . '/Resources/config/routing/' . strtolower($entityform) . '.yml';
+        $routingFile = $prjPath.'/src/'.$bundlename.'/Resources/config/routing/'.strtolower($entityform).'.yml';
 
         $code = $this->getRoutingCode(str_replace('/', '', $bundlename), $entityform);
         $fs->dumpFile($routingFile, $code);
 
-//Fixed: Adesso questa parte la fa da solo symfony (05/2015)
-//Refixed dalla versione 2.8 non lo fa più (04/2016)
+        //Fixed: Adesso questa parte la fa da solo symfony (05/2015)
+        //Refixed dalla versione 2.8 non lo fa più (04/2016)
 
-        $dest = $prjPath . '/src/' . $bundlename . '/Resources/config/routing.yml';
+        $dest = $prjPath.'/src/'.$bundlename.'/Resources/config/routing.yml';
 
-        $routingContext = "\n" . str_replace('/', '', $bundlename) . '_' . $entityform . ': ' . "\n" .
-                '  resource: "@' . str_replace('/', '', $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
-                '  prefix: /' . $entityform . "\n";
+        $routingContext = "\n".str_replace('/', '', $bundlename).'_'.$entityform.': '."\n".
+                '  resource: "@'.str_replace('/', '', $bundlename).'/Resources/config/routing/'.strtolower($entityform).'.yml"'."\n".
+                '  prefix: /'.$entityform."\n";
 
-//Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
+        //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
         $fh = fopen($dest, 'a');
         fwrite($fh, $routingContext);
         fclose($fh);
-        $retmsg = 'Routing ' . $dest . " generato automaticamente da pannelloammonistrazionebundle\n\n* * * * CLEAR CACHE * * * *\n";
+        $retmsg = 'Routing '.$dest." generato automaticamente da pannelloammonistrazionebundle\n\n* * * * CLEAR CACHE * * * *\n";
 
         return $retmsg;
     }
 
-    public function generateFormWiew($bundlename, $entityform, $view) {
+    public function generateFormWiew($bundlename, $entityform, $view)
+    {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $source = $prjPath . '/vendor/fi/fifreecorebundle/src/FiTemplate/views/' . $view . '.html.twig';
-        $dest = $prjPath . '/src/' . $bundlename . '/Resources/views/' . $entityform . '/' . $view . '.html.twig';
+        $source = $prjPath.'/vendor/fi/fifreecorebundle/src/FiTemplate/views/'.$view.'.html.twig';
+        $dest = $prjPath.'/src/'.$bundlename.'/Resources/views/'.$entityform.'/'.$view.'.html.twig';
         $fs->copy($source, $dest, true);
     }
 
-    public function generateFormsDefaultTableValues($entityform) {
+    public function generateFormsDefaultTableValues($entityform)
+    {
         //Si inserisce il record di default nella tabella permessi
         $em = $this->container->get('doctrine')->getManager();
         $ruoloAmm = $em->getRepository('FiCoreBundle:ruoli')->findOneBy(array('is_superadmin' => true)); //SuperAdmin
@@ -87,7 +91,8 @@ class GenerateCode {
         $em->flush();
     }
 
-    public function getControllerCode($bundlename, $tabella) {
+    public function getControllerCode($bundlename, $tabella)
+    {
         $codeTemplate = <<<EOF
 <?php
 namespace [bundle]\Controller;
@@ -116,7 +121,8 @@ EOF;
         return $code;
     }
 
-    public function getRoutingCode($bundlename, $tabella) {
+    public function getRoutingCode($bundlename, $tabella)
+    {
         $codeTemplate = <<<'EOF'
 [tabella]_container:
     path:  /
@@ -165,5 +171,4 @@ EOF;
 
         return $code;
     }
-
 }

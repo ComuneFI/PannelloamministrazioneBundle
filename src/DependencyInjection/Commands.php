@@ -10,23 +10,25 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Symfony\Component\Process\Process;
 
-class Commands {
-
+class Commands
+{
     private $container;
     private $apppath;
 
-    public function __construct($container) {
+    public function __construct($container)
+    {
         $this->container = $container;
         $this->apppath = new ProjectPath($container);
     }
 
-    public function generateEntity($wbFile, $bundlePath) {
+    public function generateEntity($wbFile, $bundlePath)
+    {
         $prjPath = $this->apppath->getRootPath();
         /* Questo codice per versioni che usano un symfony 2 o 3 */
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
+            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
         } else {
-            $scriptGenerator = $prjPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . "console pannelloamministrazione:generateentities $wbFile $bundlePath";
+            $scriptGenerator = $prjPath.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR."console pannelloamministrazione:generateentities $wbFile $bundlePath";
         }
         if (OsFunctions::isWindows()) {
             $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -35,35 +37,40 @@ class Commands {
         }
         $sepchr = self::getSeparator();
 
-        $command = 'cd ' . $this->apppath->getRootPath() . $sepchr
-                . $phpPath . ' ' . $scriptGenerator;
+        $command = 'cd '.$this->apppath->getRootPath().$sepchr
+                .$phpPath.' '.$scriptGenerator;
 
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            return array('errcode' => -1, 'message' => 'Errore nel comando: <i style="color: white;">' . $command . '</i><br/><i style="color: red;">' . str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())) . 'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities ' . $wbFile . ' ' . $bundlePath . '<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
+            return array('errcode' => -1, 'message' => 'Errore nel comando: <i style="color: white;">'.$command.'</i><br/><i style="color: red;">'.str_replace("\n", '<br/>', ($process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput())).'in caso di errori eseguire il comando symfony non da web: pannelloamministrazione:generateentities '.$wbFile.' '.$bundlePath.'<br/>Opzione --schemaupdate oer aggiornare anche lo schema database</i>');
         }
-        return array('errcode' => 0, 'message' => '<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>');
+
+        return array('errcode' => 0, 'message' => '<pre>Eseguito comando: <i style = "color: white;">'.$command.'</i><br/>'.str_replace("\n", '<br/>', $process->getOutput()).'</pre>');
     }
 
-    public function aggiornaSchemaDatabase() {
+    public function aggiornaSchemaDatabase()
+    {
         $result = $this->executeCommand('doctrine:schema:update', array('--force' => true));
+
         return $result;
     }
 
-    private function getOutput($fpOutupStream) {
+    private function getOutput($fpOutupStream)
+    {
         fseek($fpOutupStream, 0);
         $output = '';
         while (!feof($fpOutupStream)) {
-            $output = $output . fread($fpOutupStream, 4096);
+            $output = $output.fread($fpOutupStream, 4096);
         }
 
         return $output;
     }
 
-    public function clearcache() {
+    public function clearcache()
+    {
         if (!OsFunctions::isWindows()) {
             $phpPath = '/usr/bin/php';
         } else {
@@ -72,49 +79,51 @@ class Commands {
         $pathsrc = $this->apppath->getAppPath();
         $sepchr = self::getSeparator();
 
-        $commanddev = 'cd ' . $pathsrc . $sepchr
-                . $phpPath . ' console cache:clear';
+        $commanddev = 'cd '.$pathsrc.$sepchr
+                .$phpPath.' console cache:clear';
 
         $processdev = new Process($commanddev);
         $processdev->setTimeout(60 * 100);
         $processdev->run();
-        $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : ($processdev->getErrorOutput()?$processdev->getErrorOutput():$processdev->getOutput());
-        $commandprod = 'cd ' . $pathsrc . $sepchr
-                . $phpPath . ' console cache:clear --env=prod --no-debug';
+        $cmdoutputdev = ($processdev->isSuccessful()) ? $processdev->getOutput() : ($processdev->getErrorOutput() ? $processdev->getErrorOutput() : $processdev->getOutput());
+        $commandprod = 'cd '.$pathsrc.$sepchr
+                .$phpPath.' console cache:clear --env=prod --no-debug';
 
         $processprod = new Process($commandprod);
         $processprod->setTimeout(60 * 100);
         $processprod->run();
-        $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : ($processprod->getErrorOutput()?$processprod->getErrorOutput():$processprod->getOutput());
-        return $commanddev . $cmdoutputdev . $commandprod . $cmdoutputprod;
+        $cmdoutputprod = ($processprod->isSuccessful()) ? $processprod->getOutput() : ($processprod->getErrorOutput() ? $processprod->getErrorOutput() : $processprod->getOutput());
+
+        return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
     }
 
-    public function generateFormCrud($bundlename, $entityform) {
+    public function generateFormCrud($bundlename, $entityform)
+    {
         /* @var $fs \Symfony\Component\Filesystem\Filesystem */
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $srcPath = $prjPath . DIRECTORY_SEPARATOR . 'src';
-        $appPath = $prjPath . DIRECTORY_SEPARATOR . 'app';
+        $srcPath = $prjPath.DIRECTORY_SEPARATOR.'src';
+        $appPath = $prjPath.DIRECTORY_SEPARATOR.'app';
         if (!is_writable($appPath)) {
-            return array("errcode" => -1, "message" => $appPath . ' non scrivibile');
+            return array('errcode' => -1, 'message' => $appPath.' non scrivibile');
         }
-        $formPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . $entityform . 'Type.php';
-        $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Controller' . DIRECTORY_SEPARATOR . $entityform . 'Controller.php';
+        $formPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Form'.DIRECTORY_SEPARATOR.$entityform.'Type.php';
+        $controllerPath = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Controller'.DIRECTORY_SEPARATOR.$entityform.'Controller.php';
         if ($fs->exists($formPath)) {
-            return array("errcode" => -1, "message" => $formPath . ' esistente');
+            return array('errcode' => -1, 'message' => $formPath.' esistente');
         }
 
         if ($fs->exists($controllerPath)) {
-            return array("errcode" => -1, "message" => $controllerPath . ' esistente');
+            return array('errcode' => -1, 'message' => $controllerPath.' esistente');
         }
 
-        $viewPath = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . strtolower($entityform);
-        $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $entityform;
+        $viewPath = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.strtolower($entityform);
+        $viewPathSrc = $srcPath.DIRECTORY_SEPARATOR.$bundlename.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$entityform;
         if ($fs->exists($viewPathSrc)) {
-            return array("errcode" => -1, "message" => $viewPathSrc . ' esistente');
+            return array('errcode' => -1, 'message' => $viewPathSrc.' esistente');
         }
 
-        $resultcrud = $this->executeCommand('doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename) . ':' . $entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
+        $resultcrud = $this->executeCommand('doctrine:generate:crud', array('--entity' => str_replace('/', '', $bundlename).':'.$entityform, '--route-prefix' => $entityform, '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true));
 
         if ($resultcrud['errcode'] == 0) {
             $fs->rename($viewPath, $viewPathSrc);
@@ -124,7 +133,7 @@ class Commands {
 
             $generator->generateFormsDefaultTableValues($entityform);
 
-            $appviews = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views';
+            $appviews = $appPath.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'views';
             if ($fs->exists($appviews)) {
                 $finder = new Finder();
                 $ret = $finder->files()->in($appviews);
@@ -132,7 +141,7 @@ class Commands {
                     $fs->remove($appviews);
                 }
             }
-            $resourcesviews = $appPath . DIRECTORY_SEPARATOR . 'Resources';
+            $resourcesviews = $appPath.DIRECTORY_SEPARATOR.'Resources';
             if ($fs->exists($resourcesviews)) {
                 $finder = new Finder();
                 $ret = $finder->files()->in($resourcesviews);
@@ -140,14 +149,16 @@ class Commands {
                     $fs->remove($resourcesviews);
                 }
             }
-            $retmsg = array("errcode" => 0, "command" => $resultcrud["command"], "message" => $resultcrud['message'] . $retmsg);
+            $retmsg = array('errcode' => 0, 'command' => $resultcrud['command'], 'message' => $resultcrud['message'].$retmsg);
         } else {
-            $retmsg = array("errcode" => $resultcrud['errcode'], "command" => $resultcrud["command"], "message" => $resultcrud['message']);
+            $retmsg = array('errcode' => $resultcrud['errcode'], 'command' => $resultcrud['command'], 'message' => $resultcrud['message']);
         }
+
         return $retmsg;
     }
 
-    public function executeCommand($command, array $options = array()) {
+    public function executeCommand($command, array $options = array())
+    {
         $application = new Application($this->container->get('kernel'));
         $application->setAutoExit(false);
 
@@ -162,12 +173,12 @@ class Commands {
         return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
     }
 
-    private static function getSeparator() {
+    private static function getSeparator()
+    {
         if (OsFunctions::isWindows()) {
             return '&';
         } else {
             return ';';
         }
     }
-
 }
