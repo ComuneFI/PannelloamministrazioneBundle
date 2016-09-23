@@ -152,7 +152,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
 
-        $exportjsonfile = file_get_contents($this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'fi/fifreecorebundle/src/FiTemplate/config/export.json');
+        $exportjsonfile = file_get_contents($this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.
+                'vendor'.DIRECTORY_SEPARATOR.'fi/fifreecorebundle/src/FiTemplate/config/export.json');
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
@@ -367,7 +368,9 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         if (count($wrongfilename) > 0) {
-            $output->writeln('<error>Ci sono tabelle nel file '.$wbFile.' con nomi non consentiti:'.implode(',', $wrongfilename).'. I nomi tabella devono essere : con la prima lettera maiuscola,underscore ammesso,doppio underscore non ammesso</error>');
+            $output->writeln('<error>Ci sono tabelle nel file '.$wbFile.' con nomi non consentiti:'.
+                    implode(',', $wrongfilename).
+                    '. I nomi tabella devono essere : con la prima lettera maiuscola,underscore ammesso,doppio underscore non ammesso</error>');
 
             return -1;
         } else {
