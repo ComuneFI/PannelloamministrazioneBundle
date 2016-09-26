@@ -1,6 +1,7 @@
 <?php
 
 namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
