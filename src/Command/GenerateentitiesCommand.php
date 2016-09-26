@@ -162,12 +162,12 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         file_put_contents($exportJson, $exportjsonreplaced);
         $sepchr = self::getSeparator();
         if (OsFunctions::isWindows()) {
-            $command = 'cd '.substr($this->apppaths->getRootPath(), 0, -4).$sepchr
+            $command = 'cd '.$this->apppaths->getRootPath().$sepchr
                     .$scriptGenerator.'.bat --export=doctrine2-yaml --config='.
                     $exportJson.' '.$wbFile.' '.$destinationPathEscaped;
         } else {
             $phpPath = '/usr/bin/php';
-            $command = 'cd '.substr($this->apppaths->getRootPath(), 0, -4).$sepchr
+            $command = 'cd '.$this->apppaths->getRootPath().$sepchr
                     .$phpPath.' '.$scriptGenerator.' --export=doctrine2-yaml --config='.
                     $exportJson.' '.$wbFile.' '.$destinationPathEscaped;
         }
