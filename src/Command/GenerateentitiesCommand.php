@@ -152,7 +152,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
         $jsonfile = $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.
-                'vendor'.DIRECTORY_SEPARATOR.'fi/fifreecorebundle/src/FiTemplate/config/export.json';
+                'vendor'.DIRECTORY_SEPARATOR.'fi/fifreecorebundle/src/Fi/CoreBundle/FiTemplate/config/export.json';
 
         $exportjsonfile = file_get_contents($jsonfile);
 
