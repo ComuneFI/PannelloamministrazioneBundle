@@ -341,19 +341,22 @@ class PannelloAmministrazioneController extends Controller
             (new LockSystem($this->container))->lockFile(false);
             // eseguito deopo la fine del comando
             if (!$process->isSuccessful()) {
-                echo 'Errore nel comando: <i style = "color: white;">'.
-                str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).
-                '</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>';
+                $errmsg = 'Errore nel comando: <i style = "color: white;">'.
+                        str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).
+                        '</i><br/><i style = "color: red;">'.str_replace("\n", '<br/>', $process->getErrorOutput()).'</i>';
+
+                return new Response($errmsg);
                 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-                return;
+                //return;
                 /* return new Response('Errore nel comando: <i style = "color: white;">' .
                  * $command . '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>'); */
             }
-            echo '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>'.
-            str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/>'.
-            str_replace("\n", '<br/>', $process->getOutput()).'</pre>';
+            $msgok = '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>'.
+                    str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/>'.
+                    str_replace("\n", '<br/>', $process->getOutput()).'</pre>';
             //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-            return;
+            new Response($msgok);
+            //return;
             /* return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command .
              * '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>"); */
         }
