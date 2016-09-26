@@ -214,6 +214,10 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                     'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         } else {
             $scriptGenerator = $this->apppaths->getBinPath().DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
+            if (!file_exists($scriptGenerator)) {
+				$scriptGenerator = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.
+						'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
+			}
         }
 
         return $scriptGenerator;
