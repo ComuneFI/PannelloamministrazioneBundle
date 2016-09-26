@@ -355,7 +355,7 @@ class PannelloAmministrazioneController extends Controller
                     str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)).'</i><br/>'.
                     str_replace("\n", '<br/>', $process->getOutput()).'</pre>';
             //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
-            new Response($msgok);
+            return new Response($msgok);
             //return;
             /* return new Response('<pre>Eseguito comando: <i style = "color: white;">' . $command .
              * '</i><br/>' . str_replace("\n", "<br/>", $process->getOutput()) . "</pre>"); */
