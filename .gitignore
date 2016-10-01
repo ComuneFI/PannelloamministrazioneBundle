@@ -7,3 +7,4 @@
 src/Tests/app/cache
 src/Tests/app/logs
 src/Tests/app/bundles
+src/Tests/app/dbtest.sqlite
