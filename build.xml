@@ -99,7 +99,7 @@
             <arg path="src"/>
             <arg value="text"/>
             <arg value="tools/phpmd/ruleset.xml"/>
-            <arg value="--exclude src/Tests/app/*"/>
+            <arg value="--exclude ${basedir}/src/Tests/app/*"/>
         </exec>
     </target>
 
@@ -108,7 +108,7 @@
         <exec executable="vendor/bin/phpcs" failonerror="true">
             <arg value="--standard=tools/phpcs/ruleset.xml"/>
             <arg value="--extensions=php"/>
-            <arg value="--ignore=src/Tests/app" />
+            <arg value="--ignore=${basedir}/src/Tests/app" />
             <arg path="src"/>
         </exec>
     </target>
@@ -120,7 +120,7 @@
             <arg value="--standard=tools/phpcs/ruleset.xml"/>
             <arg value="--warning-severity=0"/>
             <arg value="--extensions=php"/>
-            <arg value="--ignore=src/Tests/app" />
+            <arg value="--ignore=${basedir}/src/Tests/app" />
             <arg path="src"/>
         </exec>
     </target>
