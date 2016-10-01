@@ -9,24 +9,7 @@ Installazione:
 
 - Aggiungere nel file composer.json (root del progetto) nella sezione:
 ```
-    {
-    "name": "ComuneFI/NomeProgetto",
-        "license": "MIT",
-        "type": "project",
-        "description": "The \"Symfony Standard Edition\" distribution",
-
-    "autoload": {
-            "psr-4" : {
-                "Fi\\PannelloAmministrazioneBundle\\": "vendor/fi/pannelloamministrazionebundle/",
-                "Fi\\PannelloamministrazioneBundle\\": "vendor/fi/osbundle/"
-
-            }
-        },
-    }    
-```
-- Aggiungere sempre in composer.json:
-```
-    "fi/pannelloamministrazionebundle": "2.0.*"
+composer require "fi/pannelloamministrazionebundle"
 ```
 - Aggiungere nel file app/AppKernel.php nella funzione registerBundles;
 ```
@@ -41,4 +24,18 @@ Installazione:
 - Infine lanciare 
 ```
     assets:install
+```
+
+- Test
+Scarico dipendenze
+```
+    composer install
+```
+Preparare il db
+```
+    php src/Tests/app/console fifree:install admin admin admin@admin.it
+```
+Lanciare i test
+```
+    vendor/bin/phpunit
 ```
