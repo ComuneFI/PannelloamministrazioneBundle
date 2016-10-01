@@ -166,7 +166,7 @@ class AdminpanelControllerTest extends FifreeTest
     private function deleteFirstLineFile($file)
     {
         $handle = fopen($file, 'r');
-        $first = fgets($handle, 2048); //get first line.
+        fgets($handle, 2048); //get first line.
         $outfile = 'temp';
         $o = fopen($outfile, 'w');
         while (!feof($handle)) {
