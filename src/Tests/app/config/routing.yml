@@ -1,0 +1,3 @@
+FiPannelloamministrazioneBundle_homepage:
+    resource: "@FiPannelloAmministrazioneBundle/Resources/config/routing.yml"
+    prefix:   /

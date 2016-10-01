@@ -1,0 +1,59 @@
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User: plaintext
+        FOS\UserBundle\Model\UserInterface: sha512
+
+
+    role_hierarchy:
+        ROLE_ADMIN:       [ROLE_USER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+    
+
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username
+            
+    firewalls:
+        sso_esclusioni:
+            pattern:  ^/(_(profiler|wdt)|css|images|js|accedi)/
+            security: false
+            
+        sso_login:
+            pattern:  ^/autenticazione/*
+            security: false
+        main:
+          pattern: ^/
+          form_login:
+              provider: fos_userbundle
+              csrf_token_generator: security.csrf.token_manager 
+              #Usare form.csrf_provider invece di security.csrf.token_manager per versioni di Symfony <2.4
+
+          logout:       true
+          anonymous:    true
+          
+        secured_area:
+            #cambiare il pattern per abilitare/disabilitare la sicurezza su tutto il progetto
+            pattern:    ^/
+            http_basic:
+                realm: "Area protetta"
+    access_control:
+        - { path: ^/(_(profiler|wdt)|css|images|js|accedi), roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/operatori/, role: ROLE_ADMIN }
+        - { path: ^/ruoli/, role: ROLE_ADMIN }
+        - { path: ^/permessi/, role: ROLE_ADMIN }
+        - { path: ^/menuApplicazione/, role: ROLE_ADMIN }
+        - { path: ^/opzioniTabella/, role: ROLE_ADMIN }
+        - { path: ^/tabelle/aggiorna, role: ROLE_ADMIN }
+        - { path: ^/tabelle/edit, role: ROLE_ADMIN }
+        - { path: ^/tabelle/new, role: ROLE_ADMIN }
+        - { path: ^/tabelle/delete, role: ROLE_ADMIN }
+        - { path: ^/adminpanel, role: [ROLE_ADMIN] }
+        
+        #Con questa configurazione se l'utente non è censito in SSO oppure non ha ruoli in FOS VIENE BLOCCATO CON Error 403
+        #- { path: ^/, role: [ROLE_USER] }
+        #Con questa configurazione se l'utente non è censito in SSO oppure non ha ruoli in FOS VIENE FATTO ENTRARE UGUALMENTE
+        - { path: ^/, role: [ROLE_USER,ROLE_UNDEFINED_USER] }
