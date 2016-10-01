@@ -125,7 +125,7 @@ function conferma(question) {
                         }
                     },
                     close: function () {
-                        $(this).dialog('destroy').remove()
+                        $(this).dialog('destroy').remove();
                     }
                 }
             );

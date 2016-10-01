@@ -35,7 +35,18 @@ Preparare il db
 ```
     php src/Tests/app/console fifree:install admin admin admin@admin.it
 ```
+Assets install
+```
+php src/Tests/app/console assets:install src/Tests/app
+```
+Start server
+```
+php src/Tests/app/console server:run -d src/Tests/app
+```
 Lanciare i test
 ```
     vendor/bin/phpunit
 ```
+
+
+

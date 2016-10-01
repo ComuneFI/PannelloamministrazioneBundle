@@ -2,7 +2,6 @@
 
 namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class LockSystem
@@ -17,7 +16,7 @@ class LockSystem
 
     public function getFileLock()
     {
-        return $this->container->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'running.run';
+        return $this->container->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'running.run';
     }
 
     public function isLockedFile()

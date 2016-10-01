@@ -11,15 +11,19 @@ use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\Commands;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\LockSystem;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
 
 class PannelloAmministrazioneController extends Controller
 {
+    protected $apppaths;
+
     public function indexAction()
     {
         $finder = new Finder();
         $fs = new Filesystem();
+        $this->apppaths = new ProjectPath($this);
 
-        $projectDir = substr($this->get('kernel')->getRootDir(), 0, -4);
+        $projectDir = $this->apppaths->getRootPath();
         $bundlelists = $this->container->getParameter('kernel.bundles');
         $bundles = array();
         foreach ($bundlelists as $bundle) {
@@ -65,7 +69,7 @@ class PannelloAmministrazioneController extends Controller
         }
 
         $dellockfile = $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.
-                'app'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'running.run';
+                'app'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'running.run';
         $delcomposerfile = $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.'composer.lock';
         $dellogsfiles = $delcmd.' '.$projectDir.DIRECTORY_SEPARATOR.
                 'app'.DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR.'*';

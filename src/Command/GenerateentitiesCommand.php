@@ -36,7 +36,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
-
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
         $schemaupdate = false;
@@ -154,7 +153,10 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $jsonfile = $this->apppaths->getProjectPath().DIRECTORY_SEPARATOR.
                 'vendor'.DIRECTORY_SEPARATOR.'fi'.DIRECTORY_SEPARATOR.'pannelloamministrazionebundle'.DIRECTORY_SEPARATOR.
                 'src'.DIRECTORY_SEPARATOR.'FiTemplate'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'export.json';
-
+        if (!file_exists($jsonfile)) {
+            $jsonfile = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.
+                    'FiTemplate'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'export.json';
+        }
         $exportjsonfile = file_get_contents($jsonfile);
 
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
@@ -219,6 +221,10 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                 $scriptGenerator = $this->apppaths->getRootPath().DIRECTORY_SEPARATOR.
                         'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
             }
+        }
+        if (!file_exists($scriptGenerator)) {
+            $scriptGenerator = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.
+                    'vendor'.DIRECTORY_SEPARATOR.'bin'.DIRECTORY_SEPARATOR.'mysql-workbench-schema-export';
         }
 
         return $scriptGenerator;
@@ -318,23 +324,25 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $scriptGenerator = $pathsrc.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'console cache:clear';
         }
 
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
+        if (file_exists($scriptGenerator)) {
+            if (OsFunctions::isWindows()) {
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
+            } else {
+                $phpPath = '/usr/bin/php';
+            }
 
-        $command = 'cd '.$pathsrc.$sepchr
-                .$phpPath.' '.$scriptGenerator;
-        /* @var $process \Symfony\Component\Process\Process */
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
+            $command = 'cd '.$pathsrc.$sepchr
+                    .$phpPath.' '.$scriptGenerator;
+            /* @var $process \Symfony\Component\Process\Process */
+            $process = new Process($command);
+            $process->setTimeout(60 * 100);
+            $process->run();
 
-        if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
-        } else {
-            $output->writeln($process->getOutput());
+            if (!$process->isSuccessful()) {
+                $output->writeln('Errore nel comando '.$command.'<error>'.$process->getErrorOutput().'</error> ');
+            } else {
+                $output->writeln($process->getOutput());
+            }
         }
     }
 
