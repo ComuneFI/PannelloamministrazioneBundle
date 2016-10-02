@@ -102,6 +102,8 @@
             <arg value="text"/>
             <arg value="tools/phpmd/ruleset.xml"/>
             <!-- These classes are already messes, exclude them for now... -->
+            <arg value="--exclude"/>
+            <arg value="${basedir}/src/Tests"/>
         </exec>
     </target>
 
@@ -110,6 +112,8 @@
             <arg path="src"/>
             <arg value="text"/>
             <arg value="tools/phpmd/ruleset.xml"/>
+            <arg value="--exclude"/>
+            <arg value="${basedir}/src/Tests"/>
         </exec>
     </target>
 
