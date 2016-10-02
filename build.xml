@@ -105,10 +105,6 @@
     </target>
 
     <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
-        <phpmd rulesets="codesize,design,naming,unusedcode">
-            <fileset refid="php-files"/>
-            <formatter type="xml" outfile="${basedir}/build/logs/pmd.xml"/>
-        </phpmd>
         <exec executable="vendor/bin/phpmd" failonerror="true">
             <arg path="src"/>
             <arg value="text"/>
