@@ -62,8 +62,8 @@ class AdminpanelControllerTest extends FifreeTest
         $session->getDriver()->getWebDriverSession()->accept_alert();
         $this->ajaxWait($session);
 //$scriptclose = "function(){ if ($(\"#risultato\").is(\":visible\")) {$(\"#risultato\").dialog(\"close\");}}()";
-        $scriptclose = 'function(){ $("#risultato").dialog("close");}()';
-        $session->executeScript($scriptclose);
+        //$scriptclose = 'function(){ $("#risultato").dialog("close");}()';
+        //$session->executeScript($scriptclose);
 
         $this->clearcache();
 
