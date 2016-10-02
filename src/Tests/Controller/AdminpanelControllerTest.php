@@ -14,7 +14,7 @@ class AdminpanelControllerTest extends FifreeTest
     public function test10AdminpanelHomepage()
     {
         parent::setUp();
-        $this->CleanFilesystem();
+        $this->cleanFilesystem();
         $client = $this->getClientAutorizzato();
 //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $url = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
@@ -139,7 +139,7 @@ class AdminpanelControllerTest extends FifreeTest
         $container->get('session')->save();
     }
 
-    private function CleanFilesystem()
+    private function cleanFilesystem()
     {
         $DELETE = "new Fi\ProvaBundle\FiProvaBundle(),";
         $vendorDir = dirname(dirname(__FILE__));
@@ -159,7 +159,7 @@ class AdminpanelControllerTest extends FifreeTest
 
         /* $cachedir = dirname(dirname(__FILE__)) . '/app/cache/test';
           $fs->remove($cachedir); */
-        //$this->CleanFilesystem();
+        //$this->cleanFilesystem();
         $this->clearcache();
     }
 
@@ -255,7 +255,7 @@ class AdminpanelControllerTest extends FifreeTest
      */
     protected function setUp()
     {
-        $this->CleanFilesystem();
+        $this->cleanFilesystem();
         parent::setUp();
     }
 }
