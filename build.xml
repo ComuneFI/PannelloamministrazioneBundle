@@ -5,8 +5,8 @@
         <include name="**/*.php"/>
         <exclude name="vendor/**"/>
         <exclude name="build/**"/>
-        <exclude name="src/Tests/**"/>
-        <exclude name="src/Tests/app/AppKernel.php"/>
+        <exclude name="${basedir}/src/Tests/**"/>
+        <exclude name="${basedir}/src/Tests/app/AppKernel.php"/>
     </fileset>
     
     <target name="build"
