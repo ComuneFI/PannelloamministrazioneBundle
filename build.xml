@@ -6,6 +6,7 @@
         <exclude name="vendor/**"/>
         <exclude name="build/**"/>
         <exclude name="src/Tests/**"/>
+        <exclude name="src/Tests/app/AppKernel.php"/>
     </fileset>
     
     <target name="build"
