@@ -226,7 +226,9 @@ class AdminpanelControllerTest extends FifreeTest
       $phpPath = '/usr/bin/php';
       }
 
-      $command = $phpPath . ' ' . dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console pannelloamministrazione:generateentities wbadmintest.mwb Fi/ProvaBundle';
+      $command = $phpPath . ' ' . 
+      dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'app' . 
+      DIRECTORY_SEPARATOR . 'console pannelloamministrazione:generateentities wbadmintest.mwb Fi/ProvaBundle';
       $process = new Process($command);
       $process->setTimeout(60 * 100);
       $process->run();
