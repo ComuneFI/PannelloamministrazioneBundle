@@ -8,6 +8,14 @@ use Behat\Mink\Session;
 
 class AdminpanelControllerTest extends FifreeTest
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+    }
+
     public function test1starttests()
     {
         startTests();
@@ -108,13 +116,6 @@ class AdminpanelControllerTest extends FifreeTest
       $this->clearcache();
       $session->stop();
       } */
-
-    public function ajaxWait($session)
-    {
-        $time = 5000; // time should be in milliseconds
-        $session->wait($time, '(0 === jQuery.active)');
-        // asserts below
-    }
 
     /*
      * @test

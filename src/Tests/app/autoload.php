@@ -1,5 +1,7 @@
 <?php
 
+namespace Fi\PannelloAmministrazioneBundle\Tests;
+
 use Symfony\Component\Process\Process;
 use Symfony\Component\Filesystem\Filesystem;
 
