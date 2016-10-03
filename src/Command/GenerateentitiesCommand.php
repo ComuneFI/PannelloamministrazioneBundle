@@ -23,13 +23,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-                ->setName('pannelloamministrazione:generateentities')
-                ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
-                ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
-                ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
-                ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
-                ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
-                ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
+            ->setName('pannelloamministrazione:generateentities')
+            ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
+            ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
+            ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
+            ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
+            ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
+            ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -253,7 +253,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         $command = 'cd '.$pathsrc.$sepchr
-                .$phpPath.' '.$scriptGenerator.' --no-backup '.str_replace('/', '', $bundlename);
+                .$phpPath.' '.$scriptGenerator.' --no-backup '.str_replace('/', '', $bundlename)
+                .' --env='.$this->getContainer()->get('kernel')->getEnvironment();
         /* @var $process \Symfony\Component\Process\Process */
         $process = new Process($command);
         $process->setTimeout(60 * 100);
@@ -295,7 +296,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                 $phpPath = '/usr/bin/php';
             }
             $command = 'cd '.$pathsrc.$sepchr
-                    .$phpPath.' '.$scriptGenerator.' --force --em='.$emdest;
+                    .$phpPath.' '.$scriptGenerator.' --force --em='.$emdest
+                    .' --env='.$this->getContainer()->get('kernel')->getEnvironment();
             /* @var $process \Symfony\Component\Process\Process */
             $process = new Process($command);
             $process->setTimeout(60 * 100);

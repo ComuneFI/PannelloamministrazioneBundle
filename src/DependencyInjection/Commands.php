@@ -40,7 +40,7 @@ class Commands
         $sepchr = self::getSeparator();
 
         $command = 'cd '.$this->apppath->getRootPath().$sepchr
-                .$phpPath.' '.$scriptGenerator;
+                .$phpPath.' '.$scriptGenerator.' --env='.$this->container->get('kernel')->getEnvironment();
 
         $process = new Process($command);
         $process->setTimeout(60 * 100);
