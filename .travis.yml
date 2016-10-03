@@ -11,10 +11,10 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - composer install
-  - php src/Tests/app/console fifree:install admin admin admin@admin.it
-  - php src/Tests/app/console assets:install src/Tests/app
-  - php src/Tests/app/console server:run -d src/Tests/app 2>&1 &
-  - sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
+  - php src/Tests/app/console fifree:install admin admin admin@admin.it --env=test
+  - php src/Tests/app/console assets:install src/Tests/app --env=test
+  - php src/Tests/app/console server:run -d src/Tests/app --env=test 2>&1 &
+  - sh vendor/bin/selenium-server-standalone --env=test > /dev/null 2>&1 &
   - rm -rf src/Tests/app/cache/test
   - rm -rf src/Tests/app/cache/dev
 
