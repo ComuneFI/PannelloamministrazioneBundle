@@ -14,6 +14,7 @@ class AdminpanelControllerTest extends FifreeTest
     protected function setUp()
     {
         parent::setUp();
+        $this->setClassName(get_class());
     }
 
     public function test1starttests()
@@ -23,8 +24,7 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test10AdminpanelHomepage()
     {
-        parent::setUp();
-        $client = $this->getClientAutorizzato();
+        $client = parent::getClientAutorizzato();
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $url = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
 
@@ -40,10 +40,8 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test20AdminpanelGenerateBundle()
     {
-        parent::__construct();
-        $this->setClassName(get_class());
         $browser = 'firefox';
-        $client = $this->getClientAutorizzato();
+        $client = parent::getClientAutorizzato();
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $urlRouting = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
         $url = 'http://127.0.0.1:8000/web.php'.$urlRouting;
