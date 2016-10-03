@@ -16,6 +16,7 @@ before_script:
   - php src/Tests/app/console server:run -d src/Tests/app 2>&1 &
   - sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
   - rm -rf src/Tests/app/cache/test
+  - rm -rf src/Tests/app/cache/dev
 
 script:
   - ant
