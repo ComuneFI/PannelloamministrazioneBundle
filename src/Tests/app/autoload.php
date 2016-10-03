@@ -1,38 +1,36 @@
 <?php
 
-namespace Fi\PannelloAmministrazioneBundle\Tests;
-
 use Symfony\Component\Process\Process;
 use Symfony\Component\Filesystem\Filesystem;
 
-$loader = include __DIR__.'/../../../vendor/autoload.php';
-require __DIR__.'/AppKernel.php';
+$loader = include __DIR__ . '/../../../vendor/autoload.php';
+require __DIR__ . '/AppKernel.php';
 
-function startTests()
-{
+startTestsPA();
+
+function startTestsPA() {
     $vendorDir = dirname(dirname(__FILE__));
-    $command = 'rm -rf '.$vendorDir.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'test';
+    $command = 'rm -rf ' . $vendorDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'test';
     $process = new Process($command);
     $process->setTimeout(60 * 100);
     $process->run();
 
-    cleanFilesystem();
+    cleanFilesystemPA();
 }
 
-function cleanFilesystem()
-{
+function cleanFilesystemPA() {
     $DELETE = "new Fi\ProvaBundle\FiProvaBundle(),";
     $vendorDir = dirname(dirname(__FILE__));
-    $kernelfile = $vendorDir.'/app/AppKernel.php';
+    $kernelfile = $vendorDir . '/app/AppKernel.php';
     deleteLineFromFile($kernelfile, $DELETE);
-    $routingfile = $vendorDir.'/app/config/routing.yml';
+    $routingfile = $vendorDir . '/app/config/routing.yml';
     $line = fgets(fopen($routingfile, 'r'));
     if (substr($line, 0, -1) == 'fi_prova:') {
         for ($index = 0; $index < 4; ++$index) {
             deleteFirstLineFile($routingfile);
         }
     }
-    $bundledir = $vendorDir.'/src/Fi/ProvaBundle';
+    $bundledir = $vendorDir . '/src/Fi/ProvaBundle';
 
     $fs = new Filesystem();
     if ($fs->exists($bundledir)) {
@@ -40,8 +38,7 @@ function cleanFilesystem()
     }
 }
 
-function deleteFirstLineFile($file)
-{
+function deleteFirstLineFile($file) {
     $handle = fopen($file, 'r');
     fgets($handle, 2048); //get first line.
     $outfile = 'temp';
@@ -55,8 +52,7 @@ function deleteFirstLineFile($file)
     rename($outfile, $file);
 }
 
-function deleteLineFromFile($file, $DELETE)
-{
+function deleteLineFromFile($file, $DELETE) {
     $data = file($file);
 
     $out = array();

@@ -5,7 +5,6 @@ namespace Fi\PannelloAmministrazioneBundle\Tests\Controller;
 use Fi\CoreBundle\DependencyInjection\FifreeTest;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
-use Fi\PannelloAmministrazioneBundle\Tests;
 
 class AdminpanelControllerTest extends FifreeTest
 {
@@ -19,7 +18,7 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test1starttests()
     {
-        startTests();
+        startTestsPA();
     }
 
     public function test10AdminpanelHomepage()
@@ -146,7 +145,7 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function testZ999999999999CloeseTests()
     {
-        startTests();
+        startTestsPA();
     }
 
     /**
