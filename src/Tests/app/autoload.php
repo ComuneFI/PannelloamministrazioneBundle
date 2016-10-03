@@ -6,8 +6,6 @@ use Symfony\Component\Filesystem\Filesystem;
 $loader = include __DIR__ . '/../../../vendor/autoload.php';
 require __DIR__ . '/AppKernel.php';
 
-startTestsPA();
-
 function startTestsPA() {
     $vendorDir = dirname(dirname(__FILE__));
     $command = 'rm -rf ' . $vendorDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'test';

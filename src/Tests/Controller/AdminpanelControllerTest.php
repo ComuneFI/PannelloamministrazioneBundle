@@ -61,8 +61,6 @@ class AdminpanelControllerTest extends FifreeTest
         $page->fillField('password', 'admin');
         $page->pressButton('_submit');
 
-        sleep(3);
-
         $page->fillField('bundlename', 'Fi/ProvaBundle');
 
         $page->pressButton('adminpanelgeneratebundle');
