@@ -5,18 +5,19 @@ namespace Fi\PannelloAmministrazioneBundle\Tests\Controller;
 use Fi\CoreBundle\DependencyInjection\FifreeTest;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Filesystem\Filesystem;
-use Fi\OsBundle\DependencyInjection\OsFunctions;
 
 class AdminpanelControllerTest extends FifreeTest
 {
+    public function test1starttests()
+    {
+        startTests();
+    }
+
     public function test10AdminpanelHomepage()
     {
         parent::setUp();
-        $this->cleanFilesystem();
         $client = $this->getClientAutorizzato();
-//$url = $client->getContainer()->get('router')->generate('Ffprincipale');
+        //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $url = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
 
         $client->request('GET', $url);
@@ -35,14 +36,14 @@ class AdminpanelControllerTest extends FifreeTest
         $this->setClassName(get_class());
         $browser = 'firefox';
         $client = $this->getClientAutorizzato();
-//$url = $client->getContainer()->get('router')->generate('Ffprincipale');
+        //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $urlRouting = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
         $url = 'http://127.0.0.1:8000/web.php'.$urlRouting;
 
-// Choose a Mink driver. More about it in later chapters.
+        // Choose a Mink driver. More about it in later chapters.
         $driver = new \Behat\Mink\Driver\Selenium2Driver($browser);
         $session = new Session($driver);
-// start the session
+        // start the session
         $session->start();
         $session->visit($url);
         $page = $session->getPage();
@@ -61,11 +62,9 @@ class AdminpanelControllerTest extends FifreeTest
         $session->executeScript($scriptrun);
         $session->getDriver()->getWebDriverSession()->accept_alert();
         $this->ajaxWait($session);
-//$scriptclose = "function(){ if ($(\"#risultato\").is(\":visible\")) {$(\"#risultato\").dialog(\"close\");}}()";
+        //$scriptclose = "function(){ if ($(\"#risultato\").is(\":visible\")) {$(\"#risultato\").dialog(\"close\");}}()";
         //$scriptclose = 'function(){ $("#risultato").dialog("close");}()';
         //$session->executeScript($scriptclose);
-
-        $this->clearcache();
 
         $session->stop();
     }
@@ -114,7 +113,7 @@ class AdminpanelControllerTest extends FifreeTest
     {
         $time = 5000; // time should be in milliseconds
         $session->wait($time, '(0 === jQuery.active)');
-// asserts below
+        // asserts below
     }
 
     /*
@@ -139,110 +138,14 @@ class AdminpanelControllerTest extends FifreeTest
         $container->get('session')->save();
     }
 
-    private function cleanFilesystem()
-    {
-        $DELETE = "new Fi\ProvaBundle\FiProvaBundle(),";
-        $vendorDir = dirname(dirname(__FILE__));
-        $kernelfile = $vendorDir.'/app/AppKernel.php';
-        $this->deleteLineFromFile($kernelfile, $DELETE);
-        $routingfile = $vendorDir.'/app/config/routing.yml';
-        $line = fgets(fopen($routingfile, 'r'));
-        if (substr($line, 0, -1) == 'fi_prova:') {
-            for ($index = 0; $index < 4; ++$index) {
-                $this->deleteFirstLineFile($routingfile);
-            }
-        }
-        $bundledir = $vendorDir.'/src';
-
-        $fs = new Filesystem();
-        $fs->remove($bundledir);
-
-        /* $cachedir = dirname(dirname(__FILE__)) . '/app/cache/test';
-          $fs->remove($cachedir); */
-        //$this->cleanFilesystem();
-        $this->clearcache();
-    }
-
-    private function deleteFirstLineFile($file)
-    {
-        $handle = fopen($file, 'r');
-        fgets($handle, 2048); //get first line.
-        $outfile = 'temp';
-        $o = fopen($outfile, 'w');
-        while (!feof($handle)) {
-            $buffer = fgets($handle, 2048);
-            fwrite($o, $buffer);
-        }
-        fclose($handle);
-        fclose($o);
-        rename($outfile, $file);
-    }
-
-    private function deleteLineFromFile($file, $DELETE)
-    {
-        $data = file($file);
-
-        $out = array();
-
-        foreach ($data as $line) {
-            if (trim($line) != $DELETE) {
-                $out[] = $line;
-            }
-        }
-
-        $fp = fopen($file, 'w+');
-        flock($fp, LOCK_EX);
-        foreach ($out as $line) {
-            fwrite($fp, $line);
-        }
-        flock($fp, LOCK_UN);
-        fclose($fp);
-    }
-
-    private function clearcache()
-    {
-        $command = 'rm -rf '.dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'test';
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
-
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
-
-        $command = $phpPath.' '.dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'console cache:clear --env=test';
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
-    }
-
-    /* private function generateentities() {
-
-      if (OsFunctions::isWindows()) {
-      $phpPath = OsFunctions::getPHPExecutableFromPath();
-      } else {
-      $phpPath = '/usr/bin/php';
-      }
-
-      $command = $phpPath . ' ' . 
-      dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'app' . 
-      DIRECTORY_SEPARATOR . 'console pannelloamministrazione:generateentities wbadmintest.mwb Fi/ProvaBundle';
-      $process = new Process($command);
-      $process->setTimeout(60 * 100);
-      $process->run();
-      if (!$process->isSuccessful()) {
-      echo 'Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ';
-      } else {
-      echo $process->getOutput();
-      }
-
-      // $fs = new Filesystem();
-      //  $cachedir = dirname(dirname(__FILE__)) . '/app/cache/test';
-      //  $fs->remove($cachedir);
-      }
+    /*
+     * @test
      */
+
+    public function testZ999999999999CloeseTests()
+    {
+        startTests();
+    }
 
     /**
      * {@inheritdoc}
@@ -250,14 +153,5 @@ class AdminpanelControllerTest extends FifreeTest
     protected function tearDown()
     {
         parent::tearDown();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        $this->cleanFilesystem();
-        parent::setUp();
     }
 }
