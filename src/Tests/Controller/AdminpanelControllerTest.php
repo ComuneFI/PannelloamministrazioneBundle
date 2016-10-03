@@ -62,6 +62,8 @@ class AdminpanelControllerTest extends FifreeTest
         $page->pressButton('_submit');
 
         sleep(1);
+        $this->ajaxWait($session);
+        sleep(1);
 
         $page->fillField('bundlename', 'Fi/ProvaBundle');
 
