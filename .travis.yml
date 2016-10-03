@@ -19,6 +19,8 @@ before_script:
   - rm -rf src/Tests/app/cache/dev
 
 script:
+  - rm -rf src/Tests/app/cache/test
+  - rm -rf src/Tests/app/cache/dev
   - ant
 
 after_success:
