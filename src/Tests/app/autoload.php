@@ -14,6 +14,11 @@ function startTestsPA() {
     $process = new Process($command);
     $process->setTimeout(60 * 100);
     $process->run();
+    if (!$process->isSuccessful()) {
+        echo 'Errore nel comando ' . $command . ($process->getErrorOutput()?$process->getErrorOutput():$process->getOutput());
+    } else {
+        echo $process->getOutput();
+    }
 
     cleanFilesystemPA();
 }
