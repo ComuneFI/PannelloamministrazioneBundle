@@ -33,15 +33,18 @@ Scarico dipendenze
 ```
 Preparare il db
 ```
-    php src/Tests/app/console fifree:install admin admin admin@admin.it
+    rm src/Tests/app/dbtest.sqlite
+    php src/Tests/app/console fifree:install admin admin admin@admin.it --env=test
 ```
 Assets install
 ```
-php src/Tests/app/console assets:install src/Tests/app
+php src/Tests/app/console assets:install src/Tests/app --env=test
 ```
 Start server
 ```
-php src/Tests/app/console server:run -d src/Tests/app
+php src/Tests/app/console server:run -d src/Tests/app --env=test 2>&1 &
+sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
+
 ```
 Lanciare i test
 ```
