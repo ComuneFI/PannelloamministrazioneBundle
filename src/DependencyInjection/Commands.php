@@ -156,7 +156,9 @@ class Commands
         $resultcrud = $this->executeCommand('doctrine:generate:crud', $crudparms);
 
         if ($resultcrud['errcode'] == 0) {
-            $fs->rename($viewPath, $viewPathSrc);
+            if ($fs->exists($viewPathSrc)) {
+                $fs->remove($viewPathSrc);
+            }
             $generator = new GenerateCode($this->container);
 
             $retmsg = $generator->generateFormsTemplates($bundlename, $entityform);
