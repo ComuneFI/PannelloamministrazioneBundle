@@ -12,7 +12,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Fi\\PannelloAmministrazioneBundle\\": "src"
+            "Fi\\PannelloAmministrazioneBundle\\": "src",
+            "Fi\\ProvaBundle\\": "src/Tests/src/Fi/ProvaBundle"
         }
     },
     "require": {
