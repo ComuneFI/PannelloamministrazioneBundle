@@ -24,9 +24,9 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test10AdminpanelHomepage()
     {
-        $client = parent::getClientAutorizzato();
-        //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
-        $url = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
+        parent::setUp();
+        $client = $this->getClientAutorizzato();
+        $url = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
 
         $client->request('GET', $url);
         $this->assertTrue(
@@ -40,10 +40,10 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test20AdminpanelGenerateBundle()
     {
+        parent::setUp();
         $browser = 'firefox';
-        $client = parent::getClientAutorizzato();
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
-        $urlRouting = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
+        $urlRouting = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
         $url = 'http://127.0.0.1:8000/web.php'.$urlRouting;
 
         // Choose a Mink driver. More about it in later chapters.
@@ -72,46 +72,6 @@ class AdminpanelControllerTest extends FifreeTest
 
         $session->stop();
     }
-
-    /* public function test30AdminpanelGenerateEntity() {
-      parent::__construct();
-      $this->setClassName(get_class());
-      $browser = 'firefox';
-      $client = $this->getClientAutorizzato();
-      //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
-      $urlRouting = $client->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage');
-      $url = 'http://127.0.0.1:8000/web.php' . $urlRouting;
-
-      // Choose a Mink driver. More about it in later chapters.
-      $driver = new \Behat\Mink\Driver\Selenium2Driver($browser);
-      $session = new Session($driver);
-      // start the session
-      $session->start();
-      $session->visit($url);
-      $page = $session->getPage();
-      sleep(1);
-      // Login
-      $page->fillField('username', 'admin');
-      $page->fillField('password', 'admin');
-      $page->pressButton('_submit');
-
-      sleep(1);
-      $page->fillField('bundlename', 'Fi/ProvaBundle');
-
-      $page->selectFieldOption('entitybundle', 'Fi/ProvaBundle');
-
-      $page->pressButton('adminpanelgenerateentity');
-      $scriptrun = "function(){ $('button:contains(\"Si\")').click();}()";
-      $session->executeScript($scriptrun);
-      $this->ajaxWait($session);
-      //$scriptclose = "function(){ if ($(\"#risultato\").is(\":visible\")) {$(\"#risultato\").dialog(\"close\");}}()";
-      $scriptclose = "function(){ $(\"#risultato\").dialog(\"close\");}()";
-      $session->executeScript($scriptclose);
-
-      //$this->generateentities();
-      $this->clearcache();
-      $session->stop();
-      } */
 
     /*
      * @test
