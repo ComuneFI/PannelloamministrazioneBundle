@@ -17,7 +17,7 @@
         }
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "fi/osbundle": "~2.0"
     },
     "require-dev": {
@@ -48,15 +48,7 @@
         "behat/mink-goutte-driver": "~1.1",
         "se/selenium-server-standalone": "^2.53",
         "phpunit/phpunit": "^5.5",
-        "fi/fifreecorebundle": "~2.0",
-        "fi/osbundle": "~2.0",
-        "friendsofsymfony/user-bundle": "2.0.*@dev",
-        "vich/uploader-bundle": "~1.0",
-        "tecnickcom/tcpdf": "^6.2",
-        "phpoffice/phpexcel": "^1.8",
-        "phpoffice/phpword": "^0.13.0",
-        "oneup/flysystem-bundle": "^1.4"
-
+        "fi/fifreecorebundle": "~2.0"
     },
     "extra": {
         "branch-alias": {
