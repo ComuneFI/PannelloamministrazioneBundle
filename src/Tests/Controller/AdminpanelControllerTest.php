@@ -25,7 +25,7 @@ class AdminpanelControllerTest extends FifreeTest
     public function test10AdminpanelHomepage()
     {
         $client = $this->getClientAutorizzato();
-        $url = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
+        $url = parent::getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
 
         $client->request('GET', $url);
         $this->assertTrue(
@@ -41,7 +41,7 @@ class AdminpanelControllerTest extends FifreeTest
     {
         $browser = 'firefox';
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
-        $urlRouting = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
+        $urlRouting = parent::getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
         $url = 'http://127.0.0.1:8000/web.php'.$urlRouting;
 
         // Choose a Mink driver. More about it in later chapters.
@@ -77,7 +77,7 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test100PannelloAmministrazioneMain()
     {
-        $container = $this->getContainer();
+        $container = parent::getContainer();
         /* @var $userManager \FOS\UserBundle\Doctrine\UserManager */
         $userManager = $container->get('fos_user.user_manager');
         /* @var $loginManager \FOS\UserBundle\Security\LoginManager */
