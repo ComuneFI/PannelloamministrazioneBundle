@@ -24,7 +24,6 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test10AdminpanelHomepage()
     {
-        parent::setUp();
         $client = $this->getClientAutorizzato();
         $url = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
 
@@ -40,7 +39,6 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test20AdminpanelGenerateBundle()
     {
-        parent::setUp();
         $browser = 'firefox';
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $urlRouting = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
@@ -79,7 +77,6 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test100PannelloAmministrazioneMain()
     {
-        parent::setUp();
         $container = $this->getContainer();
         /* @var $userManager \FOS\UserBundle\Doctrine\UserManager */
         $userManager = $container->get('fos_user.user_manager');
