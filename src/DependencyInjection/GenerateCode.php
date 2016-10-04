@@ -67,7 +67,7 @@ class GenerateCode
     {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $source = $prjPath.'/vendor/fi/fifreecorebundle/src/Fi/CoreBundle/FiTemplate/views/'.$view.'.html.twig';
+        $source = $prjPath.'/src/Fi/CoreBundle/FiTemplate/views/'.$view.'.html.twig';
         if (!$fs->exists($source)) {
             $source = $prjPath . '/vendor/fi/fifreecorebundle/src/Fi/CoreBundle/FiTemplate/views/' . $view . '.html.twig';
         }
