@@ -18,7 +18,9 @@
     },
     "require": {
         "php": ">=5.5.0",
-        "fi/osbundle": "~2.0"
+        "fi/osbundle": "~2.0",
+        "mysql-workbench-schema-exporter/mysql-workbench-schema-exporter": "^3.0",
+        "mysql-workbench-schema-exporter/doctrine2-exporter": "^3.0"
     },
     "require-dev": {
         "symfony/symfony": "2.8.*",
