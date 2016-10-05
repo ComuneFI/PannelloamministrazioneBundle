@@ -18,9 +18,7 @@
     },
     "require": {
         "php": ">=5.5.0",
-        "fi/osbundle": "~2.0",
-        "friendsofsymfony/user-bundle": "2.0.*@dev",
-        "fi/fifreecorebundle": "~2.0"
+        "fi/osbundle": "~2.0"
     },
     "require-dev": {
         "symfony/symfony": "2.8.*",
@@ -49,7 +47,8 @@
         "behat/mink-extension": "^2.2",
         "behat/mink-goutte-driver": "~1.1",
         "se/selenium-server-standalone": "^2.53",
-        "phpunit/phpunit": "^5.5"
+        "phpunit/phpunit": "^5.5",
+        "fi/fifreecorebundle": "~2.0"
     },
     "extra": {
         "branch-alias": {
