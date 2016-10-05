@@ -34,6 +34,8 @@ class AdminpanelControllerTest extends FifreeTest
 
     public function test20AdminpanelGenerateBundle()
     {
+        $this->setContainer(null);
+        $this->setUp();
         $browser = 'firefox';
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $urlRouting = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
