@@ -40,8 +40,6 @@
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "sensio/generator-bundle": "~2.0",
-        "mysql-workbench-schema-exporter/mysql-workbench-schema-exporter": "^3.0",
-        "mysql-workbench-schema-exporter/doctrine2-exporter": "^3.0",
         "behat/behat": "3.0.*",
         "behat/mink-selenium2-driver": "1.2.*",
         "behat/symfony2-extension": "2.0.*",
