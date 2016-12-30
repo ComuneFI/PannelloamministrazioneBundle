@@ -108,7 +108,7 @@ class Commands
 
         $cmdoutputprod = $this->getProcessOutput($processprod);
 
-        $commandtest = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear --env=test --no-debug';
+        $commandtest = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear --env=prod --no-debug';
 
         $processtest = new Process($commandprod);
         $processtest->setTimeout(60 * 100);
