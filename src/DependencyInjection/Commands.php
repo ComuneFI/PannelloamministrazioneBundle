@@ -227,5 +227,4 @@ class Commands
             return ';';
         }
     }
-
 }
