@@ -18,10 +18,9 @@ before_script:
   - chmod 777 src/Tests/app/dbtest.sqlite
   - rm -rf src/Tests/app/cache/test
   - rm -rf src/Tests/app/cache/dev
+  - chmod +w app/cache app/logs src/ app/AppKernel.php app/config/routing.yml
 
 script:
-  - rm -rf src/Tests/app/cache/test
-  - rm -rf src/Tests/app/cache/dev
   - ant
 
 after_success:
