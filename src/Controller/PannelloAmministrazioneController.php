@@ -21,7 +21,7 @@ class PannelloAmministrazioneController extends Controller
     {
         $finder = new Finder();
         $fs = new Filesystem();
-        $this->apppaths = new ProjectPath($this);
+        $this->apppaths = new ProjectPath($this->container);
 
         $projectDir = $this->apppaths->getRootPath();
         $bundlelists = $this->container->getParameter('kernel.bundles');
