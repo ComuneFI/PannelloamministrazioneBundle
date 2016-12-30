@@ -106,6 +106,8 @@ class Commands
         $processprod->run();
 
         $cmdoutputprod = $this->getProcessOutput($processprod);
+        
+        // aggiungere la pulizia della cache di test
 
         return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
     }
