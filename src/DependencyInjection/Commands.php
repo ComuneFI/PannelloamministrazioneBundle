@@ -99,6 +99,14 @@ class Commands
 
         $cmdoutputdev = $this->getProcessOutput($processdev);
 
+        $commandtest = 'cd '.$pathsrc.$sepchr.$phpPath.' console cache:clear --env=test --no-debug';
+
+        $processtest = new Process($commandtest);
+        $processtest->setTimeout(60 * 100);
+        $processtest->run();
+
+        $cmdoutputtest = $this->getProcessOutput($processtest);
+        
         $commandprod = 'cd '.$pathsrc.$sepchr.$phpPath.' console cache:clear --env=prod --no-debug';
 
         $processprod = new Process($commandprod);
@@ -109,7 +117,7 @@ class Commands
         
         // aggiungere la pulizia della cache di test
 
-        return $commanddev.$cmdoutputdev.$commandprod.$cmdoutputprod;
+        return $commanddev.$cmdoutputdev.$commandtest.$cmdoutputtest.$commandprod.$cmdoutputprod;
     }
 
     private function getProcessOutput($process)
