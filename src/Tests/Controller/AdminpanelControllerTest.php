@@ -40,7 +40,7 @@ class AdminpanelControllerTest extends FifreeTest
         //$url = $client->getContainer()->get('router')->generate('Ffprincipale');
         $client = $this->getClientAutorizzato();
         $urlRouting = $this->getContainer()->get('router')->generate('fi_pannello_amministrazione_homepage'/* , array('parms' => 'value') */);
-        $url = 'http://127.0.0.1:8000/web.php'.$urlRouting;
+        $url = 'http://127.0.0.1:8000'.$urlRouting;
 
         // Choose a Mink driver. More about it in later chapters.
         $driver = new \Behat\Mink\Driver\Selenium2Driver($browser);
