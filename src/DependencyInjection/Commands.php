@@ -110,7 +110,7 @@ class Commands
 
         $commandtest = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear --env=test --no-debug';
 
-        $processtest = new Process($commandtest);
+        $processtest = new Process($commandprod);
         $processtest->setTimeout(60 * 100);
         $processtest->run();
 
