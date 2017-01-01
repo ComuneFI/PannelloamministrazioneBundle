@@ -231,5 +231,4 @@ class Commands
             return ';';
         }
     }
-
 }
