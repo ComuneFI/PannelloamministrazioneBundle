@@ -16,7 +16,14 @@ class LockSystem
 
     public function getFileLock()
     {
-        return $this->container->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'running.run';
+        $cachedir = $this->container->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . 'cache';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($cachedir)) {
+                $cachefile = '..' . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache';
+                $cachedir = $this->container->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . $cachefile;
+            }
+        }
+        return $cachedir . DIRECTORY_SEPARATOR . 'running.run';
     }
 
     public function isLockedFile()
@@ -36,7 +43,7 @@ class LockSystem
     public function lockedFunctionMessage()
     {
         return new Response(
-            "<h2 style='color: orange;
+                "<h2 style='color: orange;
 '>E' già in esecuzione un comando, riprova tra qualche secondo!</h2>"
         );
     }

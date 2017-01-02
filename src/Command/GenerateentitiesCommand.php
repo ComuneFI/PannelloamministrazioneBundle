@@ -181,7 +181,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     private function getExportJsonFile()
     {
         $fs = new Filesystem();
-        $exportJson = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'export.json';
+        $cachedir = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'cache';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($cachedir)) {
+                $cachedir = $this->apppaths->getVarPath() . DIRECTORY_SEPARATOR . 'cache';
+            }
+        }
+        $exportJson = $cachedir . DIRECTORY_SEPARATOR . 'export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
         }

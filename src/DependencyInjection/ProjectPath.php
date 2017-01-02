@@ -35,6 +35,7 @@ class ProjectPath
         $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
         $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
         $this->appdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'app';
+        $this->vardir = $this->getProjectPath().DIRECTORY_SEPARATOR.'var';
 
         return $path;
     }
@@ -62,5 +63,10 @@ class ProjectPath
     public function getAppPath()
     {
         return $this->appdir;
+    }
+    
+    public function getVarPath()
+    {
+        return $this->vardir;
     }
 }
