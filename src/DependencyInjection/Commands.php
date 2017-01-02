@@ -24,15 +24,8 @@ class Commands
 
     public function generateEntity($wbFile, $bundlePath)
     {
-        $prjPath = $this->apppath->getRootPath();
-        $console = $prjPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . "console";
+        $console = $this->apppath->getConsole();
         $pannellocmd = "pannelloamministrazione:generateentities $wbFile $bundlePath";
-        /* Questo codice per versioni che usano un symfony 2 o 3 */
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            if (!file_exists($console)) {
-                $console = $prjPath . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . "console";
-            }
-        }
 
         $scriptGenerator = $console . " " . $pannellocmd;
 
