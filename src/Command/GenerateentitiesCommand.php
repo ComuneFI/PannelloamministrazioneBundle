@@ -51,7 +51,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $schemaupdate = true;
         }
 
-        $wbFile = $this->apppaths->getDocPath . DIRECTORY_SEPARATOR . $mwbfile;
+        $wbFile = $this->apppaths->getDocPath() . DIRECTORY_SEPARATOR . $mwbfile;
         $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
 
         if ($checkprerequisiti < 0) {
