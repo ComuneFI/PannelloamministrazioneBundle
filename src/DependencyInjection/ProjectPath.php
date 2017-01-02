@@ -43,7 +43,7 @@ class ProjectPath
                         DIRECTORY_SEPARATOR . 'bin';
             }
         }
-        if (!$bindir) {
+        if (!file_exists($bindir)) {
             throw new \Exception("Cartella Bin non trovata", -100);
         }
         return $bindir;
@@ -52,7 +52,7 @@ class ProjectPath
     public function getVendorBinPath()
     {
         $vendorbindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin';
-        if (!$vendorbindir) {
+        if (!file_exists($vendorbindir)) {
             throw new \Exception("Cartella Bin in vendor non trovata", -100);
         }
         return $vendorbindir;
@@ -90,6 +90,9 @@ class ProjectPath
                 $cachedir = $this->getVarPath() . DIRECTORY_SEPARATOR . 'cache';
             }
         }
+        if (!file_exists($cachedir)) {
+            throw new \Exception("Cache non trovata", -100);
+        }
         return $cachedir;
     }
 
@@ -102,7 +105,7 @@ class ProjectPath
                 $console = $this->getBinPath() . DIRECTORY_SEPARATOR . 'console';
             }
         }
-        if (!$console) {
+        if (!file_exists($console)) {
             throw new \Exception("Console non trovata", -100);
         }
         return $console;
