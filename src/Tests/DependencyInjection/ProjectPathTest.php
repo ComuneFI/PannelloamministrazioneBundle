@@ -30,5 +30,6 @@ class ProjectPathTest extends FifreeTest
         $this->assertGreaterThan(0, strlen($paths->getProjectPath()));
         $this->assertGreaterThan(0, strlen($paths->getRootPath()));
         $this->assertGreaterThan(0, strlen($paths->getVarPath()));
+        $this->assertGreaterThan(0, strlen($paths->getVendorBinPath()));
     }
 }

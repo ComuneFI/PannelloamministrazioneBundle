@@ -49,6 +49,15 @@ class ProjectPath
         return $bindir;
     }
 
+    public function getVendorBinPath()
+    {
+        $vendorbindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'bin';
+        if (!$vendorbindir) {
+            throw new \Exception("Cartella Bin in vendor non trovata", -100);
+        }
+        return $vendorbindir;
+    }
+
     public function getSrcPath()
     {
         $srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';

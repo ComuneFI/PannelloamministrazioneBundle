@@ -100,11 +100,11 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $wbFile = $this->apppaths->getDocPath() . DIRECTORY_SEPARATOR . $mwbfile;
         $bundlePath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename;
 
-        $viewsPath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
+        $viewsPath = $bundlePath .
                 DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
+        $entityPath = $bundlePath .
                 DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $this->apppaths->getSec() . DIRECTORY_SEPARATOR . $bundlename .
+        $formPath = $bundlePath .
                 DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
         $scriptGenerator = $this->getScriptGenerator();
@@ -408,4 +408,5 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return ';';
         }
     }
+
 }
