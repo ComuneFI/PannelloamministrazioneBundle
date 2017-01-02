@@ -43,6 +43,9 @@ class ProjectPath
                         DIRECTORY_SEPARATOR . 'bin';
             }
         }
+        if (!$bindir) {
+            throw new \Exception("Cartella Bin non trovata", -100);
+        }
         return $bindir;
     }
 
@@ -90,5 +93,9 @@ class ProjectPath
                 $console = $this->getBinPath() . DIRECTORY_SEPARATOR . 'console';
             }
         }
+        if (!$console) {
+            throw new \Exception("Console non trovata", -100);
+        }
+        return $console;
     }
 }
