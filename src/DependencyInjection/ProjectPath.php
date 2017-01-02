@@ -4,6 +4,7 @@ namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
 class ProjectPath
 {
+
     /**
      * La funzione ritorna un array con i path dell'applicazione.
      *
@@ -31,11 +32,12 @@ class ProjectPath
         $rootdir = dirname($this->container->get('kernel')->getRootDir());
         $this->rootdir = $rootdir;
         $this->prjdir = $rootdir;
-        $this->bindir = $this->getProjectPath().DIRECTORY_SEPARATOR.'bin';
-        $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
-        $this->srcdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'src';
-        $this->appdir = $this->getProjectPath().DIRECTORY_SEPARATOR.'app';
-        $this->vardir = $this->getProjectPath().DIRECTORY_SEPARATOR.'var';
+        $this->bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin';
+        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
+        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
+        $this->appdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'app';
+        $this->vardir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'var';
+        $this->docdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'doc';
 
         return $path;
     }
@@ -64,9 +66,26 @@ class ProjectPath
     {
         return $this->appdir;
     }
-    
+
     public function getVarPath()
     {
         return $this->vardir;
+    }
+
+    public function getDocPath()
+    {
+        return $this->docdir;
+    }
+
+    public function getCachePath()
+    {
+        $cachedir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'cache';
+        $cachedir = $this->getAppPath() . DIRECTORY_SEPARATOR . 'cache';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($cachedir)) {
+                $cachedir = $this->getVarPath() . DIRECTORY_SEPARATOR . 'cache';
+            }
+        }
+        return $cachedir;
     }
 }

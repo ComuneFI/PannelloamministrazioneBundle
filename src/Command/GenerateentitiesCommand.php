@@ -51,7 +51,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $schemaupdate = true;
         }
 
-        $wbFile = $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
+        $wbFile = $this->apppaths->getDocPath . DIRECTORY_SEPARATOR . $mwbfile;
         $checkprerequisiti = $this->checkprerequisiti($bundlename, $mwbfile, $output);
 
         if ($checkprerequisiti < 0) {
@@ -88,7 +88,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     private function getDestinationPath($bundlePath)
     {
-        return $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .
+        return $this->apppaths->getSrcPath . DIRECTORY_SEPARATOR .
                 $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
                 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
     }
@@ -97,14 +97,14 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     {
         $fs = new Filesystem();
 
-        $wbFile = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'doc' . DIRECTORY_SEPARATOR . $mwbfile;
-        $bundlePath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename;
+        $wbFile = $this->apppaths->getDocPath() . DIRECTORY_SEPARATOR . $mwbfile;
+        $bundlePath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename;
 
-        $viewsPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
+        $viewsPath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
                 DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
-        $entityPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
+        $entityPath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
                 DIRECTORY_SEPARATOR . 'Entity' . DIRECTORY_SEPARATOR;
-        $formPath = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $bundlename .
+        $formPath = $this->apppaths->getSec() . DIRECTORY_SEPARATOR . $bundlename .
                 DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR;
 
         $scriptGenerator = $this->getScriptGenerator();
@@ -181,12 +181,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     private function getExportJsonFile()
     {
         $fs = new Filesystem();
-        $cachedir = $this->apppaths->getAppPath() . DIRECTORY_SEPARATOR . 'cache';
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            if (!file_exists($cachedir)) {
-                $cachedir = $this->apppaths->getVarPath() . DIRECTORY_SEPARATOR . 'cache';
-            }
-        }
+        $cachedir = $this->apppaths->getCachePath();
         $exportJson = $cachedir . DIRECTORY_SEPARATOR . 'export.json';
         if ($fs->exists($exportJson)) {
             $fs->remove($exportJson);
