@@ -40,7 +40,7 @@ class ProjectPath
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
             if (!file_exists($bindir)) {
                 $bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' .
-                        DIRECTORY_SEPARATOR . 'cache';
+                        DIRECTORY_SEPARATOR . 'bin';
             }
         }
         return $bindir;
@@ -66,12 +66,12 @@ class ProjectPath
 
     public function getDocPath()
     {
-        return $this->docdir;
+        $docdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'doc';
+        return $docdir;
     }
 
     public function getCachePath()
     {
-        $cachedir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'cache';
         $cachedir = $this->getAppPath() . DIRECTORY_SEPARATOR . 'cache';
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
             if (!file_exists($cachedir)) {
