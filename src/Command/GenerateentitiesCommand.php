@@ -88,7 +88,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     private function getDestinationPath($bundlePath)
     {
-        return $this->apppaths->getSrcPath . DIRECTORY_SEPARATOR .
+        return $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR .
                 $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
                 'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
     }
