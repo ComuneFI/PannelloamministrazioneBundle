@@ -42,7 +42,7 @@ class GenerateCode
         $fs = new Filesystem();
         $routingFile = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
                 DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' .
-                DIRECTORY_SEPARATOR . 'routing/' . strtolower($entityform) . '.yml';
+                DIRECTORY_SEPARATOR . 'routing' . DIRECTORY_SEPARATOR . strtolower($entityform) . '.yml';
 
         $code = $this->getRoutingCode(str_replace('/', '', $bundlename), $entityform);
         $fs->dumpFile($routingFile, $code);
