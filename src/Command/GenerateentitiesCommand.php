@@ -215,20 +215,20 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     private function getScriptGenerator()
     {
         if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR .
-                    'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+            $scriptGenerator = $this->apppaths->getVendorBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
         } else {
             $scriptGenerator = $this->apppaths->getBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
             if (!file_exists($scriptGenerator)) {
-                $scriptGenerator = $this->apppaths->getRootPath() . DIRECTORY_SEPARATOR .
-                        'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
+                $scriptGenerator = $this->apppaths->getVendorBinPath() . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
             }
         }
         if (!file_exists($scriptGenerator)) {
             $scriptGenerator = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
                     'vendor' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'mysql-workbench-schema-export';
         }
-
+        if (!$scriptGenerator) {
+            throw new \Exception("mysql-workbench-schema-export non trovato", -100);
+        }
         return $scriptGenerator;
     }
 
@@ -241,13 +241,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $pathsrc = $this->apppaths->getRootPath();
         $sepchr = self::getSeparator();
-        $console = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console';
-        // Questo codice per versioni che usano un symfony 2 o 3
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            if (!file_exists($console)) {
-                $console = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . "console";
-            }
-        }
+        $console = $this->apppaths->getConsole();
         $scriptGenerator = $console . ' doctrine:generate:entities';
         if (OsFunctions::isWindows()) {
             $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -285,13 +279,9 @@ class GenerateentitiesCommand extends ContainerAwareCommand
               $result = $command->run($inputdsu, $output); */
 
             $pathsrc = $this->apppaths->getRootPath();
+            $console = $this->apppaths->getConsole();
             $sepchr = self::getSeparator();
-            // Questo codice per versioni che usano un symfony 2 o 3
-            if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console doctrine:schema:update';
-            } else {
-                $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console doctrine:schema:update';
-            }
+            $scriptGenerator = $console . ' doctrine:schema:update';
 
             if (OsFunctions::isWindows()) {
                 $phpPath = OsFunctions::getPHPExecutableFromPath();
@@ -322,14 +312,10 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $output->writeln('<info>Pulizia cache...</info>');
         $pathsrc = $this->apppaths->getRootPath();
         $sepchr = self::getSeparator();
-        // Questo codice per versioni che usano un symfony 2 o 3
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console cache:clear';
-        } else {
-            $scriptGenerator = $pathsrc . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'console cache:clear';
-        }
+        $console = $this->apppaths->getConsole();
+        $ccGenerator = $console . ' cache:clear';
 
-        if (file_exists($scriptGenerator)) {
+        if (file_exists($ccGenerator)) {
             if (OsFunctions::isWindows()) {
                 $phpPath = OsFunctions::getPHPExecutableFromPath();
             } else {
@@ -337,7 +323,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             }
 
             $command = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator;
+                    . $phpPath . ' ' . $ccGenerator;
             /* @var $process \Symfony\Component\Process\Process */
             $process = new Process($command);
             $process->setTimeout(60 * 100);
