@@ -21,7 +21,7 @@ class GenerateCode
         $fs = new Filesystem();
         //Controller
         $controlleFile = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR .
-                $bundlename . DIRECTORY_SEPARATOR . 'Controller/' . DIRECTORY_SEPARATOR .
+                $bundlename . DIRECTORY_SEPARATOR . 'Controller' . DIRECTORY_SEPARATOR .
                 $entityform . 'Controller.php';
         $code = $this->getControllerCode(str_replace('/', '\\', $bundlename), $entityform);
         $fs->dumpFile($controlleFile, $code);
