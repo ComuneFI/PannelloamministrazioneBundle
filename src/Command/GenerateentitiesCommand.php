@@ -394,5 +394,4 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return ';';
         }
     }
-
 }
