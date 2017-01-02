@@ -15,31 +15,13 @@ class ProjectPath
     private $container;
     private $rootdir;
     private $prjdir;
-    private $bindir;
-    private $srcdir;
-    private $appdir;
 
     public function __construct($container)
     {
         $this->container = $container;
-        $this->getPaths();
-    }
-
-    private function getPaths()
-    {
-        $path = array();
-
         $rootdir = dirname($this->container->get('kernel')->getRootDir());
         $this->rootdir = $rootdir;
         $this->prjdir = $rootdir;
-        $this->bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin';
-        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
-        $this->srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
-        $this->appdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'app';
-        $this->vardir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'var';
-        $this->docdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'doc';
-
-        return $path;
     }
 
     public function getRootPath()
@@ -54,22 +36,32 @@ class ProjectPath
 
     public function getBinPath()
     {
-        return $this->bindir;
+        $bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($bindir)) {
+                $bindir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'vendor' .
+                        DIRECTORY_SEPARATOR . 'cache';
+            }
+        }
+        return $bindir;
     }
 
     public function getSrcPath()
     {
-        return $this->srcdir;
+        $srcdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'src';
+        return $srcdir;
     }
 
     public function getAppPath()
     {
-        return $this->appdir;
+        $appdir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'app';
+        return $appdir;
     }
 
     public function getVarPath()
     {
-        return $this->vardir;
+        $vardir = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'var';
+        return $vardir;
     }
 
     public function getDocPath()
@@ -87,5 +79,16 @@ class ProjectPath
             }
         }
         return $cachedir;
+    }
+
+    public function getConsole()
+    {
+        $console = $this->getAppPath() . DIRECTORY_SEPARATOR . 'console';
+        // Questo codice per versioni che usano un symfony 2 o 3
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($console)) {
+                $console = $this->getBinPath() . DIRECTORY_SEPARATOR . 'console';
+            }
+        }
     }
 }

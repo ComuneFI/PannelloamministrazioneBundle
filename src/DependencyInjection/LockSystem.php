@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LockSystem
 {
+
     private $container;
 
     public function __construct($container)
@@ -16,13 +17,8 @@ class LockSystem
 
     public function getFileLock()
     {
-        $cachedir = $this->container->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . 'cache';
-        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
-            if (!file_exists($cachedir)) {
-                $cachefile = '..' . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache';
-                $cachedir = $this->container->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . $cachefile;
-            }
-        }
+        $prjpath = new ProjectPath($this->container);
+        $cachedir = $prjpath->getCachePath();
         return $cachedir . DIRECTORY_SEPARATOR . 'running.run';
     }
 
@@ -42,10 +38,8 @@ class LockSystem
 
     public function lockedFunctionMessage()
     {
-        return new Response(
-                "<h2 style='color: orange;
-'>E' già in esecuzione un comando, riprova tra qualche secondo!</h2>"
-        );
+        $msg = "<h2 style='color: orange;'>E' già in esecuzione un comando, riprova tra qualche secondo!</h2>";
+        return new Response($msg);
     }
 
     public function forceCleanLockFile()
