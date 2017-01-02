@@ -95,7 +95,7 @@ class Commands
 
         $cmdoutputdev = $this->getProcessOutput($processdev);
 
-        $commandtest = $phpPath . ' ' . $console . '  cache:clear --env=test --no-debug';
+        $commandtest = $phpPath . ' ' . $console . '  cache:clear --env=test';
 
         $processtest = new Process($commandtest);
         $processtest->setTimeout(60 * 100);
