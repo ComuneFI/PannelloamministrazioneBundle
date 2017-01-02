@@ -85,10 +85,9 @@ class Commands
         } else {
             $phpPath = OsFunctions::getPHPExecutableFromPath();
         }
-        $pathsrc = $this->apppath->getAppPath();
-        $sepchr = self::getSeparator();
-
-        $commanddev = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear';
+        $console = $this->apppath->getConsole();
+        
+        $commanddev = $phpPath . ' ' . $console . '  cache:clear';
 
         $processdev = new Process($commanddev);
         $processdev->setTimeout(60 * 100);
@@ -96,7 +95,7 @@ class Commands
 
         $cmdoutputdev = $this->getProcessOutput($processdev);
 
-        $commandtest = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear --env=test --no-debug';
+        $commandtest = $phpPath . ' ' . $console . '  cache:clear --env=test --no-debug';
 
         $processtest = new Process($commandtest);
         $processtest->setTimeout(60 * 100);
@@ -104,7 +103,7 @@ class Commands
 
         $cmdoutputtest = $this->getProcessOutput($processtest);
 
-        $commandprod = 'cd ' . $pathsrc . $sepchr . $phpPath . ' console cache:clear --env=prod --no-debug';
+        $commandprod = $phpPath . ' ' . $console . '  cache:clear --env=prod --no-debug';
 
         $processprod = new Process($commandprod);
         $processprod->setTimeout(60 * 100);
@@ -224,4 +223,5 @@ class Commands
             return ';';
         }
     }
+
 }
