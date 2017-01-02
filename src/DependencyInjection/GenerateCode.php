@@ -6,6 +6,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class GenerateCode
 {
+
     private $container;
     private $apppath;
 
@@ -18,9 +19,10 @@ class GenerateCode
     public function generateFormsTemplates($bundlename, $entityform)
     {
         $fs = new Filesystem();
-        $prjPath = $this->apppath->getRootPath();
         //Controller
-        $controlleFile = $prjPath.'/src/'.$bundlename.'/Controller/'.$entityform.'Controller.php';
+        $controlleFile = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR .
+                $bundlename . DIRECTORY_SEPARATOR . 'Controller/' . DIRECTORY_SEPARATOR .
+                $entityform . 'Controller.php';
         $code = $this->getControllerCode(str_replace('/', '\\', $bundlename), $entityform);
         $fs->dumpFile($controlleFile, $code);
 
@@ -38,9 +40,9 @@ class GenerateCode
     {
         //Routing del form
         $fs = new Filesystem();
-        $prjPath = $this->apppath->getRootPath();
-
-        $routingFile = $prjPath.'/src/'.$bundlename.'/Resources/config/routing/'.strtolower($entityform).'.yml';
+        $routingFile = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename .
+                DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config' .
+                DIRECTORY_SEPARATOR . 'routing/' . strtolower($entityform) . '.yml';
 
         $code = $this->getRoutingCode(str_replace('/', '', $bundlename), $entityform);
         $fs->dumpFile($routingFile, $code);
@@ -48,17 +50,18 @@ class GenerateCode
         //Fixed: Adesso questa parte la fa da solo symfony (05/2015)
         //Refixed dalla versione 2.8 non lo fa più (04/2016)
 
-        $dest = $prjPath.'/src/'.$bundlename.'/Resources/config/routing.yml';
+        $dest = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
+                'Resources' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'routing.yml';
 
-        $routingContext = "\n".str_replace('/', '', $bundlename).'_'.$entityform.': '."\n".
-                '  resource: "@'.str_replace('/', '', $bundlename).'/Resources/config/routing/'.strtolower($entityform).'.yml"'."\n".
-                '  prefix: /'.$entityform."\n";
+        $routingContext = "\n" . str_replace('/', '', $bundlename) . '_' . $entityform . ': ' . "\n" .
+                '  resource: "@' . str_replace('/', '', $bundlename) . '/Resources/config/routing/' . strtolower($entityform) . '.yml"' . "\n" .
+                '  prefix: /' . $entityform . "\n";
 
         //Si fa l'append nel file routing del bundle per aggiungerci le rotte della tabella che stiamo gestendo
         $fh = fopen($dest, 'a');
         fwrite($fh, $routingContext);
         fclose($fh);
-        $retmsg = 'Routing '.$dest." generato automaticamente da pannelloammonistrazionebundle\n\n* * * * CLEAR CACHE * * * *\n";
+        $retmsg = 'Routing ' . $dest . " generato automaticamente da pannelloammonistrazionebundle\n\n* * * * CLEAR CACHE * * * *\n";
 
         return $retmsg;
     }
@@ -67,11 +70,19 @@ class GenerateCode
     {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $source = $prjPath.'/src/Fi/CoreBundle/FiTemplate/views/'.$view.'.html.twig';
+        $source = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . 'Fi' . DIRECTORY_SEPARATOR .
+                'CoreBundle' . DIRECTORY_SEPARATOR . 'FiTemplate' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
+                $view . '.html.twig';
         if (!$fs->exists($source)) {
-            $source = $prjPath . '/vendor/fi/fifreecorebundle/src/Fi/CoreBundle/FiTemplate/views/' . $view . '.html.twig';
+            $source = $prjPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi' . DIRECTORY_SEPARATOR .
+                    'fifreecorebundle' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Fi' . DIRECTORY_SEPARATOR .
+                    'CoreBundle' . DIRECTORY_SEPARATOR . 'FiTemplate' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
+                    $view . '.html.twig';
         }
-        $dest = $prjPath.'/src/'.$bundlename.'/Resources/views/'.$entityform.'/'.$view.'.html.twig';
+        $dest = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
+                'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
+                $entityform . DIRECTORY_SEPARATOR . $view . '.html.twig';
+
         $fs->copy($source, $dest, true);
     }
 
