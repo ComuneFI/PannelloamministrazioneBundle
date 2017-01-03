@@ -101,30 +101,20 @@ class Commands
             $fs->remove($viewPathSrc);
             $generator = new GenerateCode($this->container);
 
-            $retmsg = $generator->generateFormsTemplates($bundlename, $entityform);
+            $retmsggenerateform = $generator->generateFormsTemplates($bundlename, $entityform);
 
             $generator->generateFormsDefaultTableValues($entityform);
 
             $appviews = $appPath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'views';
-            if ($fs->exists($appviews)) {
-                $finder = new Finder();
-                $ret = $finder->files()->in($appviews);
-                if (count($ret) == 0) {
-                    $fs->remove($appviews);
-                }
-            }
+            $this->cleanTemplatePath($appviews);
+
             $resourcesviews = $appPath . DIRECTORY_SEPARATOR . 'Resources';
-            if ($fs->exists($resourcesviews)) {
-                $finder = new Finder();
-                $ret = $finder->files()->in($resourcesviews);
-                if (count($ret) == 0) {
-                    $fs->remove($resourcesviews);
-                }
-            }
+            $this->cleanTemplatePath($resourcesviews);
+
             $retmsg = array(
                 'errcode' => 0,
                 'command' => $resultcrud['command'],
-                'message' => $resultcrud['message'] . $retmsg,
+                'message' => $resultcrud['message'] . $retmsggenerateform,
             );
         } else {
             $retmsg = array(
@@ -135,6 +125,19 @@ class Commands
         }
 
         return $retmsg;
+    }
+
+    private function cleanTemplatePath($path)
+    {
+        $fs = new Filesystem();
+        $ret = 0;
+        if ($fs->exists($path)) {
+            $finder = new Finder();
+            $ret = $finder->files()->in($path);
+            if (count($ret) == 0) {
+                $fs->remove($path);
+            }
+        }
     }
 
     public function executeCommand($command, array $options = array())
