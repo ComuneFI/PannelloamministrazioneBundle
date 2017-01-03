@@ -96,6 +96,20 @@ class ProjectPath
         return $cachedir;
     }
 
+    public function getLogsPath()
+    {
+        $logsdir = $this->getAppPath() . DIRECTORY_SEPARATOR . 'logs';
+        if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {
+            if (!file_exists($logsdir)) {
+                $logsdir = $this->getVarPath() . DIRECTORY_SEPARATOR . 'logs';
+            }
+        }
+        if (!file_exists($logsdir)) {
+            throw new \Exception("Logs non trovata", -100);
+        }
+        return $logsdir;
+    }
+
     public function getConsole()
     {
         $console = $this->getAppPath() . DIRECTORY_SEPARATOR . 'console';
