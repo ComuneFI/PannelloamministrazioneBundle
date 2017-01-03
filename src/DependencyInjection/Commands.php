@@ -60,88 +60,24 @@ class Commands
             $command . '</i><br/>' . str_replace("\n", '<br/>', $process->getOutput()) . '</pre>',);
     }
 
-    public function aggiornaSchemaDatabase()
-    {
-        $result = $this->executeCommand('doctrine:schema:update', array('--force' => true));
-
-        return $result;
-    }
-
-    private function getOutput($fpOutupStream)
-    {
-        fseek($fpOutupStream, 0);
-        $output = '';
-        while (!feof($fpOutupStream)) {
-            $output = $output . fread($fpOutupStream, 4096);
-        }
-
-        return $output;
-    }
-
-    public function clearcache()
-    {
-        if (!OsFunctions::isWindows()) {
-            $phpPath = '/usr/bin/php';
-        } else {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        }
-        $console = $this->apppath->getConsole();
-        
-        $commanddev = $phpPath . ' ' . $console . '  cache:clear';
-
-        $processdev = new Process($commanddev);
-        $processdev->setTimeout(60 * 100);
-        $processdev->run();
-
-        $cmdoutputdev = $this->getProcessOutput($processdev);
-
-        $commandtest = $phpPath . ' ' . $console . '  cache:clear --env=test';
-
-        $processtest = new Process($commandtest);
-        $processtest->setTimeout(60 * 100);
-        $processtest->run();
-
-        $cmdoutputtest = $this->getProcessOutput($processtest);
-
-        $commandprod = $phpPath . ' ' . $console . '  cache:clear --env=prod --no-debug';
-
-        $processprod = new Process($commandprod);
-        $processprod->setTimeout(60 * 100);
-        $processprod->run();
-
-        $cmdoutputprod = $this->getProcessOutput($processprod);
-
-        // aggiungere la pulizia della cache di test
-
-        return $commanddev . $cmdoutputdev . $commandtest . $cmdoutputtest . $commandprod . $cmdoutputprod;
-    }
-
-    private function getProcessOutput($process)
-    {
-        $erroroutput = $process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput();
-        $output = ($process->isSuccessful()) ? $process->getOutput() : $erroroutput;
-
-        return $output;
-    }
-
     public function generateFormCrud($bundlename, $entityform)
     {
         /* @var $fs \Symfony\Component\Filesystem\Filesystem */
         $fs = new Filesystem();
-        $prjPath = $this->apppath->getRootPath();
-        $srcPath = $prjPath . DIRECTORY_SEPARATOR . 'src';
-        $appPath = $prjPath . DIRECTORY_SEPARATOR . 'app';
+        $srcPath = $this->apppath->getSrcPath();
+        $appPath = $this->apppath->getAppPath();
         if (!is_writable($appPath)) {
             return array('errcode' => -1, 'message' => $appPath . ' non scrivibile');
         }
         $formPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
                 'Form' . DIRECTORY_SEPARATOR . $entityform . 'Type.php';
-        $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
-                'Controller' . DIRECTORY_SEPARATOR . $entityform . 'Controller.php';
 
         if ($fs->exists($formPath)) {
             return array('errcode' => -1, 'message' => $formPath . ' esistente');
         }
+
+        $controllerPath = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
+                'Controller' . DIRECTORY_SEPARATOR . $entityform . 'Controller.php';
 
         if ($fs->exists($controllerPath)) {
             return array('errcode' => -1, 'message' => $controllerPath . ' esistente');
@@ -149,9 +85,11 @@ class Commands
 
         $viewPathSrc = $srcPath . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
                 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $entityform;
+
         if ($fs->exists($viewPathSrc)) {
             return array('errcode' => -1, 'message' => $viewPathSrc . ' esistente');
         }
+
         $crudparms = array(
             '--entity' => str_replace('/', '', $bundlename) . ':' . $entityform,
             '--route-prefix' => $entityform,
@@ -213,6 +151,68 @@ class Commands
         fclose($fp);
 
         return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
+    }
+
+    public function clearcache()
+    {
+        if (!OsFunctions::isWindows()) {
+            $phpPath = '/usr/bin/php';
+        } else {
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        }
+        $console = $this->apppath->getConsole();
+
+        $commanddev = $phpPath . ' ' . $console . ' cache:clear';
+
+        $processdev = new Process($commanddev);
+        $processdev->setTimeout(60 * 100);
+        $processdev->run();
+
+        $cmdoutputdev = $this->getProcessOutput($processdev);
+
+        $commandtest = $phpPath . ' ' . $console . ' cache:clear --env=test';
+
+        $processtest = new Process($commandtest);
+        $processtest->setTimeout(60 * 100);
+        $processtest->run();
+
+        $cmdoutputtest = $this->getProcessOutput($processtest);
+
+        $commandprod = $phpPath . ' ' . $console . ' cache:clear --env=prod --no-debug';
+
+        $processprod = new Process($commandprod);
+        $processprod->setTimeout(60 * 100);
+        $processprod->run();
+
+        $cmdoutputprod = $this->getProcessOutput($processprod);
+
+        return $commanddev . $cmdoutputdev . $commandtest . $cmdoutputtest . $commandprod . $cmdoutputprod;
+    }
+
+    public function aggiornaSchemaDatabase()
+    {
+        $result = $this->executeCommand('doctrine:schema:update', array('--force' => true));
+
+        return $result;
+    }
+
+    private function getOutput($fpOutupStream)
+    {
+        fseek($fpOutupStream, 0);
+        $output = '';
+        while (!feof($fpOutupStream)) {
+            $output = $output . fread($fpOutupStream, 4096);
+        }
+
+        return $output;
+    }
+
+    private function getProcessOutput($process)
+    {
+        $erroroutput = $process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput();
+        $output = ($process->isSuccessful()) ? $process->getOutput() : $erroroutput;
+
+        return $output;
     }
 
     private static function getSeparator()
