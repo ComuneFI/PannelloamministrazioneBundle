@@ -155,6 +155,17 @@ class Commands
 
     public function clearcache()
     {
+        $cmdoutput = "";
+        $envs = array("dev", "test", "prod");
+        foreach ($envs as $env) {
+            $cmdoutput = $cmdoutput . $this->clearcacheEnv($env);
+        }
+
+        return $cmdoutput;
+    }
+
+    private function clearcacheEnv($env = "dev")
+    {
         if (!OsFunctions::isWindows()) {
             $phpPath = '/usr/bin/php';
         } else {
@@ -162,31 +173,18 @@ class Commands
         }
         $console = $this->apppath->getConsole();
 
-        $commanddev = $phpPath . ' ' . $console . ' cache:clear';
+        $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;
+        if ($env == "prod") {
+            $command = $command . ' --no-debug';
+        }
 
-        $processdev = new Process($commanddev);
-        $processdev->setTimeout(60 * 100);
-        $processdev->run();
+        $process = new Process($command);
+        $process->setTimeout(60 * 100);
+        $process->run();
 
-        $cmdoutputdev = $this->getProcessOutput($processdev);
+        $cmdoutput = $this->getProcessOutput($process);
 
-        $commandtest = $phpPath . ' ' . $console . ' cache:clear --env=test';
-
-        $processtest = new Process($commandtest);
-        $processtest->setTimeout(60 * 100);
-        $processtest->run();
-
-        $cmdoutputtest = $this->getProcessOutput($processtest);
-
-        $commandprod = $phpPath . ' ' . $console . ' cache:clear --env=prod --no-debug';
-
-        $processprod = new Process($commandprod);
-        $processprod->setTimeout(60 * 100);
-        $processprod->run();
-
-        $cmdoutputprod = $this->getProcessOutput($processprod);
-
-        return $commanddev . $cmdoutputdev . $commandtest . $cmdoutputtest . $commandprod . $cmdoutputprod;
+        return $command . $cmdoutput;
     }
 
     public function aggiornaSchemaDatabase()
