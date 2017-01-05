@@ -76,7 +76,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         $output->writeln('<info>Entities yml create</info>');
-        $this->clearCache($output);
+        //$this->clearCache($output);
 
         $generatecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
         if ($generatecheck < 0) {
@@ -239,8 +239,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         //$application = new Application($this->getContainer()->get('kernel'));
         //$application->setAutoExit(false);
 
-        $pathsrc = $this->apppaths->getRootPath();
-        $sepchr = self::getSeparator();
         $console = $this->apppaths->getConsole();
         $scriptGenerator = $console . ' doctrine:generate:entities';
         if (OsFunctions::isWindows()) {
@@ -249,8 +247,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             $phpPath = '/usr/bin/php';
         }
 
-        $command = 'cd ' . $pathsrc . $sepchr
-                . $phpPath . ' ' . $scriptGenerator . ' --no-backup ' . str_replace('/', '', $bundlename)
+        $command = $phpPath . ' ' . $scriptGenerator . ' --no-backup ' . str_replace('/', '', $bundlename)
                 . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
         /* @var $process \Symfony\Component\Process\Process */
         $process = new Process($command);
@@ -278,9 +275,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
               $inputdsu = new ArrayInput(array('--force' => true, '--em' => $emdest));
               $result = $command->run($inputdsu, $output); */
 
-            $pathsrc = $this->apppaths->getRootPath();
-            $console = $this->apppaths->getConsole();
-            $sepchr = self::getSeparator();
             $scriptGenerator = $console . ' doctrine:schema:update';
 
             if (OsFunctions::isWindows()) {
@@ -288,8 +282,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             } else {
                 $phpPath = '/usr/bin/php';
             }
-            $command = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest
+            $command = $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest
                     . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
             /* @var $process \Symfony\Component\Process\Process */
             $process = new Process($command);
@@ -307,35 +300,35 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function clearCache($output)
-    {
-        $output->writeln('<info>Pulizia cache...</info>');
-        $pathsrc = $this->apppaths->getRootPath();
-        $sepchr = self::getSeparator();
-        $console = $this->apppaths->getConsole();
-        $ccGenerator = $console . ' cache:clear';
-
-        if (file_exists($ccGenerator)) {
-            if (OsFunctions::isWindows()) {
-                $phpPath = OsFunctions::getPHPExecutableFromPath();
-            } else {
-                $phpPath = '/usr/bin/php';
-            }
-
-            $command = 'cd ' . $pathsrc . $sepchr
-                    . $phpPath . ' ' . $ccGenerator;
-            /* @var $process \Symfony\Component\Process\Process */
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-            } else {
-                $output->writeln($process->getOutput());
-            }
-        }
-    }
+//    private function clearCache($output)
+//    {
+//        $output->writeln('<info>Pulizia cache...</info>');
+//        $pathsrc = $this->apppaths->getRootPath();
+//        $sepchr = self::getSeparator();
+//        $console = $this->apppaths->getConsole();
+//        $ccGenerator = $console . ' cache:clear';
+//
+//        if (file_exists($ccGenerator)) {
+//            if (OsFunctions::isWindows()) {
+//                $phpPath = OsFunctions::getPHPExecutableFromPath();
+//            } else {
+//                $phpPath = '/usr/bin/php';
+//            }
+//
+//            $command = 'cd ' . $pathsrc . $sepchr
+//                    . $phpPath . ' ' . $ccGenerator;
+//            /* @var $process \Symfony\Component\Process\Process */
+//            $process = new Process($command);
+//            $process->setTimeout(60 * 100);
+//            $process->run();
+//
+//            if (!$process->isSuccessful()) {
+//                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+//            } else {
+//                $output->writeln($process->getOutput());
+//            }
+//        }
+//    }
 
     private function checktables($destinationPath, $wbFile, $output)
     {
