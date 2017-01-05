@@ -178,7 +178,7 @@ class Commands
         $console = $this->apppath->getConsole();
 
         $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;
-        if ($env == "prod") {
+        if ($env == "prod" || $env == "test") {
             $command = $command . ' --no-debug';
         }
 
