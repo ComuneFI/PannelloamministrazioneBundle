@@ -180,6 +180,7 @@ class PannelloAmministrazioneController extends Controller
                     '--namespace' => $bundleName,
                     '--dir' => $srcPath . DIRECTORY_SEPARATOR,
                     '--format' => 'yml',
+                    '--env' => $this->getContainer()->get('kernel')->getEnvironment(),
                     '--no-interaction' => true);
                 $result = $commands->executeCommand('generate:bundle', $commandparms);
                 $bundlePath = $srcPath . DIRECTORY_SEPARATOR . $bundleName;

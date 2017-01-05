@@ -93,7 +93,7 @@ class Commands
         $crudparms = array(
             '--entity' => str_replace('/', '', $bundlename) . ':' . $entityform,
             '--route-prefix' => $entityform,
-            "--env=" => $this->getContainer()->get('kernel')->getEnvironment(),
+            "--env" => $this->getContainer()->get('kernel')->getEnvironment(),
             '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true,);
 
         $resultcrud = $this->executeCommand('doctrine:generate:crud', $crudparms);
