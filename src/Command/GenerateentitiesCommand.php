@@ -76,7 +76,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         $output->writeln('<info>Entities yml create</info>');
-        //$this->clearCache($output);
+        $this->clearCache($output);
 
         $generatecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
         if ($generatecheck < 0) {
@@ -199,6 +199,29 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     private function exportschema($command, $output)
     {
+        $process = new Process($command);
+        $process->setTimeout(60 * 100);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+
+            return -1;
+        }
+
+        return 0;
+    }
+
+    private function clearcache($output)
+    {
+        if (OsFunctions::isWindows()) {
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
+        } else {
+            $phpPath = '/usr/bin/php';
+        }
+        $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear '
+                . '--env=' . $this->getContainer()->get('kernel')->getEnvironment();
+        
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();
