@@ -178,9 +178,9 @@ class Commands
         $console = $this->apppath->getConsole();
 
         $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;
-        if ($env == "prod" || $env == "test") {
+        //if ($env == "prod" || $env == "test") {
             $command = $command . ' --no-debug';
-        }
+        //}
 
         $process = new Process($command);
         $process->setTimeout(60 * 100);
