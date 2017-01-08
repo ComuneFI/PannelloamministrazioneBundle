@@ -40,7 +40,7 @@ class PannelloAmministrazioneUtils
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $return = array("errcode" => -1, "errmsg" => 'Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error>');
+            $return = array("errcode" => -1, "errmsg" => 'Errore nel comando ' . $command . $process->getErrorOutput() . $process->getOutput());
         } else {
             $return = array("errcode" => 0, "errmsg" => $process->getOutput());
         }
