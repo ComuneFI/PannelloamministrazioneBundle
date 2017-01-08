@@ -176,5 +176,4 @@ class GeneratorHelper
 EOF;
         return $jsonTemplate;
     }
-
 }
