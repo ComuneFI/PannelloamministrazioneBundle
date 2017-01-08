@@ -25,6 +25,9 @@ class PannelloAmministrazioneUtils
         } else {
             $phpPath = '/usr/bin/php';
         }
+        if (defined('HHVM_VERSION')) {
+            $phpPath = $phpPath . " -v Eval.EnableHipHopSyntax=true ";
+        }
         $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear --no-debug '
                 . '--env=' . $this->container->get('kernel')->getEnvironment();
 
