@@ -31,7 +31,7 @@ class PannelloAmministrazioneUtils
         return PannelloAmministrazioneUtils::runCommand($command);
     }
 
-    public function runCommand($command)
+    public static function runCommand($command)
     {
         /* @var $process \Symfony\Component\Process\Process */
         $return = array();
