@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\GeneratorHelper;
 use MwbExporter\Model\Table;
 
 class GenerateentitiesCommand extends ContainerAwareCommand
@@ -151,14 +152,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $scriptGenerator = $this->getScriptGenerator();
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
-        $jsonfile = $this->apppaths->getProjectPath() . DIRECTORY_SEPARATOR .
-                'vendor' . DIRECTORY_SEPARATOR . 'fi' . DIRECTORY_SEPARATOR . 'pannelloamministrazionebundle' . DIRECTORY_SEPARATOR .
-                'src' . DIRECTORY_SEPARATOR . 'FiTemplate' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'export.json';
-        if (!file_exists($jsonfile)) {
-            $jsonfile = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR .
-                    'FiTemplate' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'export.json';
-        }
-        $exportjsonfile = file_get_contents($jsonfile);
+
+        $exportjsonfile = GeneratorHelper::getJsonMwbGenerator();
 
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
@@ -221,7 +216,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
         $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear '
                 . '--env=' . $this->getContainer()->get('kernel')->getEnvironment();
-        
+
         $process = new Process($command);
         $process->setTimeout(60 * 100);
         $process->run();

@@ -70,20 +70,12 @@ class GenerateCode
     {
         $fs = new Filesystem();
         $prjPath = $this->apppath->getRootPath();
-        $source = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . 'Fi' . DIRECTORY_SEPARATOR .
-                'CoreBundle' . DIRECTORY_SEPARATOR . 'FiTemplate' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
-                $view . '.html.twig';
-        if (!$fs->exists($source)) {
-            $source = $prjPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'fi' . DIRECTORY_SEPARATOR .
-                    'fifreecorebundle' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Fi' . DIRECTORY_SEPARATOR .
-                    'CoreBundle' . DIRECTORY_SEPARATOR . 'FiTemplate' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
-                    $view . '.html.twig';
-        }
-        $dest = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
+        $folderview = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
                 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
-                $entityform . DIRECTORY_SEPARATOR . $view . '.html.twig';
-
-        $fs->copy($source, $dest, true);
+                $entityform . DIRECTORY_SEPARATOR;
+        $dest = $folderview . $view . '.html.twig';
+        $fs->mkdir($folderview);
+        file_put_contents($dest, "{% include 'FiCoreBundle:Standard:" . $view . ".html.twig' %}");
     }
 
     public function generateFormsDefaultTableValues($entityform)
