@@ -16,6 +16,13 @@ class GeneratorHelper
         $this->apppath = new ProjectPath($container);
     }
 
+    public function getDestinationEntityYmlPath($bundlePath)
+    {
+        return $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR .
+                $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
+                'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+    }
+
     public static function getJsonMwbGenerator()
     {
         $jsonTemplate = <<<EOF
@@ -41,5 +48,4 @@ class GeneratorHelper
 EOF;
         return $jsonTemplate;
     }
-
 }

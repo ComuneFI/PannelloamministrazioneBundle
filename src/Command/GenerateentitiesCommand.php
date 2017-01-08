@@ -21,6 +21,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 {
 
     protected $apppaths;
+    protected $genhelper;
 
     protected function configure()
     {
@@ -38,6 +39,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
+        $this->genhelper = new GeneratorHelper($this->getContainer());
+
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
         $schemaupdate = false;
@@ -59,7 +62,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return -1;
         }
 
-        $destinationPath = $this->getDestinationPath($bundlename);
+        $destinationPath = $this->genhelper->getDestinationEntityYmlPath($bundlename);
 
         $command = $this->getExportJsonCommand($bundlename, $wbFile);
 
@@ -87,13 +90,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function getDestinationPath($bundlePath)
-    {
-        return $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR .
-                $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
-                'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
-    }
-
     private function checkprerequisiti($bundlename, $mwbfile, $output)
     {
         $fs = new Filesystem();
@@ -110,7 +106,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $scriptGenerator = $this->getScriptGenerator();
 
-        $destinationPath = $this->getDestinationPath($bundlename);
+        $destinationPath = $this->genhelper->getDestinationEntityYmlPath($bundlename);
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
 
@@ -150,7 +146,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     {
         $exportJson = $this->getExportJsonFile();
         $scriptGenerator = $this->getScriptGenerator();
-        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
+        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->genhelper->getDestinationEntityYmlPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
 
         $exportjsonfile = GeneratorHelper::getJsonMwbGenerator();
@@ -158,7 +154,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
-        $sepchr = self::getSeparator();
+        $sepchr = OsFunctions::getSeparator();
         if (OsFunctions::isWindows()) {
             $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
                     . $scriptGenerator . '.bat --export=doctrine2-yaml --config=' .
@@ -323,36 +319,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
-//    private function clearCache($output)
-//    {
-//        $output->writeln('<info>Pulizia cache...</info>');
-//        $pathsrc = $this->apppaths->getRootPath();
-//        $sepchr = self::getSeparator();
-//        $console = $this->apppaths->getConsole();
-//        $ccGenerator = $console . ' cache:clear';
-//
-//        if (file_exists($ccGenerator)) {
-//            if (OsFunctions::isWindows()) {
-//                $phpPath = OsFunctions::getPHPExecutableFromPath();
-//            } else {
-//                $phpPath = '/usr/bin/php';
-//            }
-//
-//            $command = 'cd ' . $pathsrc . $sepchr
-//                    . $phpPath . ' ' . $ccGenerator;
-//            /* @var $process \Symfony\Component\Process\Process */
-//            $process = new Process($command);
-//            $process->setTimeout(60 * 100);
-//            $process->run();
-//
-//            if (!$process->isSuccessful()) {
-//                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-//            } else {
-//                $output->writeln($process->getOutput());
-//            }
-//        }
-//    }
-
     private function checktables($destinationPath, $wbFile, $output)
     {
         $finder = new Finder();
@@ -399,15 +365,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return -1;
         } else {
             return 0;
-        }
-    }
-
-    public static function getSeparator()
-    {
-        if (OsFunctions::isWindows()) {
-            return '&';
-        } else {
-            return ';';
         }
     }
 }

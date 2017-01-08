@@ -69,7 +69,6 @@ class GenerateCode
     public function generateFormWiew($bundlename, $entityform, $view)
     {
         $fs = new Filesystem();
-        $prjPath = $this->apppath->getRootPath();
         $folderview = $this->apppath->getSrcPath() . DIRECTORY_SEPARATOR . $bundlename . DIRECTORY_SEPARATOR .
                 'Resources' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR .
                 $entityform . DIRECTORY_SEPARATOR;
