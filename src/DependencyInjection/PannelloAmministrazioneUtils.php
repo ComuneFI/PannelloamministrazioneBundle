@@ -25,7 +25,7 @@ class PannelloAmministrazioneUtils
         } else {
             $phpPath = '/usr/bin/php';
         }
-        $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear '
+        $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear --no-debug '
                 . '--env=' . $this->container->get('kernel')->getEnvironment();
 
         return PannelloAmministrazioneUtils::runCommand($command);
