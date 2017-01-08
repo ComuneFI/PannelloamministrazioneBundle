@@ -3,8 +3,10 @@
 namespace Fi\PannelloAmministrazioneBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -17,7 +19,6 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 {
 
     protected $apppaths;
-    protected $genhelper;
 
     protected function configure()
     {
@@ -25,18 +26,16 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                 ->setName('pannelloamministrazione:generateentities')
                 ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
                 ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
-                ->addArgument('mwbfile', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
-                ->addArgument('bundlename', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
-                ->addArgument('em', \Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'Entity manager, default = default')
-                ->addOption('schemaupdate', null, \Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Schema update sul db');
+                ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
+                ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
+                ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
+                ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
     }
 
-    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Input\OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
-        $this->genhelper = new GeneratorHelper($this->getContainer());
-
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
         $schemaupdate = false;
@@ -58,7 +57,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             return -1;
         }
 
-        $destinationPath = $this->genhelper->getDestinationEntityYmlPath($bundlename);
+        $destinationPath = $this->getDestinationPath($bundlename);
 
         $command = $this->getExportJsonCommand($bundlename, $wbFile);
 
@@ -86,6 +85,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         return 0;
     }
 
+    private function getDestinationPath($bundlePath)
+    {
+        return $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR .
+                $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
+                'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+    }
+
     private function checkprerequisiti($bundlename, $mwbfile, $output)
     {
         $fs = new Filesystem();
@@ -102,7 +108,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $scriptGenerator = $this->getScriptGenerator();
 
-        $destinationPath = $this->genhelper->getDestinationEntityYmlPath($bundlename);
+        $destinationPath = $this->getDestinationPath($bundlename);
         $output->writeln('Creazione entities yml in ' . $destinationPath . ' da file ' . $mwbfile);
         $destinationPath = $destinationPath . 'doctrine' . DIRECTORY_SEPARATOR;
 
@@ -142,7 +148,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
     {
         $exportJson = $this->getExportJsonFile();
         $scriptGenerator = $this->getScriptGenerator();
-        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->genhelper->getDestinationEntityYmlPath($bundlePath)));
+        $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->getDestinationPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
 
         $exportjsonfile = GeneratorHelper::getJsonMwbGenerator();
@@ -150,7 +156,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $bundlejson = str_replace('[bundle]', str_replace('/', '', $bundlePathEscaped), $exportjsonfile);
         $exportjsonreplaced = str_replace('[dir]', $destinationPathEscaped, $bundlejson);
         file_put_contents($exportJson, $exportjsonreplaced);
-        $sepchr = OsFunctions::getSeparator();
+        $sepchr = self::getSeparator();
         if (OsFunctions::isWindows()) {
             $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
                     . $scriptGenerator . '.bat --export=doctrine2-yaml --config=' .
@@ -314,6 +320,36 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         return 0;
     }
+
+//    private function clearCache($output)
+//    {
+//        $output->writeln('<info>Pulizia cache...</info>');
+//        $pathsrc = $this->apppaths->getRootPath();
+//        $sepchr = self::getSeparator();
+//        $console = $this->apppaths->getConsole();
+//        $ccGenerator = $console . ' cache:clear';
+//
+//        if (file_exists($ccGenerator)) {
+//            if (OsFunctions::isWindows()) {
+//                $phpPath = OsFunctions::getPHPExecutableFromPath();
+//            } else {
+//                $phpPath = '/usr/bin/php';
+//            }
+//
+//            $command = 'cd ' . $pathsrc . $sepchr
+//                    . $phpPath . ' ' . $ccGenerator;
+//            /* @var $process \Symfony\Component\Process\Process */
+//            $process = new Process($command);
+//            $process->setTimeout(60 * 100);
+//            $process->run();
+//
+//            if (!$process->isSuccessful()) {
+//                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+//            } else {
+//                $output->writeln($process->getOutput());
+//            }
+//        }
+//    }
 
     private function checktables($destinationPath, $wbFile, $output)
     {

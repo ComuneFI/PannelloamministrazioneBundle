@@ -8,19 +8,12 @@ class GeneratorHelper
 {
 
     private $container;
-    private $apppath;
+    private $apppaths;
 
     public function __construct($container)
     {
         $this->container = $container;
-        $this->apppath = new ProjectPath($container);
-    }
-
-    public function getDestinationEntityYmlPath($bundlePath)
-    {
-        return $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR .
-                $bundlePath . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR .
-                'config' . DIRECTORY_SEPARATOR . 'doctrine' . DIRECTORY_SEPARATOR;
+        $this->apppaths = new ProjectPath($container);
     }
 
     public static function getJsonMwbGenerator()
