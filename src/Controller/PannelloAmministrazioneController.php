@@ -131,7 +131,7 @@ class PannelloAmministrazioneController extends Controller
             if ($ret['errcode'] < 0) {
                 return new Response($ret['message']);
             } else {
-                $retcc = $command->clearCache();
+                $retcc = $command->clearCacheEnv($this->container->get('kernel')->getEnvironment());
             }
             $twigparms = array('errcode' => $ret['errcode'], 'command' => $ret['command'], 'message' => $ret['message'] . $retcc);
 

@@ -7,10 +7,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\PannelloAmministrazioneUtils;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\GeneratorHelper;
 
 class GenerateentitiesCommand extends ContainerAwareCommand
@@ -18,6 +17,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     protected $apppaths;
     protected $genhelper;
+    protected $pammutils;
 
     protected function configure()
     {
@@ -36,6 +36,8 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
         $this->genhelper = new GeneratorHelper($this->getContainer());
+        $this->pammutils = new PannelloAmministrazioneUtils($this->getContainer());
+
         $bundlename = $input->getArgument('bundlename');
         $mwbfile = $input->getArgument('mwbfile');
         $schemaupdate = false;
@@ -61,12 +63,15 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $command = $this->getExportJsonCommand($bundlename, $wbFile);
 
-        $schemaupdateresult = $this->exportschema($command, $output);
-        if ($schemaupdateresult < 0) {
+        $schemaupdateresult = PannelloAmministrazioneUtils::runCommand($command);
+        if ($schemaupdateresult["errcode"] < 0) {
+            $output->writeln($schemaupdateresult["errmsg"]);
             return 1;
+        } else {
+            $output->writeln($schemaupdateresult["errmsg"]);
         }
 
-        $this->removeExportJsonFile();
+        $this->genhelper->removeExportJsonFile();
 
         $tablecheck = $this->genhelper->checktables($destinationPath, $wbFile, $output);
 
@@ -75,7 +80,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         $output->writeln('<info>Entities yml create</info>');
-        $this->clearCache($output);
+        $generateentitiesresult = $this->pammutils->clearCache();
+        if ($generateentitiesresult["errcode"] < 0) {
+            $output->writeln($generateentitiesresult["errmsg"]);
+            return 1;
+        } else {
+            $output->writeln($generateentitiesresult["errmsg"]);
+        }
 
         $generatecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
         if ($generatecheck < 0) {
@@ -87,7 +98,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
     private function getExportJsonCommand($bundlePath, $wbFile)
     {
-        $exportJson = $this->getExportJsonFile();
+        $exportJson = $this->genhelper->getExportJsonFile();
         $scriptGenerator = $this->genhelper->getScriptGenerator();
         $destinationPathEscaped = str_replace('/', "\/", str_replace('\\', '/', $this->genhelper->getDestinationEntityYmlPath($bundlePath)));
         $bundlePathEscaped = str_replace('\\', '\\\\', str_replace('/', '\\', $bundlePath));
@@ -100,73 +111,18 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         $sepchr = OsFunctions::getSeparator();
         if (OsFunctions::isWindows()) {
             $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
-                    . $scriptGenerator . '.bat --export=doctrine2-yaml --config=' .
+                    . $scriptGenerator . '.bat --export=doctrine2-yaml '
+                    . ' --config=' .
                     $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
         } else {
             $phpPath = '/usr/bin/php';
             $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
-                    . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml --config=' .
+                    . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml '
+                    . ' --config=' .
                     $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
         }
 
         return $command;
-    }
-
-    private function getExportJsonFile()
-    {
-        $fs = new Filesystem();
-        $cachedir = $this->apppaths->getCachePath();
-        $exportJson = $cachedir . DIRECTORY_SEPARATOR . 'export.json';
-        if ($fs->exists($exportJson)) {
-            $fs->remove($exportJson);
-        }
-
-        return $exportJson;
-    }
-
-    private function removeExportJsonFile()
-    {
-        $this->getExportJsonFile();
-
-        return true;
-    }
-
-    private function exportschema($command, $output)
-    {
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-
-            return -1;
-        }
-
-        return 0;
-    }
-
-    private function clearcache($output)
-    {
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
-        $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear '
-                . '--env=' . $this->getContainer()->get('kernel')->getEnvironment();
-
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-
-            return -1;
-        }
-
-        return 0;
     }
 
     private function generateentities($bundlename, $emdest, $schemaupdate, $output)
@@ -186,17 +142,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $command = $phpPath . ' ' . $scriptGenerator . ' --no-backup ' . str_replace('/', '', $bundlename)
                 . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
-        /* @var $process \Symfony\Component\Process\Process */
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
 
-        if (!$process->isSuccessful()) {
-            $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
-
-            return -1;
+        $generateentitiesresult = PannelloAmministrazioneUtils::runCommand($command);
+        if ($generateentitiesresult["errcode"] < 0) {
+            $output->writeln($generateentitiesresult["errmsg"]);
+            return 1;
         } else {
-            $output->writeln($process->getOutput());
+            $output->writeln($generateentitiesresult["errmsg"]);
         }
 
         /* $command = $this->getApplication()->find('doctrine:generate:entities');
@@ -221,19 +173,16 @@ class GenerateentitiesCommand extends ContainerAwareCommand
             }
             $command = $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest
                     . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
-            /* @var $process \Symfony\Component\Process\Process */
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
 
-            if (!$process->isSuccessful()) {
-                $output->writeln('Errore nel comando ' . $command . '<error>' . $process->getErrorOutput() . '</error> ');
+
+            $schemaupdateresult = PannelloAmministrazioneUtils::runCommand($command);
+            if ($schemaupdateresult["errcode"] < 0) {
+                $output->writeln($schemaupdateresult["errmsg"]);
             } else {
-                $output->writeln($process->getOutput());
+                $output->writeln($schemaupdateresult["errmsg"]);
                 $output->writeln('<info>Aggiornamento database completato</info>');
             }
+            return $schemaupdateresult["errcode"];
         }
-
-        return 0;
     }
 }

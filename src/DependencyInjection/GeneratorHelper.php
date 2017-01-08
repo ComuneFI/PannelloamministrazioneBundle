@@ -151,6 +151,25 @@ class GeneratorHelper
         return $scriptGenerator;
     }
 
+    public function getExportJsonFile()
+    {
+        $fs = new Filesystem();
+        $cachedir = $this->apppaths->getCachePath();
+        $exportJson = $cachedir . DIRECTORY_SEPARATOR . 'export.json';
+        if ($fs->exists($exportJson)) {
+            $fs->remove($exportJson);
+        }
+
+        return $exportJson;
+    }
+
+    public function removeExportJsonFile()
+    {
+        $this->getExportJsonFile();
+
+        return true;
+    }
+
     public static function getJsonMwbGenerator()
     {
         $jsonTemplate = <<<EOF
@@ -176,4 +195,5 @@ class GeneratorHelper
 EOF;
         return $jsonTemplate;
     }
+
 }

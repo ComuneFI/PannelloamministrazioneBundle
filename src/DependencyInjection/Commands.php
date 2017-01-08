@@ -168,7 +168,7 @@ class Commands
         return $cmdoutput;
     }
 
-    private function clearcacheEnv($env = "dev")
+    public function clearcacheEnv($env = "dev")
     {
         if (!OsFunctions::isWindows()) {
             $phpPath = '/usr/bin/php';
@@ -179,7 +179,7 @@ class Commands
 
         $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;
         //if ($env == "prod" || $env == "test") {
-            $command = $command . ' --no-debug';
+        $command = $command . ' --no-debug';
         //}
 
         $process = new Process($command);
