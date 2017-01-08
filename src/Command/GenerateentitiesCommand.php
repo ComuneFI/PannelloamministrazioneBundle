@@ -3,10 +3,6 @@
 namespace Fi\PannelloAmministrazioneBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Finder\Finder;
@@ -29,13 +25,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                 ->setName('pannelloamministrazione:generateentities')
                 ->setDescription('Genera le entities partendo da un modello workbeanch mwb')
                 ->setHelp('Genera le entities partendo da un modello workbeanch mwb, <br/>fifree.mwb Fi/CoreBundle default [--schemaupdate]<br/>')
-                ->addArgument('mwbfile', InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
-                ->addArgument('bundlename', InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
-                ->addArgument('em', InputArgument::OPTIONAL, 'Entity manager, default = default')
-                ->addOption('schemaupdate', null, InputOption::VALUE_NONE, 'Se settato fa anche lo schema update sul db');
+                ->addArgument('mwbfile', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Nome file mwb, fifree.mwb')
+                ->addArgument('bundlename', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Nome del bundle, Fi/CoreBundle')
+                ->addArgument('em', \Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'Entity manager, default = default')
+                ->addOption('schemaupdate', null, \Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Schema update sul db');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Input\OutputInterface $output)
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->getContainer());
