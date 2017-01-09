@@ -274,11 +274,7 @@ class PannelloAmministrazioneController extends Controller
         } else {
             (new LockSystem($this->container))->lockFile(true);
 
-            if (!OsFunctions::isWindows()) {
-                $phpPath = '/usr/bin/php';
-            } else {
-                $phpPath = OsFunctions::getPHPExecutableFromPath();
-            }
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
 
             $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' ' . $comando;
 
@@ -380,7 +376,7 @@ class PannelloAmministrazioneController extends Controller
                 (new LockSystem($this->container))->lockFile(true);
                 //$phpPath = OsFunctions::getPHPExecutableFromPath();
                 $sepchr = OsFunctions::getSeparator();
-                $phpPath = '/usr/bin/php';
+                $phpPath = OsFunctions::getPHPExecutableFromPath();
 
                 // Questo codice per versioni che usano un symfony 2 o 3
                 if (version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.0') >= 0) {

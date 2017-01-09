@@ -29,11 +29,7 @@ class Commands
 
         $scriptGenerator = $console . " " . $pannellocmd;
 
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
+        $phpPath = OsFunctions::getPHPExecutableFromPath();
         $sepchr = self::getSeparator();
 
         $command = 'cd ' . $this->apppath->getRootPath() . $sepchr
@@ -170,11 +166,7 @@ class Commands
 
     public function clearcacheEnv($env = "dev")
     {
-        if (!OsFunctions::isWindows()) {
-            $phpPath = '/usr/bin/php';
-        } else {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        }
+        $phpPath = OsFunctions::getPHPExecutableFromPath();
         $console = $this->apppath->getConsole();
 
         $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;

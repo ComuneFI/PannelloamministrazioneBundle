@@ -115,7 +115,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
                     . ' --config=' .
                     $exportJson . ' ' . $wbFile . ' ' . $destinationPathEscaped;
         } else {
-            $phpPath = '/usr/bin/php';
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
             $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
                     . $phpPath . ' ' . $scriptGenerator . ' --export=doctrine2-yaml '
                     . ' --config=' .
@@ -134,11 +134,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
         $console = $this->apppaths->getConsole();
         $scriptGenerator = $console . ' doctrine:generate:entities';
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
+        $phpPath = OsFunctions::getPHPExecutableFromPath();
 
         $command = $phpPath . ' ' . $scriptGenerator . ' --no-backup ' . str_replace('/', '', $bundlename)
                 . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
@@ -166,11 +162,7 @@ class GenerateentitiesCommand extends ContainerAwareCommand
 
             $scriptGenerator = $console . ' doctrine:schema:update';
 
-            if (OsFunctions::isWindows()) {
-                $phpPath = OsFunctions::getPHPExecutableFromPath();
-            } else {
-                $phpPath = '/usr/bin/php';
-            }
+            $phpPath = OsFunctions::getPHPExecutableFromPath();
             $command = $phpPath . ' ' . $scriptGenerator . ' --force --em=' . $emdest
                     . ' --env=' . $this->getContainer()->get('kernel')->getEnvironment();
 
