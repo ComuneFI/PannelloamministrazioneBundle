@@ -12,13 +12,13 @@ class Commands
 {
 
     private $container;
-    private $apppath;
+    private $apppaths;
     private $pammutils;
 
     public function __construct($container)
     {
         $this->container = $container;
-        $this->apppath = new ProjectPath($container);
+        $this->apppaths = new ProjectPath($container);
         $this->pammutils = new PannelloAmministrazioneUtils($container);
     }
 
@@ -63,7 +63,7 @@ class Commands
 
     public function generateEntity($wbFile, $bundlePath)
     {
-        $console = $this->apppath->getConsole();
+        $console = $this->apppaths->getConsole();
         $pannellocmd = "pannelloamministrazione:generateentities $wbFile $bundlePath";
 
         $scriptGenerator = $console . " " . $pannellocmd;
@@ -71,7 +71,7 @@ class Commands
         $phpPath = OsFunctions::getPHPExecutableFromPath();
         $sepchr = OsFunctions::getSeparator();
 
-        $command = 'cd ' . $this->apppath->getRootPath() . $sepchr
+        $command = 'cd ' . $this->apppaths->getRootPath() . $sepchr
                 . $phpPath . ' ' . $scriptGenerator . ' --env=' . $this->container->get('kernel')->getEnvironment();
 
         $process = new Process($command);
@@ -99,8 +99,8 @@ class Commands
     {
         /* @var $fs \Symfony\Component\Filesystem\Filesystem */
         $fs = new Filesystem();
-        $srcPath = $this->apppath->getSrcPath();
-        $appPath = $this->apppath->getAppPath();
+        $srcPath = $this->apppaths->getSrcPath();
+        $appPath = $this->apppaths->getAppPath();
         if (!is_writable($appPath)) {
             return array('errcode' => -1, 'message' => $appPath . ' non scrivibile');
         }
