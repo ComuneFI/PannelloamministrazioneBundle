@@ -83,14 +83,14 @@ class GenerateCode
         $em = $this->container->get('doctrine')->getManager();
         $ruoloAmm = $em->getRepository('FiCoreBundle:ruoli')->findOneBy(array('is_superadmin' => true)); //SuperAdmin
 
-        $newPermesso = new \Fi\CoreBundle\Entity\permessi();
+        $newPermesso = new \Fi\CoreBundle\Entity\Permessi();
         $newPermesso->setCrud('crud');
         $newPermesso->setModulo($entityform);
         $newPermesso->setRuoli($ruoloAmm);
         $em->persist($newPermesso);
         $em->flush();
 
-        $tabelle = new \Fi\CoreBundle\Entity\tabelle();
+        $tabelle = new \Fi\CoreBundle\Entity\Tabelle();
         $tabelle->setNometabella($entityform);
         $em->persist($tabelle);
         $em->flush();

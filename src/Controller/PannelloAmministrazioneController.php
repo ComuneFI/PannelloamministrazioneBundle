@@ -128,13 +128,13 @@ class PannelloAmministrazioneController extends Controller
             $ret = $command->generateFormCrud($bundlename, $entityform);
 
             (new LockSystem($this->container))->lockFile(false);
-            $retcc = '';
+            //$retcc = '';
             if ($ret['errcode'] < 0) {
                 return new Response($ret['message']);
             } else {
-                $retcc = $command->clearCacheEnv($this->container->get('kernel')->getEnvironment());
+                //$retcc = $command->clearCacheEnv($this->container->get('kernel')->getEnvironment());
             }
-            $twigparms = array('errcode' => $ret['errcode'], 'command' => $ret['command'], 'message' => $ret['message'] . $retcc);
+            $twigparms = array('errcode' => $ret['errcode'], 'command' => $ret['command'], 'message' => $ret['message']);
 
             return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', $twigparms);
         }
