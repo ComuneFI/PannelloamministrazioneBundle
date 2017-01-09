@@ -163,40 +163,20 @@ class PannelloAmministrazioneController extends Controller
     public function generateBundleAction(Request $request)
     {
         $this->apppaths = new ProjectPath($this->container);
-        $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
             (new LockSystem($this->container))->lockFile(true);
-            $srcPath = $this->apppaths->getSrcPath();
+            $commands = new Commands($this->container);
             $bundleName = $request->get('bundlename');
-
-            $bundlePath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundleName;
-            $addmessage = '';
-            if ($fs->exists($bundlePath)) {
-                $result = array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "Il bundle esiste gia' in $bundlePath");
-            } else {
-                $commands = new PannelloAmministrazioneUtils($this->container);
-                $commandparms = array(
-                    '--namespace' => $bundleName,
-                    '--dir' => $srcPath . DIRECTORY_SEPARATOR,
-                    '--format' => 'yml',
-                    '--env' => $this->container->get('kernel')->getEnvironment(),
-                    '--no-interaction' => true);
-                $result = $commands->runSymfonyCommand('generate:bundle', $commandparms);
-                $bundlePath = $srcPath . DIRECTORY_SEPARATOR . $bundleName;
-                if ($fs->exists($bundlePath)) {
-                    $addmessage = 'Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php '
-                            . 'e aggiornare la pagina';
-                    echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
-                } else {
-                    $addmessage = "Non e' stato creato il bundle in $bundlePath";
-                }
+            $result = $commands->generateBundle($bundleName);
+            if ($result['errcode'] >= 0) {
+                echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
             }
             (new LockSystem($this->container))->lockFile(false);
             //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
             //exit;
-            $twigparms = array('errcode' => $result['errcode'], 'command' => $result['command'], 'message' => $result['message'] . $addmessage);
+            $twigparms = array('errcode' => $result['errcode'], 'command' => $result['command'], 'message' => $result['message']);
 
             return $this->render('FiPannelloAmministrazioneBundle:PannelloAmministrazione:outputcommand.html.twig', $twigparms);
         }

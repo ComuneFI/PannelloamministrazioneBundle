@@ -4,9 +4,6 @@ namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\StreamOutput;
-use Symfony\Component\Console\Input\ArrayInput;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\PannelloAmministrazioneUtils;
 use Symfony\Component\Process\Process;
@@ -23,6 +20,45 @@ class Commands
         $this->container = $container;
         $this->apppath = new ProjectPath($container);
         $this->pammutils = new PannelloAmministrazioneUtils($container);
+    }
+
+    public function generateBundle($bundleName)
+    {
+        /* @var $fs \Symfony\Component\Filesystem\Filesystem */
+        $fs = new Filesystem();
+
+        $commands = new PannelloAmministrazioneUtils($this->container);
+
+        $srcPath = $this->apppaths->getSrcPath();
+
+        $bundlePath = $this->apppaths->getSrcPath() . DIRECTORY_SEPARATOR . $bundleName;
+
+        $addmessage = '';
+
+        if ($fs->exists($bundlePath)) {
+            return array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "Il bundle esiste gia' in $bundlePath");
+        }
+        if (!is_writable($bundlePath)) {
+            return array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "$bundlePath non scrivibile");
+        }
+
+        $commandparms = array(
+            '--namespace' => $bundleName,
+            '--dir' => $srcPath . DIRECTORY_SEPARATOR,
+            '--format' => 'yml',
+            '--env' => $this->container->get('kernel')->getEnvironment(),
+            '--no-interaction' => true);
+        $result = $commands->runSymfonyCommand('generate:bundle', $commandparms);
+        $bundlePath = $srcPath . DIRECTORY_SEPARATOR . $bundleName;
+        if ($fs->exists($bundlePath)) {
+            $addmessage = 'Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php '
+                    . 'e aggiornare la pagina';
+            $ret = array('errcode' => 0, 'command' => 'generate:bundle', 'message' => $result["message"] . $addmessage);
+        } else {
+            $addmessage = "Non e' stato creato il bundle in $bundlePath";
+            $ret = array('errcode' => -1, 'command' => 'generate:bundle', 'message' => $result["message"] . $addmessage);
+        }
+        return $ret;
     }
 
     public function generateEntity($wbFile, $bundlePath)
@@ -151,7 +187,7 @@ class Commands
         return $cmdoutput;
     }
 
-    public function clearcacheEnv($env = "dev")
+    public function clearcacheEnv()
     {
         $ret = $this->pammutils->clearcache();
 
