@@ -38,9 +38,9 @@ class Commands
         if ($fs->exists($bundlePath)) {
             return array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "Il bundle esiste gia' in $bundlePath");
         }
-        if (!is_writable($bundlePath)) {
-            return array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "$bundlePath non scrivibile");
-        }
+//        if (!is_writable($bundlePath)) {
+//            return array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "$bundlePath non scrivibile");
+//        }
 
         $commandparms = array(
             '--namespace' => $bundleName,
