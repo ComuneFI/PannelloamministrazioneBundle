@@ -10,6 +10,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\Commands;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\PannelloAmministrazioneUtils;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\LockSystem;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
 
@@ -175,14 +176,14 @@ class PannelloAmministrazioneController extends Controller
             if ($fs->exists($bundlePath)) {
                 $result = array('errcode' => -1, 'command' => 'generate:bundle', 'message' => "Il bundle esiste gia' in $bundlePath");
             } else {
-                $commands = new Commands($this->container);
+                $commands = new PannelloAmministrazioneUtils($this->container);
                 $commandparms = array(
                     '--namespace' => $bundleName,
                     '--dir' => $srcPath . DIRECTORY_SEPARATOR,
                     '--format' => 'yml',
                     '--env' => $this->container->get('kernel')->getEnvironment(),
                     '--no-interaction' => true);
-                $result = $commands->executeCommand('generate:bundle', $commandparms);
+                $result = $commands->runSymfonyCommand('generate:bundle', $commandparms);
                 $bundlePath = $srcPath . DIRECTORY_SEPARATOR . $bundleName;
                 if ($fs->exists($bundlePath)) {
                     $addmessage = 'Per abilitare il nuovo bundle nel kernel controllare che sia presente in app/AppKernel.php '

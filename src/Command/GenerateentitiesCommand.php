@@ -80,13 +80,13 @@ class GenerateentitiesCommand extends ContainerAwareCommand
         }
 
         $output->writeln('<info>Entities yml create</info>');
-        $generateentitiesresult = $this->pammutils->clearCache();
-        if ($generateentitiesresult["errcode"] < 0) {
-            $output->writeln($generateentitiesresult["errmsg"]);
-            return 1;
-        } else {
-            $output->writeln($generateentitiesresult["errmsg"]);
-        }
+        /* $generateentitiesresult = $this->pammutils->clearCache();
+          if ($generateentitiesresult["errcode"] < 0) {
+          $output->writeln($generateentitiesresult["errmsg"]);
+          return 1;
+          } else {
+          $output->writeln($generateentitiesresult["errmsg"]);
+          } */
 
         $generatecheck = $this->generateentities($bundlename, $emdest, $schemaupdate, $output);
         if ($generatecheck < 0) {

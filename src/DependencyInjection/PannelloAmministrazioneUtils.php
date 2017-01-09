@@ -2,9 +2,12 @@
 
 namespace Fi\PannelloAmministrazioneBundle\DependencyInjection;
 
-use Fi\OsBundle\DependencyInjection\OsFunctions;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Process\Process;
 use Fi\PannelloAmministrazioneBundle\DependencyInjection\ProjectPath;
+use Fi\OsBundle\DependencyInjection\OsFunctions;
 
 class PannelloAmministrazioneUtils
 {
@@ -43,5 +46,32 @@ class PannelloAmministrazioneUtils
         }
 
         return $return;
+    }
+
+    public function runSymfonyCommand($command, array $options = array())
+    {
+        $application = new Application($this->container->get('kernel'));
+        $application->setAutoExit(false);
+
+        $cmdoptions = array_merge(array('command' => $command), $options);
+
+        $fp = tmpfile();
+        $outputStream = new StreamOutput($fp);
+        $returncode = $application->run(new ArrayInput($cmdoptions), $outputStream);
+        $output = $this->getOutput($fp);
+        fclose($fp);
+
+        return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
+    }
+
+    private function getOutput($fpOutupStream)
+    {
+        fseek($fpOutupStream, 0);
+        $output = '';
+        while (!feof($fpOutupStream)) {
+            $output = $output . fread($fpOutupStream, 4096);
+        }
+
+        return $output;
     }
 }

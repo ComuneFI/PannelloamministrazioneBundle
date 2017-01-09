@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Input\ArrayInput;
 use Fi\OsBundle\DependencyInjection\OsFunctions;
+use Fi\PannelloAmministrazioneBundle\DependencyInjection\PannelloAmministrazioneUtils;
 use Symfony\Component\Process\Process;
 
 class Commands
@@ -15,11 +16,13 @@ class Commands
 
     private $container;
     private $apppath;
+    private $pammutils;
 
     public function __construct($container)
     {
         $this->container = $container;
         $this->apppath = new ProjectPath($container);
+        $this->pammutils = new PannelloAmministrazioneUtils($container);
     }
 
     public function generateEntity($wbFile, $bundlePath)
@@ -30,7 +33,7 @@ class Commands
         $scriptGenerator = $console . " " . $pannellocmd;
 
         $phpPath = OsFunctions::getPHPExecutableFromPath();
-        $sepchr = self::getSeparator();
+        $sepchr = OsFunctions::getSeparator();
 
         $command = 'cd ' . $this->apppath->getRootPath() . $sepchr
                 . $phpPath . ' ' . $scriptGenerator . ' --env=' . $this->container->get('kernel')->getEnvironment();
@@ -92,7 +95,7 @@ class Commands
             "--env" => $this->container->get('kernel')->getEnvironment(),
             '--with-write' => true, '--format' => 'yml', '--overwrite' => false, '--no-interaction' => true,);
 
-        $resultcrud = $this->executeCommand('doctrine:generate:crud', $crudparms);
+        $resultcrud = $this->pammutils->runSymfonyCommand('doctrine:generate:crud', $crudparms);
 
         if ($resultcrud['errcode'] == 0) {
             $fs->remove($viewPathSrc);
@@ -137,22 +140,6 @@ class Commands
         }
     }
 
-    public function executeCommand($command, array $options = array())
-    {
-        $application = new Application($this->container->get('kernel'));
-        $application->setAutoExit(false);
-
-        $cmdoptions = array_merge(array('command' => $command), $options);
-
-        $fp = tmpfile();
-        $outputStream = new StreamOutput($fp);
-        $returncode = $application->run(new ArrayInput($cmdoptions), $outputStream);
-        $output = $this->getOutput($fp);
-        fclose($fp);
-
-        return array('errcode' => ($returncode == 0 ? false : true), 'command' => $cmdoptions['command'], 'message' => $output);
-    }
-
     public function clearcache()
     {
         $cmdoutput = "";
@@ -166,55 +153,15 @@ class Commands
 
     public function clearcacheEnv($env = "dev")
     {
-        $phpPath = OsFunctions::getPHPExecutableFromPath();
-        $console = $this->apppath->getConsole();
+        $ret = $this->pammutils->clearcache();
 
-        $command = $phpPath . ' ' . $console . ' cache:clear --env=' . $env;
-        //if ($env == "prod" || $env == "test") {
-        $command = $command . ' --no-debug';
-        //}
-
-        $process = new Process($command);
-        $process->setTimeout(60 * 100);
-        $process->run();
-
-        $cmdoutput = $this->getProcessOutput($process);
-
-        return $command . $cmdoutput;
+        return $ret["errmsg"];
     }
 
     public function aggiornaSchemaDatabase()
     {
-        $result = $this->executeCommand('doctrine:schema:update', array('--force' => true));
+        $result = $this->pammutils->runSymfonyCommand('doctrine:schema:update', array('--force' => true));
 
         return $result;
-    }
-
-    private function getOutput($fpOutupStream)
-    {
-        fseek($fpOutupStream, 0);
-        $output = '';
-        while (!feof($fpOutupStream)) {
-            $output = $output . fread($fpOutupStream, 4096);
-        }
-
-        return $output;
-    }
-
-    private function getProcessOutput($process)
-    {
-        $erroroutput = $process->getErrorOutput() ? $process->getErrorOutput() : $process->getOutput();
-        $output = ($process->isSuccessful()) ? $process->getOutput() : $erroroutput;
-
-        return $output;
-    }
-
-    private static function getSeparator()
-    {
-        if (OsFunctions::isWindows()) {
-            return '&';
-        } else {
-            return ';';
-        }
     }
 }
