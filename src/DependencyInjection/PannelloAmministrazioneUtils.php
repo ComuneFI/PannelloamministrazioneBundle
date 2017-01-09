@@ -20,15 +20,8 @@ class PannelloAmministrazioneUtils
 
     public function clearcache()
     {
-        if (OsFunctions::isWindows()) {
-            $phpPath = OsFunctions::getPHPExecutableFromPath();
-        } else {
-            $phpPath = '/usr/bin/php';
-        }
-        if (defined('HHVM_VERSION') && false !== $hhvm = getenv('PHP_BINARY')) {
-            $phpPath = $hhvm;
-            $phpPath = $phpPath . " -v Eval.EnableHipHopSyntax=true ";
-        }
+        $phpPath = OsFunctions::getPHPExecutableFromPath();
+
         $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear --no-debug '
                 . '--env=' . $this->container->get('kernel')->getEnvironment();
 
