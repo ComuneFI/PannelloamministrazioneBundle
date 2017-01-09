@@ -170,9 +170,7 @@ class PannelloAmministrazioneController extends Controller
             $commands = new Commands($this->container);
             $bundleName = $request->get('bundlename');
             $result = $commands->generateBundle($bundleName);
-            if ($result['errcode'] >= 0) {
-                echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
-            }
+            echo '<script type="text/javascript">alert("Per abilitare il nuovo bundle nel kernel aggiornare la pagina");</script>';
             (new LockSystem($this->container))->lockFile(false);
             //Uso exit perchè la render avendo creato un nuovo bundle schianta perchè non è caricato nel kernel il nuovo bundle ancora
             //exit;
