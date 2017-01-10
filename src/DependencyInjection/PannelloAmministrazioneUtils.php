@@ -21,12 +21,15 @@ class PannelloAmministrazioneUtils
         $this->apppaths = new ProjectPath($container);
     }
 
-    public function clearcache()
+    public function clearcache($env = "")
     {
+        if (!$env) {
+            $env = $this->container->get('kernel')->getEnvironment();
+        }
         $phpPath = OsFunctions::getPHPExecutableFromPath();
 
         $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' cache:clear --no-debug '
-                . '--env=' . $this->container->get('kernel')->getEnvironment();
+                . '--env=' . $env;
 
         return PannelloAmministrazioneUtils::runCommand($command);
     }

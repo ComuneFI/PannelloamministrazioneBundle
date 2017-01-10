@@ -204,9 +204,9 @@ class Commands
         return $cmdoutput;
     }
 
-    public function clearcacheEnv()
+    public function clearcacheEnv($env)
     {
-        $ret = $this->pammutils->clearcache();
+        $ret = $this->pammutils->clearcache($env);
 
         return $ret["errmsg"];
     }
