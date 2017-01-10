@@ -194,11 +194,11 @@ class PannelloAmministrazioneController extends Controller
             $result = $commands->getVcs();
             (new LockSystem($this->container))->lockFile(false);
             if ($result["errcode"] < 0) {
-                $responseout = 'Errore nel comando: <i style = "color: white;">' . $result["command"] . '</i>'
-                        . '<br/><i style = "color: red;">' . str_replace("\n", '<br/>', $result["errmsg"]) . '</i>';
+                $responseout = '<pre>Errore nel comando: <i style = "color: white;">' . $result["command"] . '</i>'
+                        . '<br/><i style = "color: red;">' . nl2br($result["errmsg"]) . '</i></pre>';
             } else {
                 $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $result["command"] . '</i><br/>' .
-                        str_replace("\n", '<br/>', $result["errmsg"]) . '</pre>';
+                        nl2br($result["errmsg"]) . '</pre>';
             }
 
             return new Response($responseout);
@@ -231,32 +231,27 @@ class PannelloAmministrazioneController extends Controller
     public function symfonyCommandAction(Request $request)
     {
         set_time_limit(0);
-        $this->apppaths = new ProjectPath($this->container);
         $comando = $request->get('symfonycommand');
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
             (new LockSystem($this->container))->lockFile(true);
-
+            $this->apppaths = new ProjectPath($this->container);
+            $pammutils = new PannelloAmministrazioneUtils($this->container);
             $phpPath = OsFunctions::getPHPExecutableFromPath();
-
-            $command = $phpPath . ' ' . $this->apppaths->getConsole() . ' ' . $comando;
-
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
+            $result = $pammutils->runCommand($phpPath . ' ' . $this->apppaths->getConsole() . ' ' . $comando);
 
             (new LockSystem($this->container))->lockFile(false);
-            if (!$process->isSuccessful()) {
+            if ($result["errcode"] < 0) {
                 $responseout = 'Errore nel comando: <i style = "color: white;">' .
-                        str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) .
-                        '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
+                        str_replace(';', '<br/>', str_replace('&&', '<br/>', $comando)) .
+                        '</i><br/><i style = "color: red;">' . nl2br($result["errmsg"]) . '</i>';
 
                 return new Response($responseout);
             }
             $responseout = '<pre>Eseguito comando:<br/><br/><i style = "color: white;">' .
-                    str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/><br/>' .
-                    str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
+                    str_replace(';', '<br/>', str_replace('&&', '<br/>', $comando)) . '</i><br/><br/>' .
+                    str_replace("\n", '<br/>', $result["errmsg"]) . '</pre>';
 
             return new Response($responseout);
         }
@@ -265,6 +260,7 @@ class PannelloAmministrazioneController extends Controller
     public function unixCommandAction(Request $request)
     {
         set_time_limit(0);
+        $pammutils = new PannelloAmministrazioneUtils($this->container);
         $command = $request->get('unixcommand');
         if (!OsFunctions::isWindows()) {
             $lockdelcmd = 'rm -rf ';
@@ -278,16 +274,14 @@ class PannelloAmministrazioneController extends Controller
             if ((!($fs->exists($filelock)))) {
                 return new Response('Non esiste il file di lock: <i style = "color: white;">' . $filelock . '</i><br/>');
             } else {
-                //Sblocca pannello di controllo da lock
-                $process = new Process($command);
-                $process->setTimeout(60 * 100);
-                $process->run();
+
+                $result = $pammutils->runCommand($command);
 
                 // eseguito deopo la fine del comando
-                if (!$process->isSuccessful()) {
+                if ($result["errmsg"] < 0) {
                     $responseout = 'Errore nel comando: <i style = "color: white;">' .
                             str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) .
-                            '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
+                            '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $result["errmsg"]) . '</i>';
 
                     return new Response($responseout);
                 }
@@ -301,16 +295,14 @@ class PannelloAmministrazioneController extends Controller
         } else {
             (new LockSystem($this->container))->lockFile(true);
             //$phpPath = OsFunctions::getPHPExecutableFromPath();
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
+            $result = $pammutils->runCommand($command);
 
             (new LockSystem($this->container))->lockFile(false);
             // eseguito deopo la fine del comando
-            if (!$process->isSuccessful()) {
+            if ($result["errcode"] < 0) {
                 $errmsg = 'Errore nel comando: <i style = "color: white;">' .
                         str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) .
-                        '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
+                        '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $result["errmsg"]) . '</i>';
 
                 return new Response($errmsg);
                 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
@@ -320,7 +312,7 @@ class PannelloAmministrazioneController extends Controller
             }
             $msgok = '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>' .
                     str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/>' .
-                    str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
+                    str_replace("\n", '<br/>', $result["errmsg"]) . '</pre>';
             //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             return new Response($msgok);
             //return;
