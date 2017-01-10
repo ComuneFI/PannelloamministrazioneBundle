@@ -47,7 +47,7 @@
         "behat/mink-extension": "^2.2",
         "behat/mink-goutte-driver": "~1.1",
         "se/selenium-server-standalone": "^2.53",
-        "phpunit/phpunit": "^5.5",
+        "phpunit/phpunit": "^4.8",
         "fi/fifreecorebundle": "~2.0",
         "friendsofsymfony/user-bundle": "dev-master#28151dcb25de663c05ce26917fd6a0b5cb2787cf as 2.0"
     },
