@@ -302,7 +302,7 @@ class PannelloAmministrazioneController extends Controller
             if ($result["errcode"] < 0) {
                 $errmsg = 'Errore nel comando: <i style = "color: white;">' .
                         str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) .
-                        '</i><br/><i style = "color: red;">' . str_replace("\n", '<br/>', $result["errmsg"]) . '</i>';
+                        '</i><br/><i style = "color: red;">' . nl2br($result["errmsg"]) . '</i>';
 
                 return new Response($errmsg);
                 //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
@@ -312,7 +312,7 @@ class PannelloAmministrazioneController extends Controller
             }
             $msgok = '<pre>Eseguito comando:<br/><i style = "color: white;"><br/>' .
                     str_replace(';', '<br/>', str_replace('&&', '<br/>', $command)) . '</i><br/>' .
-                    str_replace("\n", '<br/>', $result["errmsg"]) . '</pre>';
+                    nl2br($result["errmsg"]) . '</pre>';
             //Uso exit perchè new response avendo cancellato la cache schianta non avendo più a disposizione i file
             return new Response($msgok);
             //return;
