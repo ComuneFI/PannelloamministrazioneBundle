@@ -186,35 +186,20 @@ class PannelloAmministrazioneController extends Controller
     {
         set_time_limit(0);
         $this->apppaths = new ProjectPath($this->container);
-        $fs = new Filesystem();
         if ((new LockSystem($this->container))->isLockedFile()) {
             return (new LockSystem($this->container))->lockedFunctionMessage();
         } else {
             (new LockSystem($this->container))->lockFile(true);
-            $sepchr = OsFunctions::getSeparator();
-            $projectDir = $this->apppaths->getRootPath();
-            if ($fs->exists($projectDir . '/.svn')) {
-                $vcscommand = 'svn update';
-            }
-            if ($fs->exists($projectDir . '/.git')) {
-                $vcscommand = 'git pull';
-            }
-
-            $command = 'cd ' . $projectDir . $sepchr . $vcscommand;
-
-            $process = new Process($command);
-            $process->setTimeout(60 * 100);
-            $process->run();
-
+            $commands = new Commands($this->container);
+            $result = $commands->getVcs();
             (new LockSystem($this->container))->lockFile(false);
-            if (!$process->isSuccessful()) {
-                $responseout = 'Errore nel comando: <i style = "color: white;">' . $command . '</i>'
-                        . '<br/><i style = "color: red;">' . str_replace("\n", '<br/>', $process->getErrorOutput()) . '</i>';
-
-                return new Response($responseout);
+            if ($result["errcode"] < 0) {
+                $responseout = 'Errore nel comando: <i style = "color: white;">' . $result["command"] . '</i>'
+                        . '<br/><i style = "color: red;">' . str_replace("\n", '<br/>', $result["errmsg"]) . '</i>';
+            } else {
+                $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $result["command"] . '</i><br/>' .
+                        str_replace("\n", '<br/>', $result["errmsg"]) . '</pre>';
             }
-            $responseout = '<pre>Eseguito comando: <i style = "color: white;">' . $command . '</i><br/>' .
-                    str_replace("\n", '<br/>', $process->getOutput()) . '</pre>';
 
             return new Response($responseout);
         }

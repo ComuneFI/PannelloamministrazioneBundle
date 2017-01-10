@@ -22,6 +22,23 @@ class Commands
         $this->pammutils = new PannelloAmministrazioneUtils($container);
     }
 
+    public function getVcs()
+    {
+        $fs = new Filesystem();
+
+        $sepchr = OsFunctions::getSeparator();
+        $projectDir = $this->apppaths->getRootPath();
+        if ($fs->exists($projectDir . DIRECTORY_SEPARATOR . '.svn')) {
+            $vcscommand = 'svn update';
+        }
+        if ($fs->exists($projectDir . DIRECTORY_SEPARATOR . '.git')) {
+            $vcscommand = 'git pull';
+        }
+
+        $command = 'cd ' . $projectDir . $sepchr . $vcscommand;
+        return $this->pammutils->runCommand($command);
+    }
+
     public function generateBundle($bundleName)
     {
         /* @var $fs \Symfony\Component\Filesystem\Filesystem */
