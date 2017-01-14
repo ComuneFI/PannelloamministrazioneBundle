@@ -13,7 +13,7 @@
     "autoload": {
         "psr-4": {
             "Fi\\PannelloAmministrazioneBundle\\": "src",
-            "Fi\\ProvaBundle\\": "src/Tests/src/Fi/ProvaBundle"
+            "Fi\\ProvaBundle\\": "tests/src/Fi/ProvaBundle"
         }
     },
     "require": {
