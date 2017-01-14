@@ -25,9 +25,9 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - composer install
-  - php src/Tests/app/console fifree:install admin admin admin@admin.it --env=test
-  - php src/Tests/app/console assets:install src/Tests/app --env=test
-  - php src/Tests/app/console server:run -d src/Tests/app --env=test 2>&1 &
+  - php tests/app/console fifree:install admin admin admin@admin.it --env=test
+  - php tests/app/console assets:install tests/app --env=test
+  - php tests/app/console server:run -d tests/app --env=test 2>&1 &
   - sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
 
 script:
