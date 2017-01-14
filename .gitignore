@@ -4,7 +4,7 @@
 /composer.lock
 /composer.phar
 /vendor/
-src/Tests/app/cache
-src/Tests/app/logs
-src/Tests/app/bundles
-src/Tests/app/dbtest.sqlite
+tests/app/cache
+tests/app/logs
+tests/app/bundles
+tests/app/dbtest.sqlite
