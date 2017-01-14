@@ -1,0 +1,182 @@
+/* 
+    Document   : menu
+    Created on : 12-lug-2013, 9.22.55
+    Author     : COMUNE-INTRANET\d59207
+    Description:
+        Purpose of the stylesheet follows.
+
+*/ 
+
+#bar1 :hover, 
+#bar1 :link, 
+#bar1 :visited, 
+#bar1 :active { 
+
+  font-weight: normal !important; 
+
+}
+
+.ui-menubar-link :hover, 
+.ui-menubar-link :link, 
+.ui-menubar-link :visited, 
+.ui-menubar-link :active { 
+
+  font-weight: normal !important; 
+
+}
+
+/*Se si aumenta o diminuisce questo font-size controllare anche ".ui-menu .ui-menu-item" e ""#bar1 .ui-menu" */
+/*Qusto è il font delle voci di menu*/
+#bar1 {
+  font-size: 13px; 
+}
+
+#bar1 .ui-menu {
+  width: 150px; 
+}
+
+.ui-menu .ui-menu-item {
+	padding: 0px 0em 5px 0em;
+}
+
+#bar1 { 
+  font-weight: normal !important; 
+
+}
+
+/* notifiche */ 
+
+.notification_li
+{
+  position:relative
+}
+
+.notificationContainer 
+{
+  background-color: #fff;
+  border: 1px solid rgba(100, 100, 100, .4);
+  -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+  overflow: visible;
+  position: absolute;
+  top: 30px;
+  margin-left: 0px;
+  width: 400px;
+/*  z-index: 99999;*/
+  display: none; /* Enable this after jquery implementation */
+}
+/* Popup Arrow */
+.notificationContainer:before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  color: transparent;
+  border: 10px solid black;
+  border-color: transparent transparent white;
+  margin-top: -20px;
+  margin-left: 188px;
+/*  z-index: 99999;*/
+}
+
+
+.notificationsBody
+{
+  padding: 33px 0px 0px 0px !important;
+  min-height:300px;
+/*  z-index: 99999;*/
+}
+
+.notificationFooter
+{
+  background-color: #CD0303;
+  color:#ffffff;
+  text-align: center;
+  font-weight: bold;
+  padding: 8px;
+  font-size: 10px;
+  border-top: 1px solid #dddddd;
+/*  z-index: 99999;*/
+
+}
+
+/*
+.notificationTitle
+{
+  font-weight: bold;
+  padding: 8px;
+  font-size: 13px;
+  background-color: #ffffff;
+  position: fixed;
+  z-index: 99999;
+  width: 384px;
+  border-bottom: 1px solid #dddddd;
+}
+
+
+
+*/
+
+.notification_count
+{
+  padding: 3px 7px 3px 7px;
+  background: black; 
+  color: #ffffff;
+  font-weight: bold;
+  margin-left: -10px;
+  border-radius: 9px;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  /*position: absolute; */
+  font-family: Arial,sans-serif;
+  margin-top: 15px;
+  font-size: 11px;
+/*  z-index: 999999;*/
+  display: none; 
+}
+
+
+
+
+#bar1 button {
+  background-color: #CD0404; 
+
+  color: white; 
+  display: inline-block;
+  position: relative;
+  padding: 0;
+  line-height: normal;
+  margin-right: .1em;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  overflow: visible; /* removes extra width in IE */
+
+  border-radius: 9px;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+
+  width: 250px; 
+  height:30px; 
+  margin: 5px;   
+
+
+
+}
+
+#bar1 label,
+#bar1 input, 
+#bar1 select 
+{
+  font-family: Arial,sans-serif;
+  font-size: 1em; 
+  color: black; 
+
+}
+
+#bar1 {
+}
+
+html body div#jqContextMenu {
+/*    z-index: 999 !important; */
+}

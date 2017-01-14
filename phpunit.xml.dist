@@ -11,22 +11,22 @@
     processIsolation            = "false"
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
-    bootstrap                   = "src/Tests/app/autoload.php" >
+    bootstrap                   = "tests/app/autoload.php" >
 
     <testsuites>
         <testsuite name="Pannello Amministrazione test suite">
-            <directory suffix=".php">src/Tests</directory>
+            <directory suffix=".php">tests</directory>
         </testsuite>
     </testsuites>
     
     <php>
-        <server name="KERNEL_DIR" value="src/Tests/app" />
+        <server name="KERNEL_DIR" value="tests/app" />
     </php>
 
     
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">tests</directory>
         </whitelist>
     </filter>    
 </phpunit>

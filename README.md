@@ -27,30 +27,23 @@ composer require "fi/pannelloamministrazionebundle"
 ```
 
 - Test
-Scarico dipendenze
+
 ```
+    #Scarico dipendenze
     composer install
-```
-Preparare il db
-```
-    rm src/Tests/app/dbtest.sqlite
-    php src/Tests/app/console fifree:install admin admin admin@admin.it --env=test
+    #Preparare il db
+    rm tests/app/dbtest.sqlite
+    php tests/app/console fifree:install admin admin admin@admin.it --env=test
     rm -rf src/Tests/app/cache/test
     rm -rf src/Tests/app/cache/dev
-```
-Assets install
-```
-php src/Tests/app/console assets:install src/Tests/app --env=test
-```
-Start server
-```
-php src/Tests/app/console server:run -d src/Tests/app --env=test 2>&1 &
-sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
-rm -rf src/Tests/app/cache/test
-rm -rf src/Tests/app/cache/dev
-```
-Lanciare i test
-```
+    #Assets install
+    php tests/app/console assets:install tests/app --env=test
+    #Start servers
+    php tests/app/console server:run -d tests/app --env=test 2>&1 &
+    sh vendor/bin/selenium-server-standalone > /dev/null 2>&1 &
+    rm -rf tests/app/cache/test
+    rm -rf tests/app/cache/dev
+    #Lanciare i test
     vendor/bin/phpunit
 ```
 
