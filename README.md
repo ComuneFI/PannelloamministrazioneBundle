@@ -1,8 +1,7 @@
 PannelloAmministrazioneBundle
 =============
 [![Build Status](https://travis-ci.org/ComuneFI/PannelloamministrazioneBundle.svg?branch=master)]
-(https://travis-ci.org/ComuneFI/PannelloamministrazioneBundle) [![Coverage Status](https://img.shields.io/coveralls/ComuneFI/PannelloamministrazioneBundle.svg)] 
-(https://coveralls.io/r/ComuneFI/PannelloamministrazioneBundle)
+(https://travis-ci.org/ComuneFI/PannelloamministrazioneBundle) [![Coverage Status](https://coveralls.io/repos/github/ComuneFI/PannelloamministrazioneBundle/badge.svg?branch=master)](https://coveralls.io/github/ComuneFI/PannelloamministrazioneBundle?branch=master)
 
 Installazione:
 -------------
